@@ -4,7 +4,7 @@ three = require 'three'
 module.exports = class StrokeMesh
 	constructor: (scene) ->
 		@nStrokes =
-			1000
+			10000
 
 		uniforms =
 			bright:
@@ -37,11 +37,23 @@ module.exports = class StrokeMesh
 		@strokeGeometry =
 			new three.Geometry
 
-		for idx in [0...@nStrokes]
-			p = ->
-				Math.random() * 20 - 10
+		@circleCenter =
+			new three.Vector3 0, 0, 0
 
-			@strokeGeometry.vertices.push new three.Vector3 p(), p(), p()
+		@circleRadius =
+			2
+
+		for idx in [0...@nStrokes]
+			randCoord = ->
+				Math.random() * 2 - 1
+
+			position =
+				new three.Vector3 randCoord(), randCoord(), randCoord()
+			position.normalize()
+			position.multiplyScalar @circleRadius
+			position.add @circleCenter
+
+			@strokeGeometry.vertices.push position
 
 		@strokeSystem =
 			new three.ParticleSystem @strokeGeometry, @material
