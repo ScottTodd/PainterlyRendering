@@ -1,37 +1,33 @@
 $ = require 'jquery'
-three = require 'three'
-require './vendor/TrackballControls' # creates three.TrackballControls
-Graphics = require './Graphics'
+Game = require './Game'
 
-class Game
-	constructor: (container) ->
-		@graphics = new Graphics container
+game = new Game
 
-		#@controls =
-		#	new three.TrackballControls @graphics.camera
-		#@controls.target.set 0, 0, 0
+($ 'document').ready ->
+	($ playButton).hide()
 
-		@done =
-			no
+	glContainer =
+		$ '#glContainer'
 
-	play: ->
-		@render()
+	game.bindToDiv glContainer
 
-	render: ->
-		unless @done
-			requestAnimationFrame =>
-				@render()
+	glContainer.on 'render', ->
+		($ '#frameRateNumber').text Math.round game.currentFrameRate()
 
-			try
-				#@controls.update()
-				@graphics.draw()
+	pause = ->
+		($ '#playButton').show()
+		($ '#pauseButton').hide()
+		game.pause()
 
-			catch error
-				@done = yes
-				throw error
+	($ '#stopButton').click ->
+		game.restart()
+		pause()
 
+	($ '#playButton').click ->
+		($ '#pauseButton').show()
+		($ '#playButton').hide()
+		game.play()
 
+	($ '#pauseButton').click pause
 
-$ ->
-	(new Game $ '#glContainer').play()
-
+	game.play()

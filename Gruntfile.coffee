@@ -19,7 +19,7 @@ module.exports = (grunt) ->
 
 		codo:
 			options:
-				inputs: [ 'assets/script', 'server' ]
+				inputs: [ 'assets/script' ]
 				output: 'doc'
 
 		coffeelint:
@@ -57,12 +57,16 @@ module.exports = (grunt) ->
 				src: '**/*'
 				dest: 'public/texture'
 
+		jade:
+			compile:
+				files:
+					"public/index.html": [ "assets/view/index.jade" ]
+
 		nodemon:
 			dev:
-				script: 'server/index.coffee'
+				script: 'server.coffee'
 				options:
-					#ignore: 'assets' # don't need server reset for client assets
-					watch: [ 'server' ]
+					watch: [ 'server.coffee' ]
 
 		stylus:
 			files:
@@ -88,14 +92,18 @@ module.exports = (grunt) ->
 			texture:
 				files: 'assets/texture/**/*'
 				tasks: [ 'copy:texture' ]
+			view:
+				files: 'assets/view/**/*'
+				tasks: [ 'jade' ]
 
 	(require 'load-grunt-tasks') grunt
 
 	grunt.registerTask 'deploy-assets', [
 		'clean:pre',
 		'browserify',
-		'stylus',
-		'copy'
+		'copy',
+		'jade',
+		'stylus'
 	]
 
 	grunt.registerTask 'default', [

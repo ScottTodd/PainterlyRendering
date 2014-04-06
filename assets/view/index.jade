@@ -5,7 +5,23 @@ html
 		meta(charset='utf-8')
 		meta(name='viewport', content='width=device-width, initial-scale=1.0')
 		script(src='/script/index.js')
+		link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css')
 		link(rel='stylesheet', href='/style/index.css')
 
 	body
-		div#glContainer(width=400, height=300)
+		div#hud
+			button#stopButton(title='Stop')
+				i(class='fa fa-stop')
+			div#playPauseButton
+				button#playButton(title='Play')
+					i(class='fa fa-play')
+				button#pauseButton(title='Pause')
+					i(class='fa fa-pause')
+
+			div#frameRate
+				span#frameRateNumber
+				span= ' FPS'
+
+		div#glContainer
+
+

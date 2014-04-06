@@ -14,24 +14,24 @@ module.exports = class StrokeMesh
 				type: 't'
 				value: three.ImageUtils.loadTexture 'texture/stroke.png'
 
-		# !!!
 		attributes =
 			strokeColor:
 				type: 'c'
-				value: [] # TODO: new Float32Array (@nStrokes * 4)
+				value: [ ]
 
 		for idx in [0...@nStrokes]
-			attributes.strokeColor.value.push new three.Color (0xffffff * Math.random())
+			attributes.strokeColor.value.push new three.Color 0xffffff * Math.random()
 
 		@material =
 			new three.ShaderMaterial
 				uniforms: uniforms
-				attributes: attributes # UNCOMMENT ME
+				attributes: attributes
+
 				vertexShader: fs.readFileSync __dirname + '/../shader/stroke.vs.glsl'
 				fragmentShader: fs.readFileSync __dirname + '/../shader/stroke.fs.glsl'
+
 				transparent: yes
 				blending: three.NormalBlending # Makes transparency work
-		# !!!
 
 
 		@strokeGeometry =
