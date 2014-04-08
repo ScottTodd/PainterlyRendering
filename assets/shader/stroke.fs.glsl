@@ -52,8 +52,15 @@ void main()
 	float textureAlpha =
 		textureColor.r; // = g = b
 
-	gl_FragColor =
-		strokeShadedColor;
-	gl_FragColor.a = textureAlpha;
+	// Interesting shaded effect, maybe we should try other mixing here?
+	// gl_FragColor += strokeShadedColor * textureAlpha;
+
+	if (textureAlpha > 0.01) {
+		gl_FragColor =
+			strokeShadedColor;
+		gl_FragColor.a = textureAlpha;
+	} else {
+		discard;
+	}
 }
 
