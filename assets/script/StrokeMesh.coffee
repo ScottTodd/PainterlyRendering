@@ -2,7 +2,7 @@ fs = require 'fs'
 three = require 'three'
 
 module.exports = class StrokeMesh
-	constructor: (scene) ->
+	constructor: (center, radius) ->
 		@nStrokes =
 			4000
 
@@ -41,10 +41,10 @@ module.exports = class StrokeMesh
 			new three.Geometry
 
 		@circleCenter =
-			new three.Vector3 0, 0, 0
+			center
 
 		@circleRadius =
-			2
+			radius
 
 		@randCoord = ->
 			Math.random() * 2 - 1
@@ -68,6 +68,4 @@ module.exports = class StrokeMesh
 
 		@strokeSystem.frustomCulled = yes
 		@strokeSystem.sortParticles = yes
-
-		scene.add @strokeSystem
 

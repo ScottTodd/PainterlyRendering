@@ -2,12 +2,16 @@ three = require 'three'
 #EffectComposer = (require 'three-effectcomposer') three
 require './vendor/TrackballControls' # creates three.TrackballControls
 StrokeMesh = require './StrokeMesh'
+GameObject = require './GameObject'
 
 module.exports = class Graphics
 	constructor: ->
 		@renderer =
 			new three.WebGLRenderer
 				alpha: yes
+
+		@gameObjects =
+			[]
 
 	bindToDiv: (div) ->
 		@width =
@@ -29,14 +33,16 @@ module.exports = class Graphics
 
 		div.append @renderer.domElement
 
+	attachGameObject: (gameObject) ->
+		@gameObjects.push gameObject
 
 	restart: ->
+		gameObject.removeFromScene for gameObject in @gameObjects
+
 		@scene =
 			new three.Scene()
 
-		# TODO: This is ugly code!
-		@theMesh =
-			new StrokeMesh @scene
+		gameObject.setScene @scene for gameObject in @gameObjects
 
 	draw: ->
 		@controls.update()
