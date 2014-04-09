@@ -1,30 +1,47 @@
-attribute vec3 strokeColor;
 attribute vec3 strokeVertexNormal;
 
-varying vec3 strokePosition;
+/*
+Three.js also gives us these:
+position
+color
+modelViewMatrix
+projectionMatrix
+*/
+
 varying vec4 strokeShadedColor;
-varying vec3 strokeNormal;
 
 void main()
 {
-	strokePosition =
-		position;
-	strokeShadedColor =
-		// TODO: Calculate from lighting
-		vec4(strokeColor, 1.0);
+	float phongDiffuse =
+		1.0; //dot(dirToLight, strokeVertexNormal);
+	float phongSpecular =
+		0.0; //specular * pow(reflDir * dirToCamera, shininess);
+	vec3 lightColor =
+		vec3(1, 1, 1);
+	vec3 phongLight =
+		lightColor * (phongDiffuse + phongSpecular);
 
-	vec4 mvNormal =
-		modelViewMatrix * vec4(strokeVertexNormal, 0.0);
-	strokeNormal =
-		(projectionMatrix * mvNormal).xyz;
+	strokeShadedColor =
+		vec4(color * phongLight, 1.0);
 
 	vec4 mvPosition =
 		modelViewMatrix * vec4(position, 1.0);
 
-	gl_PointSize =
-		20.0;
-
 	gl_Position =
 		projectionMatrix * mvPosition;
+
+	vec4 mvNormal =
+		modelViewMatrix * vec4(strokeVertexNormal, 0.0);
+	vec4 projectedNormal =
+		normalize(projectionMatrix * mvNormal);
+	float cosTowardsCamera =
+		- projectedNormal.z;
+
+	float shrinkInDistance =
+		1.0 / gl_Position.z;
+
+	// This also culls backfacing strokes (gl_PointSize will be negative)
+	gl_PointSize =
+		shrinkInDistance * cosTowardsCamera * 160.0;
 }
 

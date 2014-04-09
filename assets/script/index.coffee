@@ -1,18 +1,12 @@
 $ = require 'jquery'
-Game = require './Game'
+SpheresGame = require './SpheresGame'
 
-game = new Game
+game = new SpheresGame
 
 ($ 'document').ready ->
 	($ playButton).hide()
 
-	glContainer =
-		$ '#glContainer'
-
-	game.bindToDiv glContainer
-
-	glContainer.on 'render', ->
-		($ '#frameRateNumber').text Math.round game.currentFrameRate()
+	game.bindToDiv $ '#glContainer'
 
 	pause = ->
 		($ '#playButton').show()

@@ -1,6 +1,7 @@
 three = require 'three'
 Graphics = require './Graphics'
 GameObject = require './GameObject'
+{ type } = require './check'
 
 module.exports = class Game
 	constructor: ->
@@ -10,31 +11,12 @@ module.exports = class Game
 		@gameObjects =
 			[]
 
-		# Create all GameObjects and attach them to Graphics
-		sphere1 =
-			new GameObject
-		center1 =
-			new three.Vector3 -0.9, 0, 0
-		sphere1.createAsSphere(center1, 2)
-		@gameObjects.push sphere1
-
-		sphere2 =
-			new GameObject
-		center2 =
-			new three.Vector3 0.9, 0, -6
-		sphere2.createAsSphere(center2, 2)
-		@gameObjects.push sphere2
-
-		sphere3 =
-			new GameObject
-		center3 =
-			new three.Vector3 1.4, 0, 0
-		sphere3.createAsSphere(center3, 1)
-		@gameObjects.push sphere3
-
-		@graphics.attachGameObject gameObject for gameObject in @gameObjects
-
 		@restart()
+
+	addObject: (obj) ->
+		type obj, GameObject
+		@gameObjects.push obj
+		obj.addToGraphics @graphics
 
 	###
 	@param div [jquery.Selector]
@@ -48,16 +30,14 @@ module.exports = class Game
 	restart: ->
 		@graphics.restart()
 
-		@paused =
-			yes
+		for obj in @initialObjects()
+			@addObject obj
 
-		@frameNumber =
-			0
 		@clock =
 			new three.Clock yes
-		@clock.getDelta()
-		@_currentFrameRate =
-			0
+
+		@paused =
+			yes
 
 		if @container?
 			# TODO
@@ -65,11 +45,12 @@ module.exports = class Game
 			requestAnimationFrame =>
 				@renderOnce()
 
-	currentFrameRate: ->
-		@_currentFrameRate
+	initialObjects: ->
+		[ ]
 
 	play: ->
 		@paused = no
+		@clock.getDelta() # Next call to getDelta() will return time taken after this
 		@renderLoop()
 
 	pause: ->
@@ -88,19 +69,10 @@ module.exports = class Game
 				throw error
 
 	renderOnce: ->
-		@container.trigger 'render'
+		dt =
+			@clock.getDelta()
 
-		@frameNumber += 1
+		for object in @gameObjects
+			object.step dt
+
 		@graphics.draw()
-		@calculateFrameRate()
-
-	calculateFrameRate: ->
-		measureEveryNFrames =
-			30
-
-		if @frameNumber % measureEveryNFrames == 0
-			elapsed =
-				@clock.getDelta()
-			@_currentFrameRate =
-				# frames / seconds
-				measureEveryNFrames / elapsed
