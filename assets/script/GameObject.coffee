@@ -5,23 +5,45 @@ module.exports = class GameObject
 	constructor: ->
 		# currently empty
 
-	setScene: (scene) ->
-		@scene = scene
-
-		# TODO? when recreating the scene, we need to recreate the mesh.
-		#       What is the value of restarting over just refreshing the page?
-		@strokeMesh =
-			new StrokeMesh(@center, @radius)
-
-		scene.add @strokeMesh.strokeSystem
-
-	removeFromScene: ->
-		if @scene?
-			@scene.remove(@strokeMesh.strokeSystem)
-
 	createAsSphere: (center, radius) ->
 		@center = center
 		@radius = radius
 
+	addOriginalObjectToParent: (originalMeshesParent) ->
+		@createOriginalObject()
+
+		originalMeshesParent.add @originalObject
+
+	addStrokeObjectToParent: (strokeMeshesParent) ->
+		@createStrokeObject()
+
+		strokeMeshesParent.add @strokeObject
+
+	createOriginalObject: ->
+		@originalGeometry =
+			new three.SphereGeometry @radius, 32, 32
+		@originalMaterial =
+			new three.MeshBasicMaterial
+				color: 0x202022
+		@originalMesh =
+			new three.Mesh @originalGeometry, @originalMaterial
+
+		@originalObject =
+			new three.Object3D()
+		@originalObject.add @originalMesh
+
+		@originalObject.translateX @center.x
+		@originalObject.translateY @center.y
+		@originalObject.translateZ @center.z
+
+	createStrokeObject: ->
 		@strokeMesh =
-			new StrokeMesh(center, radius)
+			new StrokeMesh @radius
+
+		@strokeObject =
+			new three.Object3D()
+		@strokeObject.add @strokeMesh.strokeSystem
+
+		@strokeObject.translateX @center.x
+		@strokeObject.translateY @center.y
+		@strokeObject.translateZ @center.z

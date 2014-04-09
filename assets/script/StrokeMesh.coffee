@@ -2,7 +2,7 @@ fs = require 'fs'
 three = require 'three'
 
 module.exports = class StrokeMesh
-	constructor: (center, radius) ->
+	constructor: (radius) ->
 		@nStrokes =
 			4000
 
@@ -40,9 +40,6 @@ module.exports = class StrokeMesh
 		@strokeGeometry =
 			new three.Geometry
 
-		@circleCenter =
-			center
-
 		@circleRadius =
 			radius
 
@@ -54,11 +51,8 @@ module.exports = class StrokeMesh
 				new three.Vector3 @randCoord(), @randCoord(), @randCoord()
 			randomNormal.normalize()
 
-			offset = randomNormal.clone()
-			offset.multiplyScalar @circleRadius
-
-			position = offset.clone()
-			position.add @circleCenter
+			position = randomNormal.clone()
+			position.multiplyScalar @circleRadius
 
 			@strokeGeometry.vertices.push position
 			attributes.strokeVertexNormal.value.push randomNormal
