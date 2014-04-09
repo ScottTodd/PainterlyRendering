@@ -1,7 +1,7 @@
-Game = require './Game'
 three = require 'three'
 CameraController = require './CameraController'
 FramerateTracker = require './FramerateTracker'
+Game = require './Game'
 StrokeMesh = require './StrokeMesh'
 
 module.exports = class SpheresGame extends Game
@@ -17,6 +17,7 @@ module.exports = class SpheresGame extends Game
 				center: new three.Vector3 -0.9, 0, 0
 				radius: 2
 				nStrokes: 2000
+
 		s2 =
 			StrokeMesh.rainbowSphere
 				center: (new three.Vector3 0.9, 0, -6)

@@ -7,7 +7,7 @@ typeIt = (args, mustExist) ->
 
 		unless value?
 			if mustExist
-				module.exports.fail "Does not exist of type #{type.name}"
+				exports.fail "Does not exist of type #{type.name}"
 			else
 				continue
 

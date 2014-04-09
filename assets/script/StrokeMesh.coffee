@@ -1,18 +1,19 @@
 fs = require 'fs'
+$ = require 'jquery'
 three = require 'three'
-GameObject = require './GameObject'
 { check } =require './check'
+GameObject = require './GameObject'
+meshVerticesNormals = require './meshVerticesNormals'
 
 module.exports = class StrokeMesh extends GameObject
 	@rainbowSphere: (opts) ->
-		nStrokes = opts.nStrokes ? 10
-		radius = opts.radius ? 1
-		center = opts.center ? new three.Vector3 0, 0, 0
+		opts.nStrokes ?= 10
+		opts.radius ?= 1
 
 		vertices = []
 		normals = []
 
-		for _ in [0...nStrokes]
+		for _ in [0...opts.nStrokes]
 			randCoord = ->
 				Math.random() * 2 - 1
 			randomNormal =
@@ -20,30 +21,51 @@ module.exports = class StrokeMesh extends GameObject
 			randomNormal.normalize()
 
 			position = randomNormal.clone()
-			position.multiplyScalar radius
+			position.multiplyScalar opts.radius
 
 			vertices.push position
 			normals.push randomNormal
 
 		colors =
-			for _ in [0...nStrokes]
+			for _ in [0...opts.nStrokes]
 				new three.Color 0xffffff * Math.random()
 
 		originalGeometry =
-			new three.SphereGeometry radius, 32, 32
+			new three.SphereGeometry opts.radius, 32, 32
 		originalMaterial =
 			new three.MeshBasicMaterial
 		originalMesh =
 			new three.Mesh originalGeometry, originalMaterial
 
-		new StrokeMesh
-			nStrokes: nStrokes
+		$.extend opts,
 			vertices: vertices
 			normals: normals
 			colors: colors
-			center: center
 			originalMesh: originalMesh
 
+		new StrokeMesh opts
+
+	###
+	opts: nStrokes, originalGeometry, center, strokeTexture
+	###
+	@rainbowGeometry: (opts) ->
+		opts.nStrokes ?= 10
+
+		opts.originalMesh =
+			new three.Mesh opts.originalGeometry, new three.MeshBasicMaterial
+
+		[ vertices, normals ] = meshVerticesNormals opts.originalMesh, opts.nStrokes
+
+		colors =
+			for _ in [0...opts.nStrokes]
+				new three.Color 0xffffff * Math.random()
+
+		$.extend opts,
+			vertices: vertices
+			normals: normals
+			colors: colors
+
+		new StrokeMesh opts
 
 	###
 	@private
@@ -62,14 +84,16 @@ module.exports = class StrokeMesh extends GameObject
 		vertices = get 'vertices'
 		normals = get 'normals'
 		colors = get 'colors'
-		center = get 'center'
+		center = get 'center', -> new three.Vector3 0, 0, 0
 		@originalMesh = get 'originalMesh'
 		texture = get 'strokeTexture', ->
 			three.ImageUtils.loadTexture 'texture/stroke.png'
 
-		check vertices.length == nStrokes
-		check normals.length == nStrokes
-		check colors.length == nStrokes
+		console.log nStrokes
+		console.log vertices.length
+		check vertices.length == nStrokes, 'must have nStrokes vertices'
+		check normals.length == nStrokes, 'must have nStrokes normals'
+		check colors.length == nStrokes, 'must have nStrokes colors'
 
 		uniforms =
 			strokeTexture:
@@ -115,7 +139,6 @@ module.exports = class StrokeMesh extends GameObject
 
 		@strokeSystem =
 			new three.ParticleSystem @strokeGeometry, @material
-		#@strokeSystem.frustomCulled = yes
 		#@strokeSystem.sortParticles = yes
 
 		@center = center
