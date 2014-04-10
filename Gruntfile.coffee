@@ -56,6 +56,11 @@ module.exports = (grunt) ->
 				cwd: 'assets/texture'
 				src: '**/*'
 				dest: 'public/texture'
+			model:
+				expand: yes
+				cwd: 'assets/model'
+				src: '**/*'
+				dest: 'public/model'
 
 		jade:
 			compile:
