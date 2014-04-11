@@ -86,11 +86,8 @@ module.exports = class StrokeMesh extends GameObject
 		colors = get 'colors'
 		center = get 'center', -> new three.Vector3 0, 0, 0
 		@originalMesh = get 'originalMesh'
-		texture = get 'strokeTexture', ->
-			three.ImageUtils.loadTexture 'texture/stroke.png'
+		texture = get 'strokeTexture'
 
-		console.log nStrokes
-		console.log vertices.length
 		check vertices.length == nStrokes, 'must have nStrokes vertices'
 		check normals.length == nStrokes, 'must have nStrokes normals'
 		check colors.length == nStrokes, 'must have nStrokes colors'

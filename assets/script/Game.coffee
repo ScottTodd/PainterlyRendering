@@ -1,7 +1,8 @@
 three = require 'three'
+{ type } = require './check'
 Graphics = require './Graphics'
 GameObject = require './GameObject'
-{ type } = require './check'
+Resources = require './Resources'
 
 module.exports = class Game
 	constructor: ->
@@ -11,21 +12,35 @@ module.exports = class Game
 		@gameObjects =
 			[]
 
-		@restart()
+		@resources =
+			new Resources @allResources()
+
+		@ready = @resources.promise().then =>
+			@restart()
+
+	###
+	Every resource this game uses.
+	See example in MeshGame.coffee.
+	###
+	allResources: ->
+		models: [ ]
+		textures: [ ]
 
 	addObject: (obj) ->
 		type obj, GameObject
 		@gameObjects.push obj
+		obj.registerGame @
 		obj.addToGraphics @graphics
 
 	###
 	@param div [jquery.Selector]
 	###
 	bindToDiv: (div) ->
-		@container = div
-		@graphics.bindToDiv div
+		@ready.then =>
+			@container = div
+			@graphics.bindToDiv div
 
-		@renderOnce()
+			@renderOnce()
 
 	restart: ->
 		@graphics.restart()
@@ -49,9 +64,10 @@ module.exports = class Game
 		[ ]
 
 	play: ->
-		@paused = no
-		@clock.getDelta() # Next call to getDelta() will return time taken after this
-		@renderLoop()
+		@ready.then =>
+			@paused = no
+			@clock.getDelta() # Next call to getDelta() will return time taken after this
+			@renderLoop()
 
 	pause: ->
 		@paused = yes

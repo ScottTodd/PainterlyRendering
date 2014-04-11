@@ -19,7 +19,6 @@ module.exports = class Graphics
 		@height =
 			div.height()
 
-
 		@renderer.setSize @width, @height
 
 		@camera.aspect = @width / @height
@@ -38,7 +37,6 @@ module.exports = class Graphics
 			# aspect ratio will be changed in `bindToDiv`
 			new three.PerspectiveCamera 75, 1, 0.1, 1000
 		@scene.add @camera
-
 
 	setOriginalMeshesVisibility: (visibility) ->
 		@originalMeshesParent.visible = visibility

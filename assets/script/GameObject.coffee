@@ -5,3 +5,10 @@ module.exports = class GameObject
 
 	step: (dt) ->
 		null
+
+	registerGame: (game) ->
+		@_game = game
+
+	game: ->
+		@_game
+
