@@ -1,5 +1,9 @@
 attribute vec3 strokeVertexNormal;
 
+uniform vec3 ambientLightColor;
+uniform vec3 directionalLightDirection[MAX_DIR_LIGHTS];
+uniform vec3 directionalLightColor[MAX_DIR_LIGHTS];
+
 /*
 Three.js also gives us these:
 position
@@ -16,17 +20,27 @@ const float Pi =
 
 void main()
 {
-	float phongDiffuse =
-		1.0; //dot(dirToLight, strokeVertexNormal);
-	float phongSpecular =
-		0.0; //specular * pow(reflDir * dirToCamera, shininess);
-	vec3 lightColor =
-		vec3(1, 1, 1);
-	vec3 phongLight =
-		lightColor * (phongDiffuse + phongSpecular);
+	vec3 lightTotal = ambientLightColor;
+	for(int i = 0; i < MAX_DIR_LIGHTS; i++) {
+		vec3 dirToLight =
+			-directionalLightDirection[i];
+		float phongDiffuse =
+			max(0.0, dot(dirToLight, strokeVertexNormal));
+			// 1.0;
+		float phongSpecular =
+			0.0; //specular * pow(reflDir * dirToCamera, shininess);
+		vec3 lightColor =
+			directionalLightColor[i];
+			// vec3(1, 1, 1);
+		vec3 phongLight =
+			lightColor * (phongDiffuse + phongSpecular);
+
+		lightTotal += phongLight;
+	}
+	lightTotal = clamp(lightTotal, 0.0, 1.0);
 
 	strokeShadedColor =
-		vec4(color * phongLight, 1.0);
+		vec4(color * lightTotal, 1.0);
 
 	vec4 mvPosition =
 		modelViewMatrix * vec4(position, 1.0);

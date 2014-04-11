@@ -96,6 +96,8 @@ module.exports = class StrokeMesh extends GameObject
 			strokeTexture:
 				type: 't'
 				value: texture
+		$.extend uniforms,
+			three.UniformsLib["lights"]
 
 		attributes =
 			strokeVertexNormal:
@@ -114,6 +116,8 @@ module.exports = class StrokeMesh extends GameObject
 				depthWrite: no
 
 				vertexColors: yes
+
+				lights: yes
 
 				# blended = src * srcAlpha + dest * (1 - srcAlpha)
 				# In other words, fill in anything not already filled in

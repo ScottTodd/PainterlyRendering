@@ -66,7 +66,8 @@ module.exports = class Game
 	play: ->
 		@ready.then =>
 			@paused = no
-			@clock.getDelta() # Next call to getDelta() will return time taken after this
+			# Next call to getDelta() will return time taken after this
+			@clock.getDelta()
 			@renderLoop()
 
 	pause: ->
