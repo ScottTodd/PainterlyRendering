@@ -4,7 +4,7 @@ GameObject = require './GameObject'
 
 module.exports = class CameraController extends GameObject
 	constructor: (opts) ->
-		@distance = opts.distance ? 3
+		@distance = opts?.distance ? 5
 
 	addToGraphics: (graphics) ->
 		graphics.camera.position.set 0, 0, @distance
