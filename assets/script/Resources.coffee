@@ -11,9 +11,6 @@ get = (dict, key, dictName) ->
 
 		fail "No #{dictName} is named #{key}. Did you mean one of #{keys}?"
 
-loadTexture = (name) ->
-	(new three.JSONLoader).load "model/#{name}.js", (geometry, materials) =>
-
 module.exports = class Resources
 	constructor: (allResources) ->
 		@_textures =
