@@ -9,6 +9,10 @@ projectionMatrix
 */
 
 varying vec4 strokeShadedColor;
+varying float strokeOrientation;
+
+const float Pi =
+	3.1415926535897932384626433832795;
 
 void main()
 {
@@ -36,6 +40,9 @@ void main()
 		normalize(projectionMatrix * mvNormal);
 	float cosTowardsCamera =
 		- projectedNormal.z;
+
+	strokeOrientation =
+		atan(projectedNormal.y, projectedNormal.x);
 
 	float shrinkInDistance =
 		1.0 / gl_Position.z;

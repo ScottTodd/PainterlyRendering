@@ -1,8 +1,6 @@
 uniform sampler2D strokeTexture;
 varying vec4 strokeShadedColor;
-
-const float Pi =
-	3.1415926535897932384626433832795;
+varying float strokeOrientation;
 
 vec2 rotate2D(vec2 point, vec2 origin, float angle)
 {
@@ -21,11 +19,8 @@ vec2 rotate2D(vec2 point, vec2 origin, float angle)
 
 void main()
 {
-	float orientation =
-		Pi / 3.0;
-
 	vec2 textureCoordinate =
-		rotate2D(gl_PointCoord, vec2(0.5, 0.5), orientation);
+		rotate2D(gl_PointCoord, vec2(0.5, 0.5), strokeOrientation);
 	vec4 textureColor =
 		texture2D(strokeTexture, textureCoordinate);
 	float textureAlpha =
