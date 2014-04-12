@@ -4,6 +4,7 @@ three = require 'three'
 { check } =require './check'
 GameObject = require './GameObject'
 meshVerticesNormals = require './meshVerticesNormals'
+{ read } = require './meta'
 
 module.exports = class StrokeMesh extends GameObject
 	@rainbowSphere: (opts) ->
@@ -43,10 +44,14 @@ module.exports = class StrokeMesh extends GameObject
 			colors: colors
 			originalMesh: originalMesh
 
+
 		new StrokeMesh opts
 
 	###
-	opts: nStrokes, originalGeometry, center, strokeTexture
+	opts:
+	nStrokes
+	originalGeometry
+	strokeTexture
 	###
 	@rainbowGeometry: (opts) ->
 		opts.nStrokes ?= 10
@@ -84,8 +89,7 @@ module.exports = class StrokeMesh extends GameObject
 		vertices = get 'vertices'
 		normals = get 'normals'
 		colors = get 'colors'
-		center = get 'center', -> new three.Vector3 0, 0, 0
-		@originalMesh = get 'originalMesh'
+		@_originalMesh = get 'originalMesh'
 		texture = get 'strokeTexture'
 
 		check vertices.length == nStrokes, 'must have nStrokes vertices'
@@ -104,7 +108,7 @@ module.exports = class StrokeMesh extends GameObject
 				type: 'v3'
 				value: normals
 
-		@material =
+		@_material =
 			new three.ShaderMaterial
 				uniforms: uniforms
 				attributes: attributes
@@ -128,27 +132,25 @@ module.exports = class StrokeMesh extends GameObject
 				#transparent: yes
 				#depthWrite: no
 
-		@strokeGeometry =
+		@_strokeGeometry =
 			new three.Geometry
 
-		@strokeGeometry.vertices = vertices
-		@strokeGeometry.computeBoundingBox()
-		@strokeGeometry.computeBoundingSphere()
+		@_strokeGeometry.vertices = vertices
+		@_strokeGeometry.computeBoundingBox()
+		@_strokeGeometry.computeBoundingSphere()
 
-		@strokeGeometry.colors = colors
-		@strokeGeometry.colorsNeedUpdate = yes
+		@_strokeGeometry.colors = colors
+		@_strokeGeometry.colorsNeedUpdate = yes
 
-		@strokeSystem =
-			new three.ParticleSystem @strokeGeometry, @material
-		#@strokeSystem.sortParticles = yes
+		@_strokeSystem =
+			new three.ParticleSystem @_strokeGeometry, @_material
 
-		@center = center
-		@strokeSystem.position = @center
-		@originalMesh.position = @center
-
+	read @, 'strokeSystem'
 
 	addToGraphics: (graphics) ->
-		graphics.originalMeshesParent.add @originalMesh
-		graphics.strokeMeshesParent.add @strokeSystem
+		graphics.originalMeshesParent.add @_originalMesh
+		graphics.strokeMeshesParent.add @_strokeSystem
 
-
+	setPosition: (pos) ->
+		@_strokeSystem.position.copy pos
+		@_originalMesh.position.copy pos

@@ -1,5 +1,5 @@
 {
-	"name": "graphics-thingy",
+	"name": "Painterly Rendering",
 	"license": "MIT",
 	"private": true,
 	"version": "0.0.0",
@@ -8,9 +8,10 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ScottTodd/InteractiveRaytracer"
+		"url": "https://github.com/ScottTodd/PainterlyRendering"
 	},
 	"dependencies": {
+		"cannon": "0.5.0",
 		"express": "4.0.0-rc3",
 		"errorhandler": "1.0.0",
 		"jquery": "2.1.0",
@@ -33,10 +34,10 @@
 		"grunt-contrib-copy": "0.5.0",
 		"grunt-contrib-jade": "0.11.0",
 		"grunt-contrib-stylus": "0.13.1",
+		"grunt-contrib-uglify": "0.4.0",
 		"grunt-contrib-watch": "0.5.3",
 		"grunt-nodemon": "0.2.1",
-		"load-grunt-tasks": "0.4.0",
-		"uglifyify": "1.2.3"
+		"load-grunt-tasks": "0.4.0"
 	},
 	"engines": {
 		"node": "0.10.x"

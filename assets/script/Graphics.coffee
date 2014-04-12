@@ -1,7 +1,10 @@
 three = require 'three'
 #EffectComposer = (require 'three-effectcomposer') three
+{ check } = require './check'
+{ read } = require './meta'
+GameObject = require './GameObject'
 
-module.exports = class Graphics
+module.exports = class Graphics extends GameObject
 	constructor: ->
 		@renderer =
 			new three.WebGLRenderer
@@ -13,18 +16,24 @@ module.exports = class Graphics
 		@strokeMeshesParent =
 			new three.Object3D
 
+	read @, 'camera'
+
 	bindToDiv: (div) ->
-		@width =
+		@_width =
 			div.width()
-		@height =
+		@_height =
 			div.height()
 
-		@renderer.setSize @width, @height
+		@renderer.setSize @_width, @_height
 
-		@camera.aspect = @width / @height
-		@camera.updateProjectionMatrix()
+		@resetAspect()
 
 		div.append @renderer.domElement
+
+	resetAspect: ->
+		check @_width?
+		@_camera.aspect = @_width / @_height
+		@_camera.updateProjectionMatrix()
 
 	restart: ->
 		@scene =
@@ -35,10 +44,14 @@ module.exports = class Graphics
 
 		@setupLights()
 
-		@camera =
+		@_camera =
 			# aspect ratio will be changed in `bindToDiv`
 			new three.PerspectiveCamera 75, 1, 0.1, 1000
-		@scene.add @camera
+
+		if @_width?
+			@resetAspect()
+
+		@scene.add @_camera
 
 	setupLights: ->
 		@ambientLight =
@@ -50,15 +63,15 @@ module.exports = class Graphics
 
 		dirLight1 =
 			new three.DirectionalLight 0xffffff, 1.0
-		dirLight1.position =
-			new three.Vector3 1, 0, 0
+		dirLight1.position.set 0, -1, 0
 		@dirLights.push dirLight1
 
+		###
 		dirLight2 =
 			new three.DirectionalLight 0xff0000, 3.0
-		dirLight2.position =
-			new three.Vector3 0, -1, 0
+		dirLight2.position.set 0, -1, 0
 		@dirLights.push dirLight2
+		###
 
 		for dirLight in @dirLights
 			@scene.add dirLight
@@ -80,4 +93,4 @@ module.exports = class Graphics
 		@setOriginalMeshesVisibility false
 		@setStrokeMeshesVisibility true
 
-		@renderer.render @scene, @camera
+		@renderer.render @scene, @_camera

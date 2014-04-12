@@ -10,8 +10,22 @@ module.exports = (grunt) ->
 						[ 'assets/script/index.coffee' ]
 				options:
 					extensions: [ '.js', '.coffee' ]
-					transform: [ 'coffeeify', 'brfs' ] #, 'uglifyify'
+					transform: [ 'coffeeify', 'brfs' ]
 					debug: yes # enables source maps
+
+			prod:
+				files:
+					'public/script/index-pre.js':
+						[ 'assets/script/index.coffee' ]
+				options:
+					extensions: [ '.js', '.coffee' ]
+					transform: [ 'coffeeify', 'brfs' ]
+					debug: no
+
+		uglify:
+			prod:
+				files:
+					'public/script/index.js': [ 'public/script/index-pre.js' ]
 
 		clean:
 			all: [ 'doc', 'node_modules', 'public' ]
@@ -103,9 +117,18 @@ module.exports = (grunt) ->
 
 	(require 'load-grunt-tasks') grunt
 
-	grunt.registerTask 'deploy-assets', [
+	grunt.registerTask 'deploy-assets:dev', [
 		'clean:pre',
-		'browserify',
+		'browserify:dev',
+		'copy',
+		'jade',
+		'stylus'
+	]
+
+	grunt.registerTask 'deploy-assets:prod', [
+		'clean:pre',
+		'browserify:prod',
+		'uglify',
 		'copy',
 		'jade',
 		'stylus'
@@ -114,6 +137,10 @@ module.exports = (grunt) ->
 	grunt.registerTask 'default', [
 		'coffeelint',
 		'codo',
-		'deploy-assets',
+		'deploy-assets:dev',
 		'concurrent:dev'
+	]
+
+	grunt.registerTask 'prod', [
+		'deploy-assets:prod'
 	]

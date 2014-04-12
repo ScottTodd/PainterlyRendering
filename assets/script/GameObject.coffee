@@ -1,14 +1,24 @@
+{ read } = require './meta'
 
 module.exports = class GameObject
-	addToGraphics: (graphics) ->
-		null
-
 	step: (dt) ->
 		null
 
 	registerGame: (game) ->
 		@_game = game
 
-	game: ->
-		@_game
+	start: ->
+		null
+
+	read @, 'game'
+
+	graphics: ->
+		@game().graphics()
+
+	physics: ->
+		@game().physics()
+
+	resources: ->
+		@game().resources()
+
 

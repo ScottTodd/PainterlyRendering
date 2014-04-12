@@ -1,8 +1,10 @@
 $ = require 'jquery'
-SpheresGame = require './SpheresGame'
-MeshGame = require './MeshGame'
+SpheresGame = require './games/SpheresGame'
+MeshGame = require './games/MeshGame'
+BouncingBunnyGame = require './games/BouncingBunnyGame'
 
-game = new MeshGame
+game =
+	new BouncingBunnyGame
 
 ($ 'document').ready ->
 	($ playButton).hide()

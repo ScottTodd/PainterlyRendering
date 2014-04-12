@@ -1,6 +1,7 @@
 q = require 'q'
 three = require 'three'
 { fail } = require './check'
+{ read } = require './meta'
 
 get = (dict, key, dictName) ->
 	if dict[key]?
@@ -44,8 +45,7 @@ module.exports = class Resources
 		@_promise =
 			q.all (modelPromises.concat texturePromises)
 
-	promise: ->
-		@_promise
+	read @, 'promise'
 
 	geometry: (name) ->
 		get @_geometries, name, 'geometry'

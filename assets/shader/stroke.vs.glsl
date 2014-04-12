@@ -20,12 +20,17 @@ const float Pi =
 
 void main()
 {
+	vec4 mvNormal =
+		// TODO: lighting normals don't work with quaternions; use normalMatrix ?
+		// Use 0.0 so there's no translation
+		modelViewMatrix * vec4(strokeVertexNormal, 0.0);
+
 	vec3 lightTotal = ambientLightColor;
 	for(int i = 0; i < MAX_DIR_LIGHTS; i++) {
 		vec3 dirToLight =
 			-directionalLightDirection[i];
 		float phongDiffuse =
-			max(0.0, dot(dirToLight, strokeVertexNormal));
+			max(0.0, dot(dirToLight, vec3(mvNormal)));
 			// 1.0;
 		float phongSpecular =
 			0.0; //specular * pow(reflDir * dirToCamera, shininess);
@@ -48,21 +53,26 @@ void main()
 	gl_Position =
 		projectionMatrix * mvPosition;
 
-	vec4 mvNormal =
-		modelViewMatrix * vec4(strokeVertexNormal, 0.0);
 	vec4 projectedNormal =
 		normalize(projectionMatrix * mvNormal);
-	float cosTowardsCamera =
-		- projectedNormal.z;
 
 	strokeOrientation =
 		atan(projectedNormal.y, projectedNormal.x);
 
-	float shrinkInDistance =
-		1.0 / gl_Position.z;
+	float cosTowardsCamera =
+		- projectedNormal.z;
 
-	// This also culls backfacing strokes (gl_PointSize will be negative)
-	gl_PointSize =
-		shrinkInDistance * cosTowardsCamera * 160.0;
+	if (cosTowardsCamera >= 0.0)
+	{
+		float shrinkInDistance =
+			1.0 / gl_Position.z;
+
+		gl_PointSize =
+			shrinkInDistance * 160.0;
+	}
+	else
+	{
+		gl_PointSize = 0.0;
+	}
 }
 

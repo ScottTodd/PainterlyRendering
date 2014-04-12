@@ -1,22 +1,28 @@
+q = require 'q'
 three = require 'three'
 { type } = require './check'
 Graphics = require './Graphics'
 GameObject = require './GameObject'
+{ read } = require './meta'
+Physics = require './Physics'
 Resources = require './Resources'
 
 module.exports = class Game
 	constructor: ->
-		@graphics =
+		@_graphics =
 			new Graphics
 
-		@gameObjects =
-			[]
-
-		@resources =
+		@_resources =
 			new Resources @allResources()
 
-		@ready = @resources.promise().then =>
+		@_readyToPlay = q.defer()
+
+		@_resources.promise().then =>
 			@restart()
+		# Closes the promise so any errors don't go missing!
+		.done()
+
+	read @, 'graphics', 'physics', 'resources'
 
 	###
 	Every resource this game uses.
@@ -28,68 +34,82 @@ module.exports = class Game
 
 	addObject: (obj) ->
 		type obj, GameObject
-		@gameObjects.push obj
+		@_gameObjects.push obj
 		obj.registerGame @
-		obj.addToGraphics @graphics
+		obj.start()
 
 	###
 	@param div [jquery.Selector]
 	###
 	bindToDiv: (div) ->
-		@ready.then =>
-			@container = div
-			@graphics.bindToDiv div
+		@container = div
 
-			@renderOnce()
+		@_readyToPlay.promise.then =>
+			@_graphics.bindToDiv div
+			@_graphics.draw()
+		.done()
 
 	restart: ->
-		@graphics.restart()
+		@_graphics.restart()
+
+		@_physics =
+			new Physics
+
+		@_gameObjects =
+			[]
+
+		@addObject @_graphics
+		@addObject @_physics
 
 		for obj in @initialObjects()
 			@addObject obj
 
-		@clock =
+		@otherSetup()
+
+		@_clock =
 			new three.Clock yes
 
 		@paused =
 			yes
 
+		@_readyToPlay.resolve()
+
 		if @container?
-			# TODO
-			# For some reason, can not see first render after pressing 'stop'
 			requestAnimationFrame =>
-				@renderOnce()
+				@_graphics.draw()
 
 	initialObjects: ->
 		[ ]
 
+	otherSetup: ->
+		null
+
 	play: ->
-		@ready.then =>
-			@paused = no
+		@_readyToPlay.promise.then =>
+			@_paused = no
 			# Next call to getDelta() will return time taken after this
-			@clock.getDelta()
-			@renderLoop()
+			@_clock.getDelta()
+			@gameLoop()
+		.done()
 
 	pause: ->
-		@paused = yes
+		@_paused = yes
 
-	renderLoop: ->
-		unless @paused
+	gameLoop: ->
+		unless @_paused
 			requestAnimationFrame =>
-				@renderLoop()
+				@gameLoop()
 
 			try
-				@renderOnce()
+				dt =
+					@_clock.getDelta()
+
+				for object in @_gameObjects
+					object.step dt
+
+				@_graphics.draw()
 
 			catch error
 				@pause()
 				throw error
 
-	renderOnce: ->
-		dt =
-			@clock.getDelta()
-
-		for object in @gameObjects
-			object.step dt
-
-		@graphics.draw()
