@@ -10,6 +10,7 @@ module.exports = class StrokeMesh extends GameObject
 	@rainbowSphere: (opts) ->
 		opts.nStrokes ?= 10
 		opts.radius ?= 1
+		opts.strokeSize ?= 160
 
 		vertices = []
 		normals = []
@@ -55,6 +56,7 @@ module.exports = class StrokeMesh extends GameObject
 	###
 	@rainbowGeometry: (opts) ->
 		opts.nStrokes ?= 10
+		opts.strokeSize ?= 160
 
 		opts.originalMesh =
 			new three.Mesh opts.originalGeometry, new three.MeshBasicMaterial
@@ -86,6 +88,7 @@ module.exports = class StrokeMesh extends GameObject
 				throw new Error "Must specify #{name}"
 
 		nStrokes = get 'nStrokes'
+		strokeSize = get 'strokeSize'
 		vertices = get 'vertices'
 		normals = get 'normals'
 		colors = get 'colors'
@@ -100,6 +103,9 @@ module.exports = class StrokeMesh extends GameObject
 			strokeTexture:
 				type: 't'
 				value: texture
+			strokeSize:
+				type: 'f'
+				value: strokeSize
 		$.extend uniforms,
 			three.UniformsLib["lights"]
 

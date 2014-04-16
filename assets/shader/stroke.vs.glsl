@@ -1,5 +1,7 @@
 attribute vec3 strokeVertexNormal;
 
+uniform float strokeSize;
+
 uniform vec3 ambientLightColor;
 uniform vec3 directionalLightDirection[MAX_DIR_LIGHTS];
 uniform vec3 directionalLightColor[MAX_DIR_LIGHTS];
@@ -68,7 +70,7 @@ void main()
 			1.0 / gl_Position.z;
 
 		gl_PointSize =
-			shrinkInDistance * 160.0;
+			shrinkInDistance * strokeSize;
 	}
 	else
 	{
