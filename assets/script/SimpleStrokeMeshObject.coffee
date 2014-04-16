@@ -1,5 +1,5 @@
 GameObject = require './GameObject'
-StrokeMesh = require './StrokeMesh'
+StrokeMeshLayer = require './StrokeMeshLayer'
 
 module.exports = class SimpleStrokeMeshObject extends GameObject
 	constructor: (center, @meshes) ->

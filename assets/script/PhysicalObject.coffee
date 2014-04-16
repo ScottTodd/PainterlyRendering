@@ -1,6 +1,6 @@
 cannon = require 'cannon'
 GameObject = require './GameObject'
-StrokeMesh = require './StrokeMesh'
+StrokeMeshLayer = require './StrokeMeshLayer'
 
 module.exports = class PhysicalObject extends GameObject
 	###
@@ -28,7 +28,7 @@ module.exports = class PhysicalObject extends GameObject
 		materialName = @opts.materialName ? fail()
 
 		@mesh =
-			StrokeMesh.rainbowGeometry
+			StrokeMeshLayer.rainbowGeometry
 				originalGeometry: originalGeometry
 				nStrokes: nStrokes
 				strokeTexture: @resources().texture strokeTextureName

@@ -1,12 +1,12 @@
 fs = require 'fs'
 $ = require 'jquery'
 three = require 'three'
-{ check } =require './check'
+{ check } = require './check'
 GameObject = require './GameObject'
 meshVerticesNormals = require './meshVerticesNormals'
 { read } = require './meta'
 
-module.exports = class StrokeMesh extends GameObject
+module.exports = class StrokeMeshLayer extends GameObject
 	@rainbowSphere: (opts) ->
 		opts.nStrokes ?= 10
 		opts.radius ?= 1
@@ -45,8 +45,7 @@ module.exports = class StrokeMesh extends GameObject
 			colors: colors
 			originalMesh: originalMesh
 
-
-		new StrokeMesh opts
+		new StrokeMeshLayer opts
 
 	###
 	opts:
@@ -72,7 +71,7 @@ module.exports = class StrokeMesh extends GameObject
 			normals: normals
 			colors: colors
 
-		new StrokeMesh opts
+		new StrokeMeshLayer opts
 
 	###
 	@private

@@ -3,7 +3,7 @@ CameraController = require '../CameraController'
 FramerateTracker = require '../FramerateTracker'
 Game = require '../Game'
 SimpleStrokeMeshObject = require '../SimpleStrokeMeshObject'
-StrokeMesh = require '../StrokeMesh'
+StrokeMeshLayer = require '../StrokeMeshLayer'
 
 module.exports = class SpheresGame extends Game
 	allResources: ->
@@ -20,12 +20,12 @@ module.exports = class SpheresGame extends Game
 		s1 =
 			new SimpleStrokeMeshObject (new three.Vector3 -0.9, 0, 0),
 				[
-					StrokeMesh.rainbowSphere
+					StrokeMeshLayer.rainbowSphere
 						radius: 2
 						nStrokes: 120
 						strokeSize: 400
 						strokeTexture: @resources().texture 'stroke',
-					StrokeMesh.rainbowSphere
+					StrokeMeshLayer.rainbowSphere
 						radius: 2
 						nStrokes: 20000
 						strokeSize: 100
@@ -35,7 +35,7 @@ module.exports = class SpheresGame extends Game
 		s2 =
 			new SimpleStrokeMeshObject (new three.Vector3 0.9, 0, -6),
 				[
-					StrokeMesh.rainbowSphere
+					StrokeMeshLayer.rainbowSphere
 						radius: 2
 						nStrokes: 2000
 						strokeTexture: @resources().texture 'stroke'
@@ -44,7 +44,7 @@ module.exports = class SpheresGame extends Game
 		s3 =
 			new SimpleStrokeMeshObject (new three.Vector3 1.4, 0, 0),
 				[
-					StrokeMesh.rainbowSphere
+					StrokeMeshLayer.rainbowSphere
 						radius: 1
 						nStrokes: 2000
 						strokeTexture: @resources().texture 'stroke'
