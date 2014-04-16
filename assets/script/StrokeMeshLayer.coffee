@@ -156,6 +156,12 @@ module.exports = class StrokeMeshLayer extends GameObject
 		graphics.originalMeshesParent.add @_originalMesh
 		graphics.strokeMeshesParent.add @_strokeSystem
 
+	addToParent: (parent) ->
+		parent.add @_strokeSystem
+
+	getOriginalMesh: ->
+		@_originalMesh
+
 	setPosition: (pos) ->
 		@_strokeSystem.position.copy pos
 		@_originalMesh.position.copy pos

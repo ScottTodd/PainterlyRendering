@@ -28,17 +28,20 @@ module.exports = class PhysicalObject extends GameObject
 		materialName = @opts.materialName ? fail()
 
 		@mesh =
-			StrokeMeshLayer.rainbowGeometry
+			StrokeMesh.fromGeometry
 				originalGeometry: originalGeometry
-				nStrokes: nStrokes
-				strokeTexture: @resources().texture strokeTextureName
+				layerOptions: [
+					nStrokes: nStrokes
+					strokeSize: 160
+					strokeTexture: @resources().texture strokeTextureName
+				]
 
 		@mesh.addToGraphics @graphics()
 
 		@body =
 			@physics().addBody
 				gameObject: @
-				threeObject: @mesh.strokeSystem()
+				threeObject: @mesh._strokeLayers[0]._strokeSystem
 				mass: mass
 				center: center
 				materialName: materialName
