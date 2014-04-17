@@ -3,6 +3,7 @@ CameraController = require '../CameraController'
 FramerateTracker = require '../FramerateTracker'
 Game = require '../Game'
 SimpleStrokeMeshObject = require '../SimpleStrokeMeshObject'
+StrokeMeshLayer = require '../StrokeMeshLayer'
 StrokeMesh = require '../StrokeMesh'
 
 module.exports = class MeshGame extends Game
@@ -19,26 +20,26 @@ module.exports = class MeshGame extends Game
 
 		knot =
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
-				[
-					StrokeMesh.rainbowGeometry
-						originalGeometry: new three.TorusKnotGeometry 10, 3, 100, 16
+				StrokeMesh.fromGeometry
+					originalGeometry: new three.TorusKnotGeometry 10, 3, 100, 16
+					layerOptions: [
 						nStrokes: 100000
+						strokeSize: 160
 						strokeTexture: @resources().texture 'stroke'
-				]
+					]
 
 		bunny =
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
-				[
-					StrokeMesh.rainbowGeometry
-						originalGeometry: @resources().geometry 'bunny'
+				StrokeMesh.fromGeometry
+					originalGeometry: @resources().geometry 'bunny'
+					layerOptions: [
 						nStrokes: 2000
 						strokeSize: 280
-						strokeTexture: @resources().texture 'stroke',
-					StrokeMesh.rainbowGeometry
-						originalGeometry: @resources().geometry 'bunny'
-						nStrokes: 4000
+						strokeTexture: @resources().texture 'stroke'
+					,
+						nStrokes: 10000
 						strokeSize: 60
 						strokeTexture: @resources().texture 'stroke'
-				]
+					]
 
 		super.concat [ cc, ft, bunny ]
