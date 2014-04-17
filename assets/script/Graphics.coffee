@@ -10,11 +10,8 @@ module.exports = class Graphics extends GameObject
 			new three.WebGLRenderer
 				alpha: yes
 
-		@originalMeshesParent =
-			new three.Object3D
-
-		@strokeMeshesParent =
-			new three.Object3D
+		@strokeMeshes =
+			[]
 
 	read @, 'camera'
 
@@ -38,9 +35,6 @@ module.exports = class Graphics extends GameObject
 	restart: ->
 		@scene =
 			new three.Scene()
-
-		@scene.add @originalMeshesParent
-		@scene.add @strokeMeshesParent
 
 		@setupLights()
 
@@ -77,14 +71,12 @@ module.exports = class Graphics extends GameObject
 			@scene.add dirLight
 
 	setOriginalMeshesVisibility: (visibility) ->
-		@originalMeshesParent.visible = visibility
-		@originalMeshesParent.traverse (child) ->
-			child.visible = visibility
+		for strokeMesh in @strokeMeshes
+			strokeMesh.setOriginalMeshVisibility visibility
 
 	setStrokeMeshesVisibility: (visibility) ->
-		@strokeMeshesParent.visible = visibility
-		@strokeMeshesParent.traverse (child) ->
-			child.visible = visibility
+		for strokeMesh in @strokeMeshes
+			strokeMesh.setStrokeMeshVisibility visibility
 
 	draw: ->
 		# TODO: render only original meshes to a texture and write object ids

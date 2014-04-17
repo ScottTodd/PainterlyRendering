@@ -75,20 +75,30 @@ module.exports = class StrokeMesh extends GameObject
 
 		@_strokeMeshLayersParent =
 			new three.Object3D
-
 		for strokeLayer in @_strokeLayers
 			strokeLayer.addToParent @_strokeMeshLayersParent
 
+		@threeObject =
+			new three.Object3D
+		@threeObject.add @_originalMesh
+		@threeObject.add @_strokeMeshLayersParent
+
 	addToGraphics: (graphics) ->
-		graphics.originalMeshesParent.add @_originalMesh
-		graphics.strokeMeshesParent.add @_strokeMeshLayersParent
+		graphics.strokeMeshes.push @
+		graphics.scene.add @threeObject
+
+	setOriginalMeshVisibility: (visibility) ->
+		@_originalMesh.visible = visibility
+		@_originalMesh.traverse (child) ->
+			child.visible = visibility
+
+	setStrokeMeshVisibility: (visibility) ->
+		@_strokeMeshLayersParent.visible = visibility
+		@_strokeMeshLayersParent.traverse (child) ->
+			child.visible = visibility
 
 	getOriginalMesh: ->
 		@_originalMesh
 
-	getParentObject: ->
-		@_strokeMeshLayersParent
-
 	setPosition: (pos) ->
-		@_originalMesh.position.copy pos
-		@_strokeMeshLayersParent.position.copy pos
+		@threeObject.position.copy pos

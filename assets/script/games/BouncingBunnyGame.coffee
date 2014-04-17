@@ -24,8 +24,15 @@ module.exports = class BouncingBunnyGame extends Game
 				center: new three.Vector3 0, -10, 0
 				model: new three.PlaneGeometry 50, 50
 				materialName: 'ground'
-				strokeTextureName: 'stroke'
-				nStrokes: 50000
+				strokeLayerOptions: [
+					nStrokes: 2000
+					strokeSize: 500
+					strokeTexture: @resources().texture 'stroke'
+				,
+					nStrokes: 30000
+					strokeSize: 80
+					strokeTexture: @resources().texture 'stroke'
+				]
 				init: ->
 					@quaternion().setFromAxisAngle \
 						(new cannon.Vec3 1, 0, 0),
@@ -36,8 +43,11 @@ module.exports = class BouncingBunnyGame extends Game
 				center: new three.Vector3 0, 10, 0
 				modelName: 'bunny'
 				materialName: 'bunny'
-				strokeTextureName: 'stroke'
-				nStrokes: 100000
+				strokeLayerOptions: [
+					nStrokes: 100000
+					strokeSize: 160
+					strokeTexture: @resources().texture 'stroke'
+				]
 				mass: 1
 
 		super.concat [ cc, ft, @ground, @bunny ]

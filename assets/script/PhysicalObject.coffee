@@ -1,14 +1,14 @@
 cannon = require 'cannon'
 GameObject = require './GameObject'
 StrokeMeshLayer = require './StrokeMeshLayer'
+StrokeMesh = require './StrokeMesh'
 
 module.exports = class PhysicalObject extends GameObject
 	###
 	opts:
 	center
 	modelName
-	nStrokes
-	strokeTextureName
+	strokeLayerOptions
 	mass
 	###
 	constructor: (@opts) ->
@@ -22,26 +22,22 @@ module.exports = class PhysicalObject extends GameObject
 				@resources().geometry @opts.modelName
 			else
 				fail()
-		nStrokes = @opts.nStrokes ? fail()
-		strokeTextureName = @opts.strokeTextureName ? fail()
 		mass = @opts.mass ? 0
 		materialName = @opts.materialName ? fail()
+		strokeLayerOptions = @opts.strokeLayerOptions ? fail()
 
 		@mesh =
 			StrokeMesh.fromGeometry
 				originalGeometry: originalGeometry
-				layerOptions: [
-					nStrokes: nStrokes
-					strokeSize: 160
-					strokeTexture: @resources().texture strokeTextureName
-				]
+				layerOptions: strokeLayerOptions
 
 		@mesh.addToGraphics @graphics()
 
 		@body =
 			@physics().addBody
 				gameObject: @
-				threeObject: @mesh._strokeLayers[0]._strokeSystem
+				threeObject: @mesh.threeObject
+				originalGeometry: @mesh.getOriginalMesh().geometry
 				mass: mass
 				center: center
 				materialName: materialName

@@ -56,15 +56,16 @@ module.exports = class Physics extends GameObject
 		mass = opts.mass ? 0
 		gameObject = opts.gameObject ? fail()
 		threeObject = opts.threeObject ? fail()
+		originalGeometry = opts.originalGeometry ? fail()
 		center = opts. center ? fail()
 		boundsType = 'box'
 
 		shape =
 			switch boundsType
 				when 'box'
-					threeObject.geometry.computeBoundingBox()
+					originalGeometry.computeBoundingBox()
 					{ min, max } =
-						threeObject.geometry.boundingBox
+						originalGeometry.boundingBox
 
 					minv =
 						new cannon.Vec3 min.x, min.y, min.z
