@@ -3,7 +3,8 @@ StrokeMeshLayer = require './StrokeMeshLayer'
 StrokeMesh = require './StrokeMesh'
 
 module.exports = class SimpleStrokeMeshObject extends GameObject
-	constructor: (center, @mesh) ->
+	constructor: (center, meshOpts) ->
+		@mesh = StrokeMesh.of meshOpts
 		@mesh.setPosition center
 
 	start: ->

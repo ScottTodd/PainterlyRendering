@@ -1,4 +1,4 @@
-cannon = require 'cannon'
+$ = require 'jquery'
 GameObject = require './GameObject'
 StrokeMeshLayer = require './StrokeMeshLayer'
 StrokeMesh = require './StrokeMesh'
@@ -24,12 +24,11 @@ module.exports = class PhysicalObject extends GameObject
 				fail()
 		mass = @opts.mass ? 0
 		materialName = @opts.materialName ? fail()
-		strokeLayerOptions = @opts.strokeLayerOptions ? fail()
+		strokeMeshOptions = @opts.strokeMeshOptions ? fail()
 
 		@mesh =
-			StrokeMesh.fromGeometry
-				originalGeometry: originalGeometry
-				layerOptions: strokeLayerOptions
+			StrokeMesh.of $.extend strokeMeshOptions,
+				geometry: originalGeometry
 
 		@mesh.addToGraphics @graphics()
 

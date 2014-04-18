@@ -2,97 +2,57 @@ fs = require 'fs'
 $ = require 'jquery'
 three = require 'three'
 { check } = require './check'
-GameObject = require './GameObject'
 meshVerticesNormals = require './meshVerticesNormals'
 { read } = require './meta'
 
-module.exports = class StrokeMeshLayer extends GameObject
-	@rainbowSphere: (opts) ->
-		opts.nStrokes ?= 10
-		opts.radius ?= 1
-		opts.strokeSize ?= 160
+getOpt = (opts, name, defaultOpt) ->
+	if opts[name]?
+		opts[name]
+	else if defaultOpt?
+		defaultOpt()
+	else
+		throw new Error "Must specify #{name}"
 
-		vertices = []
-		normals = []
+module.exports = class StrokeMeshLayer
 
-		for _ in [0...opts.nStrokes]
-			randCoord = ->
-				Math.random() * 2 - 1
-			randomNormal =
-				new three.Vector3 randCoord(), randCoord(), randCoord()
-			randomNormal.normalize()
+	###
+	@param opts
+	geometry: [three.Geometry]
+	nStrokes: [Number]
+	strokeSize: [Number]
+	strokeTexture: [three.Texture]
+	colors:
+		type: 'rainbow'
+		OR
+		???
+	###
+	@of: (opts) ->
+		geometry = getOpt opts, 'geometry'
 
-			position = randomNormal.clone()
-			position.multiplyScalar opts.radius
+		outOpts = { }
 
-			vertices.push position
-			normals.push randomNormal
+		outOpts.nStrokes = getOpt opts, 'nStrokes'
+		outOpts.strokeSize = getOpt opts, 'strokeSize'
+		outOpts.strokeTexture = getOpt opts, 'strokeTexture'
 
-		colors =
+		colorsOpt = getOpt opts, 'colors'
+		check colorsOpt.type == 'rainbow' # TODO: other color methods
+		outOpts.colors =
 			for _ in [0...opts.nStrokes]
 				new three.Color 0xffffff * Math.random()
 
-		originalGeometry =
-			new three.SphereGeometry opts.radius, 32, 32
-		originalMaterial =
-			new three.MeshBasicMaterial
-		originalMesh =
-			new three.Mesh originalGeometry, originalMaterial
+		[ outOpts.vertices, outOpts.normals ] =
+			meshVerticesNormals (new three.Mesh geometry), outOpts.nStrokes
 
-		$.extend opts,
-			vertices: vertices
-			normals: normals
-			colors: colors
-			originalMesh: originalMesh
+		new StrokeMeshLayer outOpts
 
-		new StrokeMeshLayer opts
-
-	###
-	opts:
-	nStrokes
-	originalGeometry
-	strokeTexture
-	###
-	@rainbowGeometry: (opts) ->
-		opts.nStrokes ?= 10
-		opts.strokeSize ?= 160
-
-		opts.originalMesh =
-			new three.Mesh opts.originalGeometry, new three.MeshBasicMaterial
-
-		[ vertices, normals ] = meshVerticesNormals opts.originalMesh, opts.nStrokes
-
-		colors =
-			for _ in [0...opts.nStrokes]
-				new three.Color 0xffffff * Math.random()
-
-		$.extend opts,
-			vertices: vertices
-			normals: normals
-			colors: colors
-
-		new StrokeMeshLayer opts
 
 	###
 	@private
 	Use a factory method instead!
 	###
 	constructor: (opts) ->
-		get = (name, defaultOpt) ->
-			if opts[name]?
-				opts[name]
-			else if defaultOpt?
-				defaultOpt()
-			else
-				throw new Error "Must specify #{name}"
-
-		nStrokes = get 'nStrokes'
-		strokeSize = get 'strokeSize'
-		vertices = get 'vertices'
-		normals = get 'normals'
-		colors = get 'colors'
-		@_originalMesh = get 'originalMesh'
-		texture = get 'strokeTexture'
+		{ nStrokes, strokeSize, vertices, normals, colors, strokeTexture } = opts
 
 		check vertices.length == nStrokes, 'must have nStrokes vertices'
 		check normals.length == nStrokes, 'must have nStrokes normals'
@@ -101,12 +61,12 @@ module.exports = class StrokeMeshLayer extends GameObject
 		uniforms =
 			strokeTexture:
 				type: 't'
-				value: texture
+				value: strokeTexture
 			strokeSize:
 				type: 'f'
 				value: strokeSize
 		$.extend uniforms,
-			three.UniformsLib["lights"]
+			three.UniformsLib.lights
 
 		attributes =
 			strokeVertexNormal:
@@ -152,16 +112,6 @@ module.exports = class StrokeMeshLayer extends GameObject
 
 	read @, 'strokeSystem'
 
-	addToGraphics: (graphics) ->
-		graphics.originalMeshesParent.add @_originalMesh
-		graphics.strokeMeshesParent.add @_strokeSystem
-
 	addToParent: (parent) ->
 		parent.add @_strokeSystem
 
-	getOriginalMesh: ->
-		@_originalMesh
-
-	setPosition: (pos) ->
-		@_strokeSystem.position.copy pos
-		@_originalMesh.position.copy pos

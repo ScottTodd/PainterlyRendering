@@ -40,6 +40,7 @@ Else, throws a new Error with `err` as the message.
 @fail = (err) ->
 	unless err instanceof Error
 		err = new Error (err ? "Fail")
+	console.trace()
 	throw err
 
 ###

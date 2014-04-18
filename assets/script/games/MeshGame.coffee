@@ -20,26 +20,26 @@ module.exports = class MeshGame extends Game
 
 		knot =
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
-				StrokeMesh.fromGeometry
-					originalGeometry: new three.TorusKnotGeometry 10, 3, 100, 16
-					layerOptions: [
-						nStrokes: 100000
-						strokeSize: 160
-						strokeTexture: @resources().texture 'stroke'
-					]
+				geometry: new three.TorusKnotGeometry 10, 3, 100, 16
+				colors: type: 'rainbow'
+				layers: [
+					nStrokes: 100000
+					strokeSize: 160
+					strokeTexture: @resources().texture 'stroke'
+				]
 
 		bunny =
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
-				StrokeMesh.fromGeometry
-					originalGeometry: @resources().geometry 'bunny'
-					layerOptions: [
-						nStrokes: 2000
-						strokeSize: 280
-						strokeTexture: @resources().texture 'stroke'
-					,
-						nStrokes: 10000
-						strokeSize: 60
-						strokeTexture: @resources().texture 'stroke'
-					]
+				geometry: @resources().geometry 'bunny'
+				strokeTexture: @resources().texture 'stroke'
+				colors: type: 'rainbow'
+				layers: [
+					nStrokes: 2000
+					strokeSize: 280
+				,
+					nStrokes: 10000
+					strokeSize: 60
+					strokeTexture: @resources().texture 'stroke'
+				]
 
-		super.concat [ cc, ft, bunny ]
+		super.concat [ cc, ft, knot ]
