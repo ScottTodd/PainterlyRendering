@@ -10,6 +10,16 @@ module.exports = class Graphics extends GameObject
 			new three.WebGLRenderer
 				alpha: yes
 
+		depthTextureOptions =
+			magFilter: three.NearestFilter
+			minFilter: three.NearestFilter
+			wrapS: three.ClampToEdgeWrapping
+			wrapT: three.ClampToEdgeWrapping
+			type: three.FloatType
+
+		@depthTexture =
+			new three.WebGLRenderTarget 800, 600, depthTextureOptions
+
 		@strokeMeshes =
 			[]
 
@@ -74,15 +84,23 @@ module.exports = class Graphics extends GameObject
 		for strokeMesh in @strokeMeshes
 			strokeMesh.setOriginalMeshVisibility visibility
 
+	setDepthMeshesVisibility: (visibility) ->
+		for strokeMesh in @strokeMeshes
+			strokeMesh.setDepthMeshVisibility visibility
+
 	setStrokeMeshesVisibility: (visibility) ->
 		for strokeMesh in @strokeMeshes
 			strokeMesh.setStrokeMeshVisibility visibility
 
 	draw: ->
-		# TODO: render only original meshes to a texture and write object ids
-		# TODO: pass that texture into the next rendering pass
+		@setOriginalMeshesVisibility false
+		@setDepthMeshesVisibility true
+		@setStrokeMeshesVisibility false
+
+		@renderer.render @scene, @_camera, @depthTexture, true
 
 		@setOriginalMeshesVisibility false
+		@setDepthMeshesVisibility false
 		@setStrokeMeshesVisibility true
 
 		@renderer.render @scene, @_camera

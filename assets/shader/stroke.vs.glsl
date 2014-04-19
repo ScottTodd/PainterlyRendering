@@ -2,6 +2,8 @@ attribute vec3 strokeVertexNormal;
 
 uniform float strokeSize;
 
+uniform sampler2D depthTexture;
+
 uniform vec3 ambientLightColor;
 uniform vec3 directionalLightDirection[MAX_DIR_LIGHTS];
 uniform vec3 directionalLightColor[MAX_DIR_LIGHTS];
@@ -15,7 +17,9 @@ projectionMatrix
 */
 
 varying vec4 strokeShadedColor;
-varying float strokeOrientation;
+varying vec2 strokeOrientation;
+varying vec4 mvPosition;
+varying float strokeZDifference;
 
 const float Pi =
 	3.1415926535897932384626433832795;
@@ -49,7 +53,7 @@ void main()
 	strokeShadedColor =
 		vec4(color * lightTotal, 1.0);
 
-	vec4 mvPosition =
+	mvPosition =
 		modelViewMatrix * vec4(position, 1.0);
 
 	gl_Position =
@@ -59,22 +63,34 @@ void main()
 		normalize(projectionMatrix * mvNormal);
 
 	strokeOrientation =
-		atan(projectedNormal.y, projectedNormal.x);
+		normalize(projectedNormal.xy);
 
-	float cosTowardsCamera =
-		- projectedNormal.z;
+	vec2 screenSpace =
+		// Convert to (0, 0) to (1, 1) coordinates.
+		(vec2(1, 1) + gl_Position.xy / gl_Position.w) / 2.0;
+	float depthTextureZ =
+		texture2D(depthTexture, screenSpace).z;
+	strokeZDifference =
+		abs(mvPosition.z - depthTextureZ);
 
-	if (cosTowardsCamera >= 0.0)
-	{
-		float shrinkInDistance =
-			1.0 / gl_Position.z;
+	const float strokeZEpsilon =
+		// TODO: This should vary by object size
+		1.0;
+	float zQuality =
+		// 1 when z is perfect.
+		// 0 when z is not good enough.
+		// Negative when strokeZDifference exceeds strokeZEpsilon
+		1.0 - (strokeZDifference / strokeZEpsilon);
 
-		gl_PointSize =
-			shrinkInDistance * strokeSize;
-	}
+	if (zQuality <= 0.0)
+		gl_PointSize = 0.0;
 	else
 	{
-		gl_PointSize = 0.0;
+		strokeShadedColor.a *= min(zQuality, 1.0);
+		float shrinkInDistance =
+			1.0 / gl_Position.z;
+		gl_PointSize =
+			shrinkInDistance * strokeSize;
 	}
 }
 

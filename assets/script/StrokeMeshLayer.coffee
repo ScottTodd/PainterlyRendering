@@ -85,26 +85,33 @@ module.exports = class StrokeMeshLayer
 	Use a factory method instead!
 	###
 	constructor: (opts) ->
-		{ nStrokes, strokeSize, vertices, normals, colors, strokeTexture } = opts
+		{ nStrokes, @strokeSize, @vertices, @normals, @colors, @strokeTexture } = opts
 
-		check vertices.length == nStrokes, 'must have nStrokes vertices'
-		check normals.length == nStrokes, 'must have nStrokes normals'
-		check colors.length == nStrokes, 'must have nStrokes colors'
+		check @vertices.length == nStrokes, 'must have nStrokes vertices'
+		check @normals.length == nStrokes, 'must have nStrokes normals'
+		check @colors.length == nStrokes, 'must have nStrokes colors'
 
+	read @, 'strokeSystem'
+
+
+	setupUsingGraphics: (graphics) ->
 		uniforms =
 			strokeTexture:
 				type: 't'
-				value: strokeTexture
+				value: @strokeTexture
 			strokeSize:
 				type: 'f'
-				value: strokeSize
+				value: @strokeSize
+			depthTexture:
+				type: 't'
+				value: graphics.depthTexture
 		$.extend uniforms,
 			three.UniformsLib.lights
 
 		attributes =
 			strokeVertexNormal:
 				type: 'v3'
-				value: normals
+				value: @normals
 
 		@_material =
 			new three.ShaderMaterial
@@ -133,17 +140,17 @@ module.exports = class StrokeMeshLayer
 		@_strokeGeometry =
 			new three.Geometry
 
-		@_strokeGeometry.vertices = vertices
+		@_strokeGeometry.vertices = @vertices
 		@_strokeGeometry.computeBoundingBox()
 		@_strokeGeometry.computeBoundingSphere()
 
-		@_strokeGeometry.colors = colors
+		@_strokeGeometry.colors = @colors
 		@_strokeGeometry.colorsNeedUpdate = yes
 
 		@_strokeSystem =
 			new three.ParticleSystem @_strokeGeometry, @_material
 
-	read @, 'strokeSystem'
+		# @_strokeSystem.sortParticles = yes
 
 	addToParent: (parent) ->
 		parent.add @_strokeSystem

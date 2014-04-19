@@ -35,7 +35,7 @@ module.exports = class PhysicalObject extends GameObject
 		@body =
 			@physics().addBody
 				gameObject: @
-				threeObject: @mesh.threeObject
+				threeObject: @mesh.threeObject()
 				originalGeometry: @mesh.getOriginalMesh().geometry
 				mass: mass
 				center: center

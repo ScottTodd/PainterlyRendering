@@ -136,7 +136,7 @@ module.exports = (grunt) ->
 
 	grunt.registerTask 'default', [
 		'coffeelint',
-		'codo',
+		#'codo',
 		'deploy-assets:dev',
 		'concurrent:dev'
 	]

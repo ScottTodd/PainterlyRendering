@@ -4,6 +4,19 @@ three = require 'three'
 vecScale = (v, scale) ->
 	v.clone().multiplyScalar scale
 
+shuffleEqually = (listA, listB) ->
+	check listA.length == listB.length
+
+	swap = (list, idx1, idx2) ->
+		temp = list[idx1]
+		list[idx1] = list[idx2]
+		list[idx2] = temp
+
+	for idx in [listA.length-1 .. 0] by -1
+		swapIdx = Math.floor Math.random() * idx
+		swap listA, idx, swapIdx
+		swap listB, idx, swapIdx
+
 ###
 Can't simply use three.GeometryUtils.randomPointInTriangle
 	because we need the normal too.
@@ -80,5 +93,7 @@ module.exports = meshVerticesNormals = (mesh, nVertices) ->
 			normals.push normal
 
 	check vertices.length == nVertices
+
+	shuffleEqually vertices, normals
 
 	[ vertices, normals ]
