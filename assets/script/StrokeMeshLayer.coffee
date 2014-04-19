@@ -1,7 +1,7 @@
 fs = require 'fs'
 $ = require 'jquery'
 three = require 'three'
-{ check } = require './check'
+{ check, type } = require './check'
 meshVerticesNormals = require './meshVerticesNormals'
 { read } = require './meta'
 
@@ -13,18 +13,46 @@ getOpt = (opts, name, defaultOpt) ->
 	else
 		throw new Error "Must specify #{name}"
 
+
+randomHSLs = (nStrokes, colorOpts) ->
+	hue = getOpt colorOpts, 'hue'
+	sat = getOpt colorOpts, 'sat'
+	lum = getOpt colorOpts, 'lum'
+
+	###
+	If x is a Number, exactly x.
+	Else, x is a range; choose a random member.
+	###
+	choose = (x) ->
+		if Object(x) instanceof Number
+			x
+		else
+			[ min, max ] = x
+			type min, Number, max, Number
+			Math.random() * (max - min) + min
+
+	randomHSL = ->
+		(new three.Color).setHSL (choose hue), (choose sat), (choose lum)
+
+	for _ in [0...nStrokes]
+		randomHSL()
+
+
 module.exports = class StrokeMeshLayer
 
 	###
 	@param opts
-	geometry: [three.Geometry]
-	nStrokes: [Number]
-	strokeSize: [Number]
-	strokeTexture: [three.Texture]
+	geometry: three.Geometry
+	nStrokes: Number
+	strokeSize: Number
+	strokeTexture: three.Texture
 	colors:
 		type: 'rainbow'
 		OR
-		???
+		type: 'randomHSL'
+		hue: Number OR [Number, Number]
+		sat: Number OR [Number, Number]
+		lum: Number OR [Number, Number]
 	###
 	@of: (opts) ->
 		geometry = getOpt opts, 'geometry'
@@ -36,10 +64,15 @@ module.exports = class StrokeMeshLayer
 		outOpts.strokeTexture = getOpt opts, 'strokeTexture'
 
 		colorsOpt = getOpt opts, 'colors'
-		check colorsOpt.type == 'rainbow' # TODO: other color methods
 		outOpts.colors =
-			for _ in [0...opts.nStrokes]
-				new three.Color 0xffffff * Math.random()
+			switch colorsOpt.type
+				when 'rainbow'
+					randomHSLs opts.nStrokes,
+						hue: [0, 1]
+						sat: 1
+						lum: 0.5
+				when 'randomHSL'
+					randomHSLs opts.nStrokes, colorsOpt
 
 		[ outOpts.vertices, outOpts.normals ] =
 			meshVerticesNormals (new three.Mesh geometry), outOpts.nStrokes

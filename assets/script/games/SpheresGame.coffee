@@ -22,13 +22,22 @@ module.exports = class SpheresGame extends Game
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
 				geometry: new three.SphereGeometry 2, 32, 32
 				strokeTexture: @resources().texture 'stroke'
-				colors: type: 'rainbow'
 				layers: [
 						nStrokes: 120
 						strokeSize: 400
+						colors:
+							type: 'randomHSL'
+							hue: 0.25
+							sat: [0.25, 0.75]
+							lum: 0.5
 					,
 						nStrokes: 20000
 						strokeSize: 100
+						colors:
+							type: 'randomHSL'
+							hue: 0.5
+							sat: [0.5, 1]
+							lum: 0.5
 				]
 
 		s2 =
