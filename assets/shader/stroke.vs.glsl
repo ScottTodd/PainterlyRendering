@@ -2,6 +2,8 @@ attribute vec3 strokeVertexNormal;
 
 uniform float strokeSize;
 
+uniform sampler2D depthTexture;
+
 uniform vec3 ambientLightColor;
 uniform vec3 directionalLightDirection[MAX_DIR_LIGHTS];
 uniform vec3 directionalLightColor[MAX_DIR_LIGHTS];
@@ -15,7 +17,7 @@ projectionMatrix
 */
 
 varying vec4 strokeShadedColor;
-varying float strokeOrientation;
+varying vec2 strokeOrientation;
 varying vec4 mvPosition;
 
 const float Pi =
@@ -60,22 +62,26 @@ void main()
 		normalize(projectionMatrix * mvNormal);
 
 	strokeOrientation =
-		atan(projectedNormal.y, projectedNormal.x);
+		projectedNormal.xy;
 
-	float cosTowardsCamera =
-		- projectedNormal.z;
-
-	if (cosTowardsCamera >= 0.0)
+	vec2 screenSpace =
+		// Convert to (0, 0) to (1, 1) coordinates.
+		(vec2(1, 1) + gl_Position.xy / gl_Position.w) / 2.0;
+	float depthTextureZ =
+		texture2D(depthTexture, screenSpace).z;
+	float zDifference =
+		abs(mvPosition.z - depthTextureZ);
+	if (zDifference > 1.0)
+	{
+		gl_PointSize = 0.0;
+	}
+	else
 	{
 		float shrinkInDistance =
 			1.0 / gl_Position.z;
 
 		gl_PointSize =
 			shrinkInDistance * strokeSize;
-	}
-	else
-	{
-		gl_PointSize = 0.0;
 	}
 }
 

@@ -1,27 +1,26 @@
 fs = require 'fs'
 three = require 'three'
-GameObject = require './GameObject'
 
-module.exports = class DepthBufferMesh extends GameObject
-    constructor: (geometry) ->
-        @_geometry = geometry
+module.exports = class DepthBufferMesh
+	constructor: (geometry) ->
+		@_geometry = geometry
 
-        uniforms =
-            {}
+		uniforms =
+			{}
 
-        attributes =
-            {}
+		attributes =
+			{}
 
-        @_material =
-            new three.ShaderMaterial
-                uniforms: uniforms
-                attributes: attributes
+		@_material =
+			new three.ShaderMaterial
+				uniforms: uniforms
+				attributes: attributes
 
-                vertexShader: fs.readFileSync __dirname + '/../shader/depth.vs.glsl'
-                fragmentShader: fs.readFileSync __dirname + '/../shader/depth.fs.glsl'
+				vertexShader: fs.readFileSync __dirname + '/../shader/depth.vs.glsl'
+				fragmentShader: fs.readFileSync __dirname + '/../shader/depth.fs.glsl'
 
-                # transparent: yes
-                depthWrite: yes
+				# transparent: yes
+				depthWrite: yes
 
-        @mesh =
-            new three.Mesh @_geometry, @_material
+		@mesh =
+			new three.Mesh @_geometry, @_material
