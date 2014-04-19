@@ -82,8 +82,12 @@ void main()
 		// Negative when strokeZDifference exceeds strokeZEpsilon
 		1.0 - (strokeZDifference / strokeZEpsilon);
 
-	if (zQuality <= 0.0)
-		gl_PointSize = 0.0;
+	if (zQuality <= 0.0) {
+		gl_PointSize =
+			0.0;
+		gl_Position =
+			vec4(-100, -100, -100, 1);
+	}
 	else
 	{
 		strokeShadedColor.a *= min(zQuality, 1.0);

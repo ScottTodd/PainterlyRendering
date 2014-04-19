@@ -38,7 +38,8 @@ module.exports = class StrokeMesh extends GameObject
 		@_depthMesh =
 			new DepthBufferMesh @_originalMesh.geometry
 
-		@_depthMesh.mesh.scale = new three.Vector3 1.01, 1.01, 1.01
+		@_depthMesh.mesh.scale =
+			new three.Vector3 1.01, 1.01, 1.01
 
 		@_threeObject =
 			new three.Object3D

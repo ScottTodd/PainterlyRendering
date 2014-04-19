@@ -85,7 +85,8 @@ module.exports = class StrokeMeshLayer
 	Use a factory method instead!
 	###
 	constructor: (opts) ->
-		{ nStrokes, @strokeSize, @vertices, @normals, @colors, @strokeTexture } = opts
+		{ nStrokes, @strokeSize, @vertices, @normals, @colors,
+		  @strokeTexture } = opts
 
 		check @vertices.length == nStrokes, 'must have nStrokes vertices'
 		check @normals.length == nStrokes, 'must have nStrokes normals'
