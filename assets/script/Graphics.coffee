@@ -74,6 +74,10 @@ module.exports = class Graphics extends GameObject
 		for strokeMesh in @strokeMeshes
 			strokeMesh.setOriginalMeshVisibility visibility
 
+	setDepthMeshesVisibility: (visibility) ->
+		for strokeMesh in @strokeMeshes
+			strokeMesh.setDepthMeshVisibility visibility
+
 	setStrokeMeshesVisibility: (visibility) ->
 		for strokeMesh in @strokeMeshes
 			strokeMesh.setStrokeMeshVisibility visibility
@@ -83,6 +87,7 @@ module.exports = class Graphics extends GameObject
 		# TODO: pass that texture into the next rendering pass
 
 		@setOriginalMeshesVisibility false
-		@setStrokeMeshesVisibility true
+		@setDepthMeshesVisibility true
+		@setStrokeMeshesVisibility false
 
 		@renderer.render @scene, @_camera

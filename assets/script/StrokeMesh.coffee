@@ -5,13 +5,14 @@ three = require 'three'
 GameObject = require './GameObject'
 { read } = require './meta'
 StrokeMeshLayer = require './StrokeMeshLayer'
+DepthBufferMesh = require './DepthBufferMesh'
 
 module.exports = class StrokeMesh extends GameObject
 	###
 	opts:
 	originalMesh
 	strokeLayers
-		[ StrokeMeshLayer1, StrokeMeshLayer12, ... ]
+		[ StrokeMeshLayer1, StrokeMeshLayer2, ... ]
 	###
 	@fromLayers: (opts) ->
 		opts.originalMesh ?= opts.strokeLayers[0].getOriginalMesh()
@@ -73,6 +74,8 @@ module.exports = class StrokeMesh extends GameObject
 		@_originalMesh = get 'originalMesh'
 		@_strokeLayers = get 'strokeLayers'
 
+		@_depthMesh =
+			new DepthBufferMesh @_originalMesh.geometry
 		@_strokeMeshLayersParent =
 			new three.Object3D
 		for strokeLayer in @_strokeLayers
@@ -81,6 +84,7 @@ module.exports = class StrokeMesh extends GameObject
 		@threeObject =
 			new three.Object3D
 		@threeObject.add @_originalMesh
+		@threeObject.add @_depthMesh.mesh
 		@threeObject.add @_strokeMeshLayersParent
 
 	addToGraphics: (graphics) ->
@@ -91,6 +95,9 @@ module.exports = class StrokeMesh extends GameObject
 		@_originalMesh.visible = visibility
 		@_originalMesh.traverse (child) ->
 			child.visible = visibility
+
+	setDepthMeshVisibility: (visibility) ->
+		@_depthMesh.mesh.visible = visibility
 
 	setStrokeMeshVisibility: (visibility) ->
 		@_strokeMeshLayersParent.visible = visibility
