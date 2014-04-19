@@ -86,32 +86,38 @@ module.exports = class StrokeMeshLayer extends GameObject
 			else
 				throw new Error "Must specify #{name}"
 
-		nStrokes = get 'nStrokes'
-		strokeSize = get 'strokeSize'
-		vertices = get 'vertices'
-		normals = get 'normals'
-		colors = get 'colors'
+		@nStrokes = get 'nStrokes'
+		@strokeSize = get 'strokeSize'
+		@vertices = get 'vertices'
+		@normals = get 'normals'
+		@colors = get 'colors'
 		@_originalMesh = get 'originalMesh'
-		texture = get 'strokeTexture'
+		@texture = get 'strokeTexture'
 
-		check vertices.length == nStrokes, 'must have nStrokes vertices'
-		check normals.length == nStrokes, 'must have nStrokes normals'
-		check colors.length == nStrokes, 'must have nStrokes colors'
+		check @vertices.length == @nStrokes, 'must have nStrokes vertices'
+		check @normals.length == @nStrokes, 'must have nStrokes normals'
+		check @colors.length == @nStrokes, 'must have nStrokes colors'
 
+	read @, 'strokeSystem'
+
+	setupUsingGraphics: (graphics) ->
 		uniforms =
 			strokeTexture:
 				type: 't'
-				value: texture
+				value: @texture
 			strokeSize:
 				type: 'f'
-				value: strokeSize
+				value: @strokeSize
+			depthTexture:
+				type: 't'
+				value: graphics.depthTexture
 		$.extend uniforms,
 			three.UniformsLib["lights"]
 
 		attributes =
 			strokeVertexNormal:
 				type: 'v3'
-				value: normals
+				value: @normals
 
 		@_material =
 			new three.ShaderMaterial
@@ -140,17 +146,17 @@ module.exports = class StrokeMeshLayer extends GameObject
 		@_strokeGeometry =
 			new three.Geometry
 
-		@_strokeGeometry.vertices = vertices
+		@_strokeGeometry.vertices = @vertices
 		@_strokeGeometry.computeBoundingBox()
 		@_strokeGeometry.computeBoundingSphere()
 
-		@_strokeGeometry.colors = colors
+		@_strokeGeometry.colors = @colors
 		@_strokeGeometry.colorsNeedUpdate = yes
 
 		@_strokeSystem =
 			new three.ParticleSystem @_strokeGeometry, @_material
 
-	read @, 'strokeSystem'
+		# @_strokeSystem.sortParticles = yes
 
 	addToGraphics: (graphics) ->
 		graphics.originalMeshesParent.add @_originalMesh

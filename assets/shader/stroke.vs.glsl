@@ -16,6 +16,7 @@ projectionMatrix
 
 varying vec4 strokeShadedColor;
 varying float strokeOrientation;
+varying vec4 mvPosition;
 
 const float Pi =
 	3.1415926535897932384626433832795;
@@ -49,7 +50,7 @@ void main()
 	strokeShadedColor =
 		vec4(color * lightTotal, 1.0);
 
-	vec4 mvPosition =
+	mvPosition =
 		modelViewMatrix * vec4(position, 1.0);
 
 	gl_Position =

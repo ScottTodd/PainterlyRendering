@@ -76,19 +76,25 @@ module.exports = class StrokeMesh extends GameObject
 
 		@_depthMesh =
 			new DepthBufferMesh @_originalMesh.geometry
-		@_strokeMeshLayersParent =
-			new three.Object3D
-		for strokeLayer in @_strokeLayers
-			strokeLayer.addToParent @_strokeMeshLayersParent
 
 		@threeObject =
 			new three.Object3D
+
+	addToGraphics: (graphics) ->
+		graphics.strokeMeshes.push @
+
+		@_strokeMeshLayersParent =
+			new three.Object3D
+		for strokeLayer in @_strokeLayers
+			strokeLayer.setupUsingGraphics graphics
+			strokeLayer.addToParent @_strokeMeshLayersParent
+
+		if @originalPosition?
+			@threeObject.position.copy @originalPosition
 		@threeObject.add @_originalMesh
 		@threeObject.add @_depthMesh.mesh
 		@threeObject.add @_strokeMeshLayersParent
 
-	addToGraphics: (graphics) ->
-		graphics.strokeMeshes.push @
 		graphics.scene.add @threeObject
 
 	setOriginalMeshVisibility: (visibility) ->
@@ -108,4 +114,4 @@ module.exports = class StrokeMesh extends GameObject
 		@_originalMesh
 
 	setPosition: (pos) ->
-		@threeObject.position.copy pos
+		@originalPosition = pos

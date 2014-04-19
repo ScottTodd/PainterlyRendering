@@ -1,6 +1,23 @@
 uniform sampler2D strokeTexture;
+uniform sampler2D depthTexture;
+uniform float minimumZ;
+uniform float maximumZ;
+
 varying vec4 strokeShadedColor;
 varying float strokeOrientation;
+varying vec4 mvPosition;
+
+float remap(float outputMin, float outputMax,
+			float inputMin,  float inputMax, float inputValue)
+{
+	float inputRange  = inputMax  - inputMin;
+	float outputRange = outputMax - outputMin;
+
+	float inputScaledValue  = (inputValue - inputMin) / inputRange;
+	float outputScaledValue = inputScaledValue * outputRange + outputMin;
+
+	return outputScaledValue;
+}
 
 vec2 rotate2D(vec2 point, vec2 origin, float angle)
 {
