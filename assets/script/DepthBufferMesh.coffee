@@ -9,10 +9,10 @@ module.exports = class DepthBufferMesh extends GameObject
         uniforms =
             minimumZ:
                 type: 'f'
-                value: -20.0
+                value: -30.0
             maximumZ:
                 type: 'f'
-                value: 0.0
+                value: 30.0
 
         attributes =
             {}

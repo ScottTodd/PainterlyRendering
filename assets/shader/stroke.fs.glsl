@@ -36,13 +36,25 @@ vec2 rotate2D(vec2 point, vec2 origin, float angle)
 
 void main()
 {
-	vec2 textureCoordinate =
-		rotate2D(gl_PointCoord, vec2(0.5, 0.5), strokeOrientation);
-	vec4 textureColor =
-		texture2D(strokeTexture, textureCoordinate);
-	float textureAlpha =
-		textureColor.r; // = g = b
+	float remappedZ = remap(0.0, 1.0, minimumZ, maximumZ, mvPosition.z);
 
-	gl_FragColor = strokeShadedColor;
-	gl_FragColor.a *= textureAlpha;
+	vec2 fragmentTextureCoordinate =
+		vec2(gl_FragCoord.x/400.0, gl_FragCoord.y/300.0);
+	float depthTextureZ = texture2D(depthTexture, fragmentTextureCoordinate).z;
+
+	float zDifference = abs(remappedZ - depthTextureZ);
+
+	if (zDifference < 0.1) {
+		vec2 textureCoordinate =
+			rotate2D(gl_PointCoord, vec2(0.5, 0.5), strokeOrientation);
+		vec4 textureColor =
+			texture2D(strokeTexture, textureCoordinate);
+		float textureAlpha =
+			textureColor.r; // = g = b
+
+		gl_FragColor = strokeShadedColor;
+		gl_FragColor.a *= textureAlpha;
+	} else {
+		discard;
+	}
 }

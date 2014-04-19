@@ -111,6 +111,12 @@ module.exports = class StrokeMeshLayer extends GameObject
 			depthTexture:
 				type: 't'
 				value: graphics.depthTexture
+			minimumZ:
+				type: 'f'
+				value: -30.0
+			maximumZ:
+				type: 'f'
+				value: 30.0
 		$.extend uniforms,
 			three.UniformsLib["lights"]
 
