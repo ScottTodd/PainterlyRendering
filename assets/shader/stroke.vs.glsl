@@ -19,6 +19,7 @@ projectionMatrix
 varying vec4 strokeShadedColor;
 varying vec2 strokeOrientation;
 varying vec4 mvPosition;
+varying float strokeZDifference;
 
 const float Pi =
 	3.1415926535897932384626433832795;
@@ -69,19 +70,12 @@ void main()
 		(vec2(1, 1) + gl_Position.xy / gl_Position.w) / 2.0;
 	float depthTextureZ =
 		texture2D(depthTexture, screenSpace).z;
-	float zDifference =
+	strokeZDifference =
 		abs(mvPosition.z - depthTextureZ);
-	if (zDifference > 1.0)
-	{
-		gl_PointSize = 0.0;
-	}
-	else
-	{
-		float shrinkInDistance =
-			1.0 / gl_Position.z;
 
-		gl_PointSize =
-			shrinkInDistance * strokeSize;
-	}
+	float shrinkInDistance =
+		1.0 / gl_Position.z;
+	gl_PointSize =
+		shrinkInDistance * strokeSize;
 }
 
