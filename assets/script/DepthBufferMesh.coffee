@@ -7,12 +7,7 @@ module.exports = class DepthBufferMesh extends GameObject
         @_geometry = geometry
 
         uniforms =
-            minimumZ:
-                type: 'f'
-                value: -30.0
-            maximumZ:
-                type: 'f'
-                value: 30.0
+            {}
 
         attributes =
             {}

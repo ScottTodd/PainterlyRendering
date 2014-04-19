@@ -15,6 +15,8 @@ module.exports = class Graphics extends GameObject
 			minFilter: three.NearestFilter
 			wrapS: three.ClampToEdgeWrapping
 			wrapT: three.ClampToEdgeWrapping
+			type: three.FloatType
+
 		@depthTexture =
 			new three.WebGLRenderTarget 800, 600, depthTextureOptions
 
@@ -100,4 +102,5 @@ module.exports = class Graphics extends GameObject
 		@setOriginalMeshesVisibility false
 		@setDepthMeshesVisibility false
 		@setStrokeMeshesVisibility true
+
 		@renderer.render @scene, @_camera
