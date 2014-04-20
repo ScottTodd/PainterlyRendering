@@ -77,6 +77,11 @@ module.exports = class StrokeMeshLayer
 		[ outOpts.vertices, outOpts.normals ] =
 			meshVerticesNormals (new three.Mesh geometry), outOpts.nStrokes
 
+		outOpts.specularMin =
+			opts.specularMin ? 0
+		outOpts.specularFadeIn =
+			opts.specularFadeIn ? 0
+
 		new StrokeMeshLayer outOpts
 
 
@@ -86,7 +91,7 @@ module.exports = class StrokeMeshLayer
 	###
 	constructor: (opts) ->
 		{ nStrokes, @strokeSize, @vertices, @normals, @colors,
-		  @strokeTexture } = opts
+		  @strokeTexture, @specularMin, @specularFadeIn } = opts
 
 		check @vertices.length == nStrokes, 'must have nStrokes vertices'
 		check @normals.length == nStrokes, 'must have nStrokes normals'
@@ -106,6 +111,14 @@ module.exports = class StrokeMeshLayer
 			depthTexture:
 				type: 't'
 				value: graphics.depthTexture
+			specularMin:
+				type: 'f'
+				value: @specularMin
+			specularFadeIn:
+				type: 'f'
+				value: @specularFadeIn
+
+
 		$.extend uniforms,
 			three.UniformsLib.lights
 

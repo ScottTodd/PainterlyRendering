@@ -25,25 +25,13 @@ vec2 rotate2D(vec2 point, vec2 origin, vec2 orientation)
 
 void main()
 {
+	gl_FragColor = strokeShadedColor;
+
 	vec2 textureCoordinate =
 		rotate2D(gl_PointCoord, vec2(0.5, 0.5), strokeOrientation);
 	vec4 textureColor =
 		texture2D(strokeTexture, textureCoordinate);
-	gl_FragColor = strokeShadedColor;
-
 	float textureAlpha =
 		textureColor.r; // = g = b
 	gl_FragColor.a *= textureAlpha;
-
-	// TODO: Remove hardcoded screen dimensions from this calculation
-	//vec2 fragmentTextureCoordinate =
-	//	vec2(gl_FragCoord.x/400.0, gl_FragCoord.y/300.0);
-	//float depthTextureZ =
-	//	texture2D(depthTexture, fragmentTextureCoordinate).z;
-	//float fragmentZDifference =
-	//	abs(mvPosition.z - depthTextureZ);
-
-	//if (fragmentZDifference > 1.0) {
-	//	gl_FragColor.a = 0.0;
-	//}
 }
