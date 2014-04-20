@@ -21,6 +21,7 @@ projectionMatrix
 varying vec4 strokeShadedColor;
 varying vec2 strokeOrientation;
 varying vec4 mvPosition;
+varying float curveAmount;
 
 /*
 How much we weight a color's importance.
@@ -42,8 +43,10 @@ vec3 calcLight(vec3 mvNormal, out float specularTotalAmount)
 		// TODO: calculate
 		vec3(0, 0, -1);
 	const float specularAmount =
+		// TODO: uniform
 		4.0;
 	const float specularPow =
+		// TODO: uniform
 		8.0;
 
 	vec3 lightTotal = ambientLightColor;
@@ -73,43 +76,59 @@ vec3 calcLight(vec3 mvNormal, out float specularTotalAmount)
 }
 
 /*
-Calculates stroke orientation.
-Strokes on the edge (where the normal is perpendicular to the camera) should follow the border.
-Otherwise, strokes should circle around light.
+This could be faster if we only calculated intensities the whole way through...
 */
-vec2 getOrientation(vec4 mvNormal, vec3 lightTotal)
+float calcLightAmount(vec3 mvNormal)
 {
+	float junk;
+	vec3 light =
+		calcLight(mvNormal, junk);
+
+	return colorAmount(light);
+}
+
+vec2 getGradient(vec3 mvNormal, float lightAmount)
+{
+	// Camera 'gradient'
 	vec4 projectedNormal =
-		normalize(projectionMatrix * mvNormal);
+		normalize(projectionMatrix * vec4(mvNormal, 0));
 
-	vec2 relToCamera =
-		vec2(-projectedNormal.y, projectedNormal.x);
+	vec2 cameraGradient =
+		projectedNormal.xy;
 
+	// Light gradient
 	float epsilon =
 		0.01;
-
 	vec3 dxNormal =
-		vec3(mvNormal) + vec3(epsilon, 0, 0);
+		mvNormal + vec3(epsilon, 0, 0);
 	vec3 dyNormal =
-		vec3(mvNormal) + vec3(0, epsilon, 0);
-
+		mvNormal + vec3(0, epsilon, 0);
 	// Estimate the gradient here by altering the normal.
 	// (If the object is concave this will be the opposite of the correct answer...)
-	float junk;
 	float dx =
-		colorAmount(calcLight(dxNormal, junk)) - colorAmount(lightTotal);
+		calcLightAmount(dxNormal) - lightAmount;
 	float dy =
-		colorAmount(calcLight(dyNormal, junk)) - colorAmount(lightTotal);
-
-	vec2 relToLight =
-		// Perpendicular to gradient
-		vec2(-dy, dx);
+		calcLightAmount(dyNormal) - lightAmount;
+	vec2 lightGradient =
+		vec2(dx, dy);
 
 	float camPart =
 		projectedNormal.z;
 	float lightPart =
 		1.0;
-	return normalize(camPart * relToCamera + lightPart * relToLight);
+
+	return camPart * cameraGradient + lightPart * lightGradient;
+}
+
+/*
+Ensures that this vertex is not rendered.
+*/
+void discardVertex()
+{
+	gl_PointSize =
+		0.0;
+	gl_Position =
+		vec4(-100, -100, -100, 1);
 }
 
 /*
@@ -133,16 +152,11 @@ float getZQuality(vec4 mvPosition, vec4 glPosition)
 	return 1.0 - (strokeZDifference / strokeZEpsilon);
 }
 
-/*
-Ensures that this vertex is not rendered.
-*/
-void discardVertex()
+float manhattanLength(vec2 v)
 {
-	gl_PointSize =
-		0.0;
-	gl_Position =
-		vec4(-100, -100, -100, 1);
+	return abs(v.x) + abs(v.y);
 }
+
 
 void main()
 {
@@ -159,10 +173,10 @@ void main()
 		return;
 	}
 
-	vec4 mvNormal =
+	vec3 mvNormal =
 		// TODO: lighting normals don't work with quaternions; use normalMatrix ?
 		// Use 0.0 so there's no translation.
-		modelViewMatrix * vec4(strokeVertexNormal, 0.0);
+		vec3(modelViewMatrix * vec4(strokeVertexNormal, 0.0));
 
 	float specularTotalAmount;
 	vec3 lightTotal =
@@ -180,17 +194,32 @@ void main()
 		:
 			min(1.0, (specularTotalAmount - specularMin) / specularFadeIn);
 
-	strokeShadedColor =
-		vec4(color * lightTotal, specularAmountToAlpha);
+	float zQualityAlpha =
+		// 'Marginal' strokes just coming around the edge of an object are partly transparent.
+		min(zQuality, 1.0);
 
-	// 'Marginal' strokes just coming around the edge of an object are partly transparent.
-	strokeShadedColor.a *= min(zQuality, 1.0);
+	float alpha =
+		specularAmountToAlpha * zQualityAlpha;
+
+	strokeShadedColor =
+		vec4(color * lightTotal, alpha);
+
 
 	float shrinkInDistance =
 		1.0 / gl_Position.z;
 	gl_PointSize =
 		shrinkInDistance * strokeSize;
 
+	vec2 gradient =
+		getGradient(mvNormal, colorAmount(lightTotal));
+
 	strokeOrientation =
-		getOrientation(mvNormal, lightTotal);
+		normalize(vec2(-gradient.y, gradient.x));
+
+	float curveFactor =
+		// TODO: uniform
+		2.0;
+	// This should be in [0..1] or the stroke will be clipped.
+	curveAmount =
+		manhattanLength(gradient) * curveFactor;
 }

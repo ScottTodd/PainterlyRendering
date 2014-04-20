@@ -3,8 +3,6 @@ CameraController = require '../CameraController'
 FramerateTracker = require '../FramerateTracker'
 Game = require '../Game'
 SimpleStrokeMeshObject = require '../SimpleStrokeMeshObject'
-StrokeMeshLayer = require '../StrokeMeshLayer'
-StrokeMesh = require '../StrokeMesh'
 
 module.exports = class SpheresGame extends Game
 	allResources: ->

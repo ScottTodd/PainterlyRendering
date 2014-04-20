@@ -1,4 +1,5 @@
 $ = require 'jquery'
+TestGame = require './games/TestGame'
 SpheresGame = require './games/SpheresGame'
 MeshGame = require './games/MeshGame'
 BouncingBunnyGame = require './games/BouncingBunnyGame'
