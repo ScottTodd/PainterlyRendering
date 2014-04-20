@@ -19,7 +19,6 @@ projectionMatrix
 varying vec4 strokeShadedColor;
 varying vec2 strokeOrientation;
 varying vec4 mvPosition;
-varying float strokeZDifference;
 
 const float Pi =
 	3.1415926535897932384626433832795;
@@ -31,24 +30,32 @@ void main()
 		// Use 0.0 so there's no translation
 		modelViewMatrix * vec4(strokeVertexNormal, 0.0);
 
+	const vec3 dirToCamera =
+		// TODO: calculate
+		vec3(0, 0, -1);
+	const float specularAmount =
+		4.0;
+	const float specularPow =
+		8.0;
+
 	vec3 lightTotal = ambientLightColor;
-	for(int i = 0; i < MAX_DIR_LIGHTS; i++) {
+	for(int i = 0; i < MAX_DIR_LIGHTS; i++)
+	{
 		vec3 dirToLight =
 			-directionalLightDirection[i];
 		float phongDiffuse =
 			max(0.0, dot(dirToLight, vec3(mvNormal)));
-			// 1.0;
+		vec3 reflectedDir =
+			normalize(reflect(dirToLight, vec3(mvNormal)));
 		float phongSpecular =
-			0.0; //specular * pow(reflDir * dirToCamera, shininess);
+			specularAmount * pow(max(0.0, dot(reflectedDir, dirToCamera)), specularPow);
 		vec3 lightColor =
 			directionalLightColor[i];
-			// vec3(1, 1, 1);
 		vec3 phongLight =
 			lightColor * (phongDiffuse + phongSpecular);
 
 		lightTotal += phongLight;
 	}
-	lightTotal = clamp(lightTotal, 0.0, 1.0);
 
 	strokeShadedColor =
 		vec4(color * lightTotal, 1.0);
@@ -66,23 +73,23 @@ void main()
 		normalize(projectedNormal.xy);
 
 	vec2 screenSpace =
-		// Convert to (0, 0) to (1, 1) coordinates.
+		// Convert to normalized ([0, 1]^2) coordinates.
 		(vec2(1, 1) + gl_Position.xy / gl_Position.w) / 2.0;
 	float depthTextureZ =
 		texture2D(depthTexture, screenSpace).z;
-	strokeZDifference =
+	float strokeZDifference =
 		abs(mvPosition.z - depthTextureZ);
-
 	const float strokeZEpsilon =
 		// TODO: This should vary by object size
 		1.0;
 	float zQuality =
 		// 1 when z is perfect.
-		// 0 when z is not good enough.
-		// Negative when strokeZDifference exceeds strokeZEpsilon
+		// 0 when z is just barely not good enough (strokeZDifference = strokeZEpsilon).
+		// Negative when we shouldn't appear at all.
 		1.0 - (strokeZDifference / strokeZEpsilon);
 
-	if (zQuality <= 0.0) {
+	if (zQuality <= 0.0)
+	{
 		gl_PointSize =
 			0.0;
 		gl_Position =

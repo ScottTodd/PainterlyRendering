@@ -31,7 +31,7 @@ module.exports = class SpheresGame extends Game
 							sat: [0.25, 0.75]
 							lum: 0.5
 					,
-						nStrokes: 1000
+						nStrokes: 2000
 						strokeSize: 100
 						colors:
 							type: 'randomHSL'

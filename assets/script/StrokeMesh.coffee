@@ -5,6 +5,7 @@ GameObject = require './GameObject'
 { read } = require './meta'
 StrokeMeshLayer = require './StrokeMeshLayer'
 DepthBufferMesh = require './DepthBufferMesh'
+fattenGeometry = require './fattenGeometry'
 
 module.exports = class StrokeMesh extends GameObject
 	###
@@ -27,19 +28,27 @@ module.exports = class StrokeMesh extends GameObject
 
 				StrokeMeshLayer.of lop
 
-		new StrokeMesh originalMesh, layers
+		new StrokeMesh opts.geometry, layers
 
 
 	###
 	@private
 	Use a factory method instead!
 	###
-	constructor: (@_originalMesh, @_strokeLayers) ->
-		@_depthMesh =
-			new DepthBufferMesh @_originalMesh.geometry
+	constructor: (originalGeometry, @_strokeLayers) ->
+		depthGeometry = originalGeometry.clone()
+		fattenGeometry originalGeometry, 0.1
 
-		@_depthMesh.mesh.scale =
-			new three.Vector3 1.01, 1.01, 1.01
+		@_depthMesh =
+			new DepthBufferMesh originalGeometry
+
+		outlineGeometry = originalGeometry.clone()
+		fattenGeometry outlineGeometry, 0.2
+
+		@_originalMesh =
+			new three.Mesh outlineGeometry, new three.MeshBasicMaterial
+				color: 0x000000
+				side: three.BackSide
 
 		@_threeObject =
 			new three.Object3D

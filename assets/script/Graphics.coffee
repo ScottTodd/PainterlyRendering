@@ -67,7 +67,7 @@ module.exports = class Graphics extends GameObject
 
 		dirLight1 =
 			new three.DirectionalLight 0xffffff, 1.0
-		dirLight1.position.set 0, -1, 0
+		dirLight1.position.set -1, 0, -1
 		@dirLights.push dirLight1
 
 		###
@@ -99,7 +99,7 @@ module.exports = class Graphics extends GameObject
 
 		@renderer.render @scene, @_camera, @depthTexture, true
 
-		@setOriginalMeshesVisibility false
+		@setOriginalMeshesVisibility true
 		@setDepthMeshesVisibility false
 		@setStrokeMeshesVisibility true
 
