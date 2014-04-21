@@ -4,9 +4,11 @@ MeshGame = require './games/MeshGame'
 BouncingBunnyGame = require './games/BouncingBunnyGame'
 BouncingBallsGame = require './games/BouncingBallsGame'
 ParametersGame = require './games/ParametersGame'
+TextureGame = require './games/TextureGame'
 
 game =
-	new ParametersGame
+	new TextureGame
+	# new ParametersGame
 
 ($ 'document').ready ->
 	($ playButton).hide()

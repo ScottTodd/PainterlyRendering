@@ -1,6 +1,8 @@
 attribute vec3 strokeVertexNormal;
+attribute vec2 strokeUV;
 
 uniform sampler2D depthTexture;
+uniform sampler2D objectTexture;
 
 uniform float strokeSize;
 uniform float specularMin;
@@ -45,7 +47,6 @@ void calcLight(vec3 mPosition, vec3 mNormal, out vec3 diffuseTotal, out vec3 spe
 {
 	vec3 dirToCamera =
 		normalize(cameraPosition - mPosition);
-
 	diffuseTotal =
 		ambientLightColor;
 	specularTotal =
@@ -333,6 +334,8 @@ void main()
 
 	strokeShadedColor =
 		vec4(litColor, alpha);
+	//  texture2D(objectTexture, strokeUV);
+	// 	vec4(color * lightTotal, alpha) * texture2D(objectTexture, strokeUV);
 
 
 	float shrinkInDistance =
