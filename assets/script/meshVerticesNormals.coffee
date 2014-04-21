@@ -25,7 +25,7 @@ Done using barycentric coordinates.
 The best reference for random selection I can find is
 	<http://www.cs.fsu.edu/~banks/courses/2003.3/homework/hw.04.html>.
 ###
-randomPointAndNormalInTriangle = (va, vb, vc, na, nb, nc) ->
+randomPointNormalUVInTriangle = (va, vb, vc, na, nb, nc, uva, uvb, uvc) ->
 	alpha =
 		1 - Math.sqrt Math.random()
 	beta =
@@ -41,7 +41,11 @@ randomPointAndNormalInTriangle = (va, vb, vc, na, nb, nc) ->
 	normal.add vecScale nb, beta
 	normal.add vecScale nc, gamma
 
-	[ point, normal ]
+	uv = vecScale uva, alpha
+	uv.add vecScale uvb, beta
+	uv.add vecScale uvc, gamma
+
+	[ point, normal, uv ]
 
 
 ###
@@ -69,12 +73,16 @@ module.exports = meshVerticesNormals = (mesh, nVertices) ->
 
 	vertices = []
 	normals = []
+	uvs = []
 
 	verticesOwed = 0
 
-	for face in geometry.faces
+	for i in [0...geometry.faces.length]
+		face = geometry.faces[i]
+
 		[ va, vb, vc ] = faceVertices face
 		[ na, nb, nc ] = face.vertexNormals
+		[ uva, uvb, uvc ] = geometry.faceVertexUvs[0][i]
 
 		area =
 			three.GeometryUtils.triangleArea va, vb, vc
@@ -87,13 +95,17 @@ module.exports = meshVerticesNormals = (mesh, nVertices) ->
 		verticesOwed -= nFacePoints
 
 		for _ in [0...nFacePoints]
-			[ point, normal ] =
-				randomPointAndNormalInTriangle va, vb, vc, na, nb, nc
+			[ point, normal, uv ] =
+				randomPointNormalUVInTriangle va, vb, vc,
+					na, nb, nc,
+					uva, uvb, uvc
+
 			vertices.push point
 			normals.push normal
+			uvs.push uv
 
 	check vertices.length == nVertices
 
 	shuffleEqually vertices, normals
 
-	[ vertices, normals ]
+	[ vertices, normals, uvs ]

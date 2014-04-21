@@ -45,6 +45,7 @@ module.exports = class StrokeMeshLayer
 	nStrokes: Number
 	strokeSize: Number
 	strokeTexture: three.Texture
+	objectTexture: three.Texture
 	colors:
 		type: 'rainbow'
 		OR
@@ -65,6 +66,7 @@ module.exports = class StrokeMeshLayer
 			opts.enableRotation ? 1
 		outOpts.curveFactor =
 			opts.curveFactor ? 1.0
+		outOpts.objectTexture = getOpt opts, 'objectTexture'
 
 		colorsOpt = getOpt opts, 'colors'
 		outOpts.colors =
@@ -77,7 +79,7 @@ module.exports = class StrokeMeshLayer
 				when 'randomHSL'
 					randomHSLs opts.nStrokes, colorsOpt
 
-		[ outOpts.vertices, outOpts.normals ] =
+		[ outOpts.vertices, outOpts.normals, outOpts.uvs ] =
 			meshVerticesNormals (new three.Mesh geometry), outOpts.nStrokes
 
 		outOpts.specularIntensity =
@@ -97,8 +99,8 @@ module.exports = class StrokeMeshLayer
 	Use a factory method instead!
 	###
 	constructor: (opts) ->
-		{ nStrokes, strokeSize, vertices, normals, colors, strokeTexture,
-		  enableRotation, curveFactor,
+		{ nStrokes, strokeSize, vertices, normals, uvs, colors,
+		  strokeTexture, objectTexture, enableRotation, curveFactor,
 		  specularMin, specularFadeIn, specularIntensity, specularPower } = opts
 
 		check vertices.length == nStrokes, 'must have nStrokes vertices'
@@ -112,6 +114,9 @@ module.exports = class StrokeMeshLayer
 			strokeTexture:
 				type: 't'
 				value: strokeTexture
+			objectTexture:
+				type: 't'
+				value: objectTexture
 			strokeSize:
 				type: 'f'
 				value: 0 #strokeSize
@@ -144,6 +149,9 @@ module.exports = class StrokeMeshLayer
 			strokeVertexNormal:
 				type: 'v3'
 				value: normals
+			strokeUV:
+				type: 'v2'
+				value: uvs
 
 		material =
 			new three.ShaderMaterial
