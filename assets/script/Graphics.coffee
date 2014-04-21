@@ -18,6 +18,7 @@ module.exports = class Graphics extends GameObject
 			type: three.FloatType
 
 		@depthTexture =
+			# TODO: don't hard-code size
 			new three.WebGLRenderTarget 800, 600, depthTextureOptions
 
 		@strokeMeshes =
@@ -70,12 +71,10 @@ module.exports = class Graphics extends GameObject
 		dirLight1.position.set -1, 0, -1
 		@dirLights.push dirLight1
 
-		###
 		dirLight2 =
-			new three.DirectionalLight 0xff0000, 3.0
-		dirLight2.position.set 0, -1, 0
+			new three.DirectionalLight 0xffff00, 2.0
+		dirLight2.position.set 0, -1, 1
 		@dirLights.push dirLight2
-		###
 
 		for dirLight in @dirLights
 			@scene.add dirLight

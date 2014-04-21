@@ -54,9 +54,9 @@ vec3 calcLight(vec3 mPosition, vec3 mNormal, out float specularTotalAmount)
 		vec3 dirToLight =
 			-directionalLightDirection[i];
 		float phongDiffuse =
-			max(0.0, dot(dirToLight, vec3(mNormal)));
+			max(0.0, dot(dirToLight, mNormal));
 		vec3 reflectedDir =
-			normalize(reflect(-dirToLight, vec3(mNormal)));
+			normalize(reflect(-dirToLight, mNormal));
 		float phongSpecular =
 			specularAmount * pow(max(0.0, dot(reflectedDir, dirToCamera)), specularPow);
 		vec3 lightColor =
@@ -85,37 +85,162 @@ float calcLightAmount(vec3 mPosition, vec3 mNormal)
 	return colorAmount(light);
 }
 
-vec2 getGradient(vec3 mPosition, vec3 mNormal, vec3 mvNormal, float lightAmount)
+/*
+... getJitteredNormal(vec2 oldPos, vec2 newPos, float dxy)
+{
+	// Jitter in x-direction
+
+	float dDepth =
+		sampleDepth(newPos) - sampleDepth(oldPos);
+
+	xy = length2(oldNormal.xy);
+	float newZPart =
+		dxy / dz * xy;
+
+	return normalize(vec3(oldNormal.x, oldNormal.y, newZPart));
+
+	//float dx =
+	//	newPos - oldPos;
+	//oldNormal + vec3(dz, -dx)
+
+}
+*/
+
+float length2(vec2 v)
+{
+	return dot(v, v);
+}
+
+float length2(vec3 v)
+{
+	return dot(v, v);
+}
+
+float square(float a)
+{
+	return a * a;
+}
+
+
+float getLightDifferential(
+	vec3 oldMPos,
+	vec3 rayDirAdjust,
+	float lightAmount,
+	vec3 oldMNormal)
+{
+	/*
+	Approximate this area as a sphere.
+	Discover the ray the camera fired to get here.
+	Alter it by `dirAdjust`.
+	Calculate the new sphere collision there.
+	Then new normal and position can be calculated.
+	Then calculate the new light at that normal and position,
+	and return the difference.
+	*/
+
+	float curvatureRadius =
+		// TODO: Attribute
+		2.0;
+	vec3 mCurveCenter =
+		oldMPos - oldMNormal * curvatureRadius;
+
+	vec3 oldRayDir =
+		normalize(oldMPos - cameraPosition);
+
+	vec3 newRayDir =
+		oldRayDir + rayDirAdjust;
+
+	/*
+	Solve the ray equation.
+	a * t^2 + b * t + c = 0
+	*/
+	float a =
+		length2(newRayDir);
+	float b =
+		2.0 * dot(newRayDir, cameraPosition - mCurveCenter);
+	float c =
+		length2(cameraPosition - mCurveCenter) - square(curvatureRadius);
+	float det =
+		square(b) - 4.0 * a * c;
+	// When curvature is high enough, we will surely hit the sphere
+	// and can ignore the case where det would be negative.
+	float sqrtDet =
+		sqrt(det);
+	float a2 =
+		2.0 * a;
+	float t =
+		// We want the first `t`, so subtract sqrtDet.
+		(-b - sqrtDet) / a2;
+
+	vec3 newPos =
+		cameraPosition + newRayDir * t;
+	vec3 newNorm =
+		normalize(newPos - mCurveCenter);
+
+	return calcLightAmount(newPos, newNorm) - lightAmount;
+}
+
+
+/*
+float getLightDifferential(vec3 mPos, vec3 mNormal, float lightAmount)
+{
+	vec3 newNormal =
+		mNormal + modelMatrix * dNormal;
+
+	return calcLightAmount(mPos, newNormal) - lightAmount;
+}
+*/
+
+/*
+Returned value has length in range [0..1].
+*/
+vec2 getGradient(
+	vec3 mPosition,
+	vec3 mvPosition,
+	vec3 mNormal,
+	vec3 mvNormal,
+	float lightAmount)
 {
 	// Camera 'gradient'
 	vec4 projectedNormal =
 		normalize(projectionMatrix * vec4(mvNormal, 0));
 
 	vec2 cameraGradient =
-		projectedNormal.xy;
+		-projectedNormal.xy;
+
+
+	vec3 cameraRight =
+		normalize(vec3(viewMatrix[0].x, viewMatrix[1].x, viewMatrix[2].x));
+	vec3 cameraUp =
+		normalize(vec3(viewMatrix[0].y, viewMatrix[1].y, viewMatrix[2].y));
 
 	// Light gradient
 	float epsilon =
 		0.01;
-	vec3 dxNormal =
-		mNormal + vec3(epsilon, 0, 0);
-	vec3 dyNormal =
-		mNormal + vec3(0, epsilon, 0);
-	// Estimate the gradient here by altering the normal.
-	// (If the object is concave this will be the opposite of the correct answer...)
-	float dx =
-		calcLightAmount(mPosition, dxNormal) - lightAmount;
-	float dy =
-		calcLightAmount(mPosition, dyNormal) - lightAmount;
+	float dldx =
+		getLightDifferential(mPosition, cameraRight * epsilon, lightAmount, mNormal);
+	float dldy =
+		getLightDifferential(mPosition, cameraUp * epsilon, lightAmount, mNormal);
 	vec2 lightGradient =
-		vec2(dx, dy);
+		vec2(dldx, dldy);
 
-	float camPart =
-		projectedNormal.z;
+	float cameraPart =
+		length(cameraGradient);
 	float lightPart =
-		1.0;
+		min(length(lightGradient), 1.0 - cameraPart);
 
-	return camPart * cameraGradient + lightPart * lightGradient;
+	cameraGradient =
+		normalize(cameraGradient);
+	lightGradient =
+		normalize(lightGradient);
+
+	/*
+	// Visualize the relative gradient contributions.
+	strokeShadedColor =
+		vec4(1, 0, 0, 1) * lightPart + vec4(0, 1, 0, 1) * camPart
+	*/
+
+	return cameraPart * cameraGradient + lightPart * lightGradient;
 }
 
 /*
@@ -129,18 +254,24 @@ void discardVertex()
 		vec4(-100, -100, -100, 1);
 }
 
+float sampleDepth(vec4 glPosition)
+{
+	vec2 screenSpace =
+		// Convert to normalized ([0, 1]^2) coordinates.
+		(vec2(1, 1) + glPosition.xy / glPosition.w) / 2.0;
+	return
+		texture2D(depthTexture, screenSpace).z;
+}
+
 /*
 1 when z is perfect.
 0 when z is just barely good enough (strokeZDifference = strokeZEpsilon).
 Negative when we shouldn't appear at all.
 */
-float getZQuality(vec4 mvPosition, vec4 glPosition)
+float getZQuality(vec3 mvPosition, vec4 glPosition)
 {
-	vec2 screenSpace =
-		// Convert to normalized ([0, 1]^2) coordinates.
-		(vec2(1, 1) + glPosition.xy / glPosition.w) / 2.0;
 	float depthTextureZ =
-		texture2D(depthTexture, screenSpace).z;
+		sampleDepth(glPosition);
 	float strokeZDifference =
 		abs(mvPosition.z - depthTextureZ);
 	const float strokeZEpsilon =
@@ -149,12 +280,6 @@ float getZQuality(vec4 mvPosition, vec4 glPosition)
 
 	return 1.0 - (strokeZDifference / strokeZEpsilon);
 }
-
-float manhattanLength(vec2 v)
-{
-	return abs(v.x) + abs(v.y);
-}
-
 
 void main()
 {
@@ -165,7 +290,7 @@ void main()
 	gl_Position =
 		projectionMatrix * mvPosition;
 	float zQuality =
-		getZQuality(mvPosition, gl_Position);
+		getZQuality(vec3(mvPosition), gl_Position);
 
 	if (zQuality <= 0.0)
 	{
@@ -174,11 +299,11 @@ void main()
 	}
 
 	vec3 mNormal =
-		vec3(modelMatrix * vec4(strokeVertexNormal, 0.0));
+		normalize(vec3(modelMatrix * vec4(strokeVertexNormal, 0.0)));
 	vec3 mvNormal =
 		// TODO: lighting normals don't work with quaternions; use normalMatrix ?
 		// Use 0.0 so there's no translation.
-		vec3(modelViewMatrix * vec4(strokeVertexNormal, 0.0));
+		normalize(vec3(modelViewMatrix * vec4(strokeVertexNormal, 0.0)));
 
 	float specularTotalAmount;
 	vec3 lightTotal =
@@ -213,15 +338,17 @@ void main()
 		shrinkInDistance * strokeSize;
 
 	vec2 gradient =
-		getGradient(vec3(mPosition), mNormal, mvNormal, colorAmount(lightTotal));
+		getGradient(
+			vec3(mPosition), vec3(mvPosition),
+			mNormal, mvNormal,
+			colorAmount(lightTotal));
 
 	strokeOrientation =
 		normalize(vec2(-gradient.y, gradient.x));
 
 	float curveFactor =
 		// TODO: uniform
-		2.0;
-	// This should be in [0..1] or the stroke will be clipped.
+		1.0;
 	curveAmount =
-		manhattanLength(gradient) * curveFactor;
+		length(gradient) * curveFactor;
 }
