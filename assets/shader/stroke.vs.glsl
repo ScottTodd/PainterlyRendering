@@ -20,7 +20,6 @@ projectionMatrix
 
 varying vec4 strokeShadedColor;
 varying vec2 strokeOrientation;
-varying vec4 mvPosition;
 varying float curveAmount;
 
 /*
@@ -33,15 +32,14 @@ float colorAmount(vec3 color)
 }
 
 /*
-How much light am I recieving if I face in the direction `mvNormal`?
+How much light am I recieving if I face in the direction `mNormal`?
 */
-vec3 calcLight(vec3 mvNormal, out float specularTotalAmount)
+vec3 calcLight(vec3 mPosition, vec3 mNormal, out float specularTotalAmount)
 {
 	specularTotalAmount = 0.0;
 
-	const vec3 dirToCamera =
-		// TODO: calculate
-		vec3(0, 0, -1);
+	vec3 dirToCamera =
+		normalize(cameraPosition - mPosition);
 	const float specularAmount =
 		// TODO: uniform
 		4.0;
@@ -56,9 +54,9 @@ vec3 calcLight(vec3 mvNormal, out float specularTotalAmount)
 		vec3 dirToLight =
 			-directionalLightDirection[i];
 		float phongDiffuse =
-			max(0.0, dot(dirToLight, vec3(mvNormal)));
+			max(0.0, dot(dirToLight, vec3(mNormal)));
 		vec3 reflectedDir =
-			normalize(reflect(dirToLight, vec3(mvNormal)));
+			normalize(reflect(-dirToLight, vec3(mNormal)));
 		float phongSpecular =
 			specularAmount * pow(max(0.0, dot(reflectedDir, dirToCamera)), specularPow);
 		vec3 lightColor =
@@ -78,16 +76,16 @@ vec3 calcLight(vec3 mvNormal, out float specularTotalAmount)
 /*
 This could be faster if we only calculated intensities the whole way through...
 */
-float calcLightAmount(vec3 mvNormal)
+float calcLightAmount(vec3 mPosition, vec3 mNormal)
 {
 	float junk;
 	vec3 light =
-		calcLight(mvNormal, junk);
+		calcLight(mPosition, mNormal, junk);
 
 	return colorAmount(light);
 }
 
-vec2 getGradient(vec3 mvNormal, float lightAmount)
+vec2 getGradient(vec3 mPosition, vec3 mNormal, vec3 mvNormal, float lightAmount)
 {
 	// Camera 'gradient'
 	vec4 projectedNormal =
@@ -100,15 +98,15 @@ vec2 getGradient(vec3 mvNormal, float lightAmount)
 	float epsilon =
 		0.01;
 	vec3 dxNormal =
-		mvNormal + vec3(epsilon, 0, 0);
+		mNormal + vec3(epsilon, 0, 0);
 	vec3 dyNormal =
-		mvNormal + vec3(0, epsilon, 0);
+		mNormal + vec3(0, epsilon, 0);
 	// Estimate the gradient here by altering the normal.
 	// (If the object is concave this will be the opposite of the correct answer...)
 	float dx =
-		calcLightAmount(dxNormal) - lightAmount;
+		calcLightAmount(mPosition, dxNormal) - lightAmount;
 	float dy =
-		calcLightAmount(dyNormal) - lightAmount;
+		calcLightAmount(mPosition, dyNormal) - lightAmount;
 	vec2 lightGradient =
 		vec2(dx, dy);
 
@@ -160,7 +158,9 @@ float manhattanLength(vec2 v)
 
 void main()
 {
-	mvPosition =
+	vec4 mPosition =
+		modelMatrix * vec4(position, 1.0);
+	vec4 mvPosition =
 		modelViewMatrix * vec4(position, 1.0);
 	gl_Position =
 		projectionMatrix * mvPosition;
@@ -173,6 +173,8 @@ void main()
 		return;
 	}
 
+	vec3 mNormal =
+		vec3(modelMatrix * vec4(strokeVertexNormal, 0.0));
 	vec3 mvNormal =
 		// TODO: lighting normals don't work with quaternions; use normalMatrix ?
 		// Use 0.0 so there's no translation.
@@ -180,7 +182,7 @@ void main()
 
 	float specularTotalAmount;
 	vec3 lightTotal =
-		calcLight(vec3(mvNormal), specularTotalAmount);
+		calcLight(vec3(mPosition), mNormal, specularTotalAmount);
 
 	if (specularTotalAmount < specularMin)
 	{
@@ -211,7 +213,7 @@ void main()
 		shrinkInDistance * strokeSize;
 
 	vec2 gradient =
-		getGradient(mvNormal, colorAmount(lightTotal));
+		getGradient(vec3(mPosition), mNormal, mvNormal, colorAmount(lightTotal));
 
 	strokeOrientation =
 		normalize(vec2(-gradient.y, gradient.x));

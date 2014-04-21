@@ -6,7 +6,6 @@ uniform sampler2D depthTexture;
 
 varying vec4 strokeShadedColor;
 varying vec2 strokeOrientation;
-varying vec4 mvPosition;
 varying float curveAmount;
 
 vec2 rotate2D(vec2 point, vec2 origin, vec2 orientation)
