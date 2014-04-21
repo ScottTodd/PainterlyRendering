@@ -4,8 +4,8 @@ three = require 'three'
 vecScale = (v, scale) ->
 	v.clone().multiplyScalar scale
 
-shuffleEqually = (listA, listB) ->
-	check listA.length == listB.length
+shuffleEqually = (listA, listB, listC) ->
+	check listA.length == listB.length == listC.length
 
 	swap = (list, idx1, idx2) ->
 		temp = list[idx1]
@@ -16,6 +16,7 @@ shuffleEqually = (listA, listB) ->
 		swapIdx = Math.floor Math.random() * idx
 		swap listA, idx, swapIdx
 		swap listB, idx, swapIdx
+		swap listC, idx, swapIdx
 
 ###
 Can't simply use three.GeometryUtils.randomPointInTriangle
@@ -54,7 +55,7 @@ randomPointNormalUVInTriangle = (va, vb, vc, na, nb, nc, uva, uvb, uvc) ->
 Randomly distributres vertices across a mesh.
 Assigns interpolated normals.
 ###
-module.exports = meshVerticesNormals = (mesh, nVertices) ->
+module.exports = meshVerticesNormalsUVs = (mesh, nVertices) ->
 	type mesh, three.Mesh
 
 	geometry = mesh.geometry
@@ -108,6 +109,6 @@ module.exports = meshVerticesNormals = (mesh, nVertices) ->
 
 	check vertices.length == nVertices
 
-	shuffleEqually vertices, normals
+	shuffleEqually vertices, normals, uvs
 
 	[ vertices, normals, uvs ]

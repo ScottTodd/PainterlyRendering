@@ -27,20 +27,23 @@ module.exports = class TextureGame extends Game
 		quad =
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
 				geometry: @resources().geometry 'quad'
-				objectTexture: @resources().texture 'easy_colors'
+				objectTexture: @resources().texture 'The_Scream'
 				colors:
 					type: 'randomHSL'
 					hue: 0.65
 					sat: 0.0
 					lum: 1.0
+				strokeTexture: @resources().texture 'stroke'
 				layers: [
-					# nStrokes: 10
-					# strokeSize: 160
-					# nStrokes: 1000
-					# strokeSize: 160
-					nStrokes: 100000
-					strokeSize: 40
-					strokeTexture: @resources().texture 'stroke'
+					nStrokes: 500
+					strokeSize: 380
+				,
+					nStrokes: 3000
+					strokeSize: 160
+				,
+					nStrokes: 10000
+					strokeSize: 30
+
 				]
 
 

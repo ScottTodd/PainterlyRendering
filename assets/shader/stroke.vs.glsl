@@ -334,8 +334,10 @@ void main()
 
 	strokeShadedColor =
 		vec4(litColor, alpha);
-	//  texture2D(objectTexture, strokeUV);
-	// 	vec4(color * lightTotal, alpha) * texture2D(objectTexture, strokeUV);
+		// texture2D(objectTexture, strokeUV);
+		// vec4(color * lightTotal, alpha) * texture2D(objectTexture, strokeUV);
+		// vec4(color * lightTotal, alpha) * texture2D(objectTexture, strokeUV);
+		// texture2D(objectTexture, strokeUV);
 
 
 	float shrinkInDistance =

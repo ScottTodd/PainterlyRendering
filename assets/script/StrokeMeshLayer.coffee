@@ -2,7 +2,7 @@ fs = require 'fs'
 $ = require 'jquery'
 three = require 'three'
 { check, type } = require './check'
-meshVerticesNormals = require './meshVerticesNormals'
+meshVerticesNormalsUVs = require './meshVerticesNormalsUVs'
 { read } = require './meta'
 
 getOpt = (opts, name, defaultOpt) ->
@@ -82,7 +82,7 @@ module.exports = class StrokeMeshLayer
 					fail()
 
 		[ outOpts.vertices, outOpts.normals, outOpts.uvs ] =
-			meshVerticesNormals (new three.Mesh geometry), outOpts.nStrokes
+			meshVerticesNormalsUVs (new three.Mesh geometry), outOpts.nStrokes
 
 		outOpts.specularIntensity =
 			opts.specularIntensity ? 4
