@@ -1,6 +1,10 @@
-centered()
+centered-x()
 	margin-left auto
 	margin-right auto
+
+margin-y(amount)
+	margin-top amount
+	margin-bottom amount
 
 html, body
 	margin 0
@@ -10,10 +14,9 @@ body
 	background linear-gradient(to bottom right, #ddd, #aaa)
 
 #hud
+	centered-x()
 	width 200px
 	height 24px
-
-	centered()
 
 #playPauseButton
 	float left
@@ -25,8 +28,43 @@ body
 	float right
 
 #glContainer
-	centered()
+	centered-x()
 
 	margin-top 10px
 	width 400px
 	height 300px
+
+#parameters
+	centered-x()
+
+	width 400px
+	border 1px solid black
+
+.rangeRange
+	centered-x()
+	width 350px
+	background-color pink
+	margin-y 10px
+	border 1px solid green
+	vertical-align middle
+
+.rangeRangePart
+	vertical-align middle
+	display inline-block
+
+.rangeRange .name
+	@extends .rangeRangePart
+	color blue
+	width 40px
+
+.rangeRange .average
+	@extends .rangeRangePart
+	width 80px
+
+.rangeRange .variance
+	@extends .rangeRangePart
+	width 80px
+
+.rangeRange .readOut
+	@extends .rangeRangePart
+	color red

@@ -1,3 +1,4 @@
+q = require 'q'
 three = require 'three'
 #EffectComposer = (require 'three-effectcomposer') three
 { check } = require './check'
@@ -24,7 +25,12 @@ module.exports = class Graphics extends GameObject
 		@strokeMeshes =
 			[]
 
+		@_divDefer = q.defer()
+
 	read @, 'camera'
+
+	divPromise: ->
+		@_divDefer.promise
 
 	bindToDiv: (div) ->
 		@_width =
@@ -37,6 +43,8 @@ module.exports = class Graphics extends GameObject
 		@resetAspect()
 
 		div.append @renderer.domElement
+
+		@_divDefer.resolve div.get 0
 
 	resetAspect: ->
 		check @_width?

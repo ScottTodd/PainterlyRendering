@@ -1,5 +1,6 @@
 three = require 'three'
 require './vendor/TrackballControls' # creates three.TrackballControls
+
 GameObject = require './GameObject'
 
 module.exports = class CameraController extends GameObject
@@ -10,9 +11,12 @@ module.exports = class CameraController extends GameObject
 		@graphics().camera().position.set 0, 0, @distance
 		@graphics().camera().lookAt new three.Vector3 0, 0, 0
 
-		@controls =
-			new three.TrackballControls @graphics().camera()
-		@controls.target.set 0, 0, 0
+		@graphics().divPromise().then (div) =>
+			@controls =
+				new three.TrackballControls @graphics().camera(), div
+			@controls.target.set 0, 0, 0
+		.done()
 
 	step: ->
-		@controls.update()
+		if @controls?
+			@controls.update()

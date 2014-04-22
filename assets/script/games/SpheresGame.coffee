@@ -1,7 +1,9 @@
+$ = require 'jquery'
 three = require 'three'
 CameraController = require '../CameraController'
 FramerateTracker = require '../FramerateTracker'
 Game = require '../Game'
+ParametersController = require '../ParametersController'
 SimpleStrokeMeshObject = require '../SimpleStrokeMeshObject'
 
 module.exports = class SpheresGame extends Game
@@ -70,4 +72,7 @@ module.exports = class SpheresGame extends Game
 					strokeSize: 160
 				]
 
-		super.concat [ cc, ft, s1 ]#, s2, s3 ]
+		pc =
+			new ParametersController 'parameters'
+
+		super.concat [ cc, ft, s1, pc ]#, s2, s3 ]
