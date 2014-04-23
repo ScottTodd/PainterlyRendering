@@ -1,14 +1,16 @@
 attribute vec3 strokeVertexNormal;
 
-uniform float strokeSize;
-
 uniform sampler2D depthTexture;
+
+uniform float strokeSize;
+uniform float specularMin;
+uniform float specularFadeIn;
+uniform float specularIntensity;
+uniform float specularPower;
 
 uniform vec3 ambientLightColor;
 uniform vec3 directionalLightDirection[MAX_DIR_LIGHTS];
 uniform vec3 directionalLightColor[MAX_DIR_LIGHTS];
-uniform float specularMin;
-uniform float specularFadeIn;
 
 /*
 Three.js also gives us these:
@@ -34,43 +36,37 @@ float colorAmount(vec3 color)
 /*
 How much light am I recieving if I face in the direction `mNormal`?
 */
-vec3 calcLight(vec3 mPosition, vec3 mNormal, out float specularTotalAmount)
+void calcLight(vec3 mPosition, vec3 mNormal, out vec3 diffuseTotal, out vec3 specularTotal)
 {
-	specularTotalAmount = 0.0;
-
 	vec3 dirToCamera =
 		normalize(cameraPosition - mPosition);
-	const float specularAmount =
-		// TODO: uniform
-		4.0;
-	const float specularPow =
-		// TODO: uniform
-		8.0;
 
-	vec3 lightTotal = ambientLightColor;
+	diffuseTotal =
+		ambientLightColor;
+	specularTotal =
+		vec3(0, 0, 0);
 
 	for(int i = 0; i < MAX_DIR_LIGHTS; i++)
 	{
+		vec3 lightColor =
+			directionalLightColor[i];
 		vec3 dirToLight =
 			-directionalLightDirection[i];
-		float phongDiffuse =
-			max(0.0, dot(dirToLight, mNormal));
+		vec3 phongDiffuse =
+			lightColor * max(0.0, dot(dirToLight, mNormal));
+
+		diffuseTotal += phongDiffuse;
+
 		vec3 reflectedDir =
 			normalize(reflect(-dirToLight, mNormal));
 		float phongSpecular =
-			specularAmount * pow(max(0.0, dot(reflectedDir, dirToCamera)), specularPow);
-		vec3 lightColor =
-			directionalLightColor[i];
+			pow(max(0.0, dot(reflectedDir, dirToCamera)), specularPower);
 
-		specularTotalAmount +=
-			colorAmount(lightColor * phongSpecular);
-
-		vec3 phongLight =
-			lightColor * (phongDiffuse + phongSpecular);
-		lightTotal += phongLight;
+		specularTotal +=
+			lightColor * phongSpecular;
 	}
 
-	return lightTotal;
+	specularTotal *= specularIntensity;
 }
 
 /*
@@ -78,33 +74,11 @@ This could be faster if we only calculated intensities the whole way through...
 */
 float calcLightAmount(vec3 mPosition, vec3 mNormal)
 {
-	float junk;
-	vec3 light =
-		calcLight(mPosition, mNormal, junk);
+	vec3 diffuseTotal, specularTotal;
+	calcLight(mPosition, mNormal, diffuseTotal, specularTotal);
 
-	return colorAmount(light);
+	return colorAmount(diffuseTotal + specularTotal);//colorAmount(color * (diffuseTotal + specularTotal));
 }
-
-/*
-... getJitteredNormal(vec2 oldPos, vec2 newPos, float dxy)
-{
-	// Jitter in x-direction
-
-	float dDepth =
-		sampleDepth(newPos) - sampleDepth(oldPos);
-
-	xy = length2(oldNormal.xy);
-	float newZPart =
-		dxy / dz * xy;
-
-	return normalize(vec3(oldNormal.x, oldNormal.y, newZPart));
-
-	//float dx =
-	//	newPos - oldPos;
-	//oldNormal + vec3(dz, -dx)
-
-}
-*/
 
 float length2(vec2 v)
 {
@@ -179,17 +153,6 @@ float getLightDifferential(
 
 	return calcLightAmount(newPos, newNorm) - lightAmount;
 }
-
-
-/*
-float getLightDifferential(vec3 mPos, vec3 mNormal, float lightAmount)
-{
-	vec3 newNormal =
-		mNormal + modelMatrix * dNormal;
-
-	return calcLightAmount(mPos, newNormal) - lightAmount;
-}
-*/
 
 /*
 Returned value has length in range [0..1].
@@ -299,15 +262,19 @@ void main()
 	}
 
 	vec3 mNormal =
+		// Use 0.0 so there's no translation.
 		normalize(vec3(modelMatrix * vec4(strokeVertexNormal, 0.0)));
 	vec3 mvNormal =
-		// TODO: lighting normals don't work with quaternions; use normalMatrix ?
-		// Use 0.0 so there's no translation.
 		normalize(vec3(modelViewMatrix * vec4(strokeVertexNormal, 0.0)));
 
-	float specularTotalAmount;
-	vec3 lightTotal =
-		calcLight(vec3(mPosition), mNormal, specularTotalAmount);
+	vec3 diffuseTotal, specularTotal;
+	calcLight(vec3(mPosition), mNormal, diffuseTotal, specularTotal);
+
+	float specularTotalAmount =
+		colorAmount(specularTotal);
+
+	vec3 litColor =
+		color * (diffuseTotal + specularTotal);
 
 	if (specularTotalAmount < specularMin)
 	{
@@ -329,7 +296,7 @@ void main()
 		specularAmountToAlpha * zQualityAlpha;
 
 	strokeShadedColor =
-		vec4(color * lightTotal, alpha);
+		vec4(litColor, alpha);
 
 
 	float shrinkInDistance =
@@ -341,7 +308,7 @@ void main()
 		getGradient(
 			vec3(mPosition), vec3(mvPosition),
 			mNormal, mvNormal,
-			colorAmount(lightTotal));
+			colorAmount(diffuseTotal + specularTotal));
 
 	strokeOrientation =
 		normalize(vec2(-gradient.y, gradient.x));

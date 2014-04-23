@@ -7,6 +7,11 @@ StrokeMeshLayer = require './StrokeMeshLayer'
 DepthBufferMesh = require './DepthBufferMesh'
 fattenGeometry = require './fattenGeometry'
 
+removeFromList = (list, em) ->
+	idx = list.indexOf em
+	list.splice idx, 1
+
+
 module.exports = class StrokeMesh extends GameObject
 	###
 	@param opts
@@ -23,10 +28,7 @@ module.exports = class StrokeMesh extends GameObject
 
 		layers =
 			for layerOpts in opts.layers
-				lop =
-					$.extend opts, layerOpts
-
-				StrokeMeshLayer.of lop
+				StrokeMeshLayer.of $.extend opts, layerOpts
 
 		new StrokeMesh opts.geometry, layers
 
@@ -56,7 +58,7 @@ module.exports = class StrokeMesh extends GameObject
 	read @, 'threeObject'
 
 	addToGraphics: (graphics) ->
-		graphics.strokeMeshes.push @
+		graphics.strokeMeshes().push @
 
 		@_strokeMeshLayersParent =
 			new three.Object3D
@@ -70,7 +72,13 @@ module.exports = class StrokeMesh extends GameObject
 		@_threeObject.add @_depthMesh.mesh
 		@_threeObject.add @_strokeMeshLayersParent
 
-		graphics.scene.add @_threeObject
+		graphics.scene().add @_threeObject
+
+	removeFromGraphics: (graphics) ->
+		removeFromList graphics.strokeMeshes(), @
+
+		graphics.scene().remove @_threeObject
+
 
 	setOriginalMeshVisibility: (visibility) ->
 		@_originalMesh.visible = visibility

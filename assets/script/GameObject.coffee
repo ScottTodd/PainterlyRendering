@@ -7,9 +7,6 @@ module.exports = class GameObject
 	registerGame: (game) ->
 		@_game = game
 
-	start: ->
-		null
-
 	read @, 'game'
 
 	graphics: ->
@@ -21,4 +18,18 @@ module.exports = class GameObject
 	resources: ->
 		@game().resources()
 
+	emit: (obj) ->
+		@game().addObject obj
+		obj
 
+	die: ->
+		@_dead = yes
+
+	dead: ->
+		@_dead?
+
+	start: ->
+		null
+
+	finish: ->
+		null

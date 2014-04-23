@@ -1,12 +1,20 @@
 GameObject = require './GameObject'
 StrokeMeshLayer = require './StrokeMeshLayer'
 StrokeMesh = require './StrokeMesh'
+{ read } = require './meta'
 
 module.exports = class SimpleStrokeMeshObject extends GameObject
 	constructor: (@center, meshOpts) ->
-		@mesh = StrokeMesh.of meshOpts
+		@_mesh =
+			StrokeMesh.of meshOpts
 
 	start: ->
 		super()
-		@mesh.setPosition @center
-		@mesh.addToGraphics @graphics()
+		@_mesh.setPosition @center
+		@_mesh.addToGraphics @graphics()
+
+	finish: ->
+		super()
+		@_mesh.removeFromGraphics @graphics()
+
+	read @, 'mesh'

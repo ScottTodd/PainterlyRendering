@@ -106,6 +106,12 @@ module.exports = class Game
 
 				for object in @_gameObjects
 					object.step dt
+				@_gameObjects = @_gameObjects.filter (x) ->
+					if x.dead()
+						x.finish()
+						no
+					else
+						yes
 
 				@_graphics.draw()
 

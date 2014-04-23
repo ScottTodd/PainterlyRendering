@@ -6,12 +6,19 @@ margin-y(amount)
 	margin-top amount
 	margin-bottom amount
 
+grad-bg(color-a, color-b, angle=to bottom right)
+	background linear-gradient(angle, color-a, color-b)
+
 html, body
 	margin 0
 	height 100%
 
 body
-	background linear-gradient(to bottom right, #ddd, #aaa)
+	grad-bg #aaa, #eee, -45deg
+	background-repeat no-repeat
+	background-attachment fixed
+	margin 0
+	height 100%
 
 #hud
 	centered-x()
@@ -35,10 +42,26 @@ body
 	height 300px
 
 #parameters
+	width 1200px
 	centered-x()
+	background-color cyan
 
+.layerController
+	centered-x()
 	width 400px
-	border 1px solid black
+	background-color gray
+	display inline-block
+
+.range
+	centered-x()
+	width 350px
+	background-color pink
+	margin-y 10px
+	border 1px solid green
+	vertical-align middle
+
+.range .slider
+	width 160px
 
 .rangeRange
 	centered-x()
@@ -48,23 +71,23 @@ body
 	border 1px solid green
 	vertical-align middle
 
-.rangeRangePart
+.controlPart
 	vertical-align middle
 	display inline-block
 
-.rangeRange .name
-	@extends .rangeRangePart
+.controlName
+	@extends .controlPart
 	color blue
-	width 40px
+	width 60px
 
 .rangeRange .average
-	@extends .rangeRangePart
+	@extends .controlPart
 	width 80px
 
 .rangeRange .variance
-	@extends .rangeRangePart
+	@extends .controlPart
 	width 80px
 
-.rangeRange .readOut
-	@extends .rangeRangePart
+.readOut
+	@extends .controlPart
 	color red

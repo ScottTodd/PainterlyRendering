@@ -39,7 +39,6 @@ randomHSLs = (nStrokes, colorOpts) ->
 
 
 module.exports = class StrokeMeshLayer
-
 	###
 	@param opts
 	geometry: three.Geometry
@@ -77,6 +76,10 @@ module.exports = class StrokeMeshLayer
 		[ outOpts.vertices, outOpts.normals ] =
 			meshVerticesNormals (new three.Mesh geometry), outOpts.nStrokes
 
+		outOpts.specularIntensity =
+			opts.specularIntensity ? 4
+		outOpts.specularPower =
+			opts.specularPower ? 4
 		outOpts.specularMin =
 			opts.specularMin ? 0
 		outOpts.specularFadeIn =
@@ -90,34 +93,35 @@ module.exports = class StrokeMeshLayer
 	Use a factory method instead!
 	###
 	constructor: (opts) ->
-		{ nStrokes, @strokeSize, @vertices, @normals, @colors,
-		  @strokeTexture, @specularMin, @specularFadeIn } = opts
+		{ nStrokes, strokeSize, vertices, normals, colors, strokeTexture,
+		  specularMin, specularFadeIn, specularIntensity, specularPower } = opts
 
-		check @vertices.length == nStrokes, 'must have nStrokes vertices'
-		check @normals.length == nStrokes, 'must have nStrokes normals'
-		check @colors.length == nStrokes, 'must have nStrokes colors'
+		check vertices.length == nStrokes, 'must have nStrokes vertices'
+		check normals.length == nStrokes, 'must have nStrokes normals'
+		check colors.length == nStrokes, 'must have nStrokes colors'
 
-	read @, 'strokeSystem'
-
-
-	setupUsingGraphics: (graphics) ->
 		uniforms =
 			strokeTexture:
 				type: 't'
-				value: @strokeTexture
+				value: strokeTexture
 			strokeSize:
 				type: 'f'
-				value: @strokeSize
+				value: strokeSize
 			depthTexture:
 				type: 't'
-				value: graphics.depthTexture
+				value: null
+			specularIntensity:
+				type: 'f'
+				value: specularIntensity
+			specularPower:
+				type: 'f'
+				value: specularPower
 			specularMin:
 				type: 'f'
-				value: @specularMin
+				value: specularMin
 			specularFadeIn:
 				type: 'f'
-				value: @specularFadeIn
-
+				value: specularFadeIn
 
 		$.extend uniforms,
 			three.UniformsLib.lights
@@ -125,9 +129,9 @@ module.exports = class StrokeMeshLayer
 		attributes =
 			strokeVertexNormal:
 				type: 'v3'
-				value: @normals
+				value: normals
 
-		@_material =
+		material =
 			new three.ShaderMaterial
 				uniforms: uniforms
 				attributes: attributes
@@ -142,30 +146,33 @@ module.exports = class StrokeMeshLayer
 
 				lights: yes
 
-				# blended = src * srcAlpha + dest * (1 - srcAlpha)
-				# In other words, fill in anything not already filled in
-				#blending: three.CustomBlending
-				#blendSrc: three.SrcAlphaFactor
-				#blendDst: three.OneMinusSrcAlphaFactor
-				#blendEquation: three.AddEquation
-				#transparent: yes
-				#depthWrite: no
-
-		@_strokeGeometry =
+		strokeGeometry =
 			new three.Geometry
 
-		@_strokeGeometry.vertices = @vertices
-		@_strokeGeometry.computeBoundingBox()
-		@_strokeGeometry.computeBoundingSphere()
-
-		@_strokeGeometry.colors = @colors
-		@_strokeGeometry.colorsNeedUpdate = yes
+		strokeGeometry.vertices = vertices
+		strokeGeometry.computeBoundingBox()
+		strokeGeometry.computeBoundingSphere()
 
 		@_strokeSystem =
-			new three.ParticleSystem @_strokeGeometry, @_material
+			new three.ParticleSystem strokeGeometry, material
 
-		# @_strokeSystem.sortParticles = yes
+		@setColors colors
+
+	read @, 'strokeSystem'
+
+	nStrokes: ->
+		@_strokeSystem.geometry.vertices.length
+
+	setupUsingGraphics: (graphics) ->
+		@setUniform 'depthTexture', graphics.depthTexture()
 
 	addToParent: (parent) ->
 		parent.add @_strokeSystem
+
+	setUniform: (name, value) ->
+		@_strokeSystem.material.uniforms[name].value = value
+
+	setColors: (colors) ->
+		@_strokeSystem.geometry.colors = colors
+		@_strokeSystem.geometry.colorsNeedUpdate = yes
 

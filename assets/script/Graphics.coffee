@@ -18,16 +18,16 @@ module.exports = class Graphics extends GameObject
 			wrapT: three.ClampToEdgeWrapping
 			type: three.FloatType
 
-		@depthTexture =
+		@_depthTexture =
 			# TODO: don't hard-code size
 			new three.WebGLRenderTarget 800, 600, depthTextureOptions
 
-		@strokeMeshes =
+		@_strokeMeshes =
 			[]
 
 		@_divDefer = q.defer()
 
-	read @, 'camera'
+	read @, 'camera', 'depthTexture', 'scene', 'strokeMeshes'
 
 	divPromise: ->
 		@_divDefer.promise
@@ -52,7 +52,7 @@ module.exports = class Graphics extends GameObject
 		@_camera.updateProjectionMatrix()
 
 	restart: ->
-		@scene =
+		@_scene =
 			new three.Scene()
 
 		@setupLights()
@@ -64,12 +64,12 @@ module.exports = class Graphics extends GameObject
 		if @_width?
 			@resetAspect()
 
-		@scene.add @_camera
+		@_scene.add @_camera
 
 	setupLights: ->
 		@ambientLight =
 			new three.AmbientLight 0x222222
-		@scene.add @ambientLight
+		@_scene.add @ambientLight
 
 		@dirLights =
 			[]
@@ -85,18 +85,18 @@ module.exports = class Graphics extends GameObject
 		@dirLights.push dirLight2
 
 		for dirLight in @dirLights
-			@scene.add dirLight
+			@_scene.add dirLight
 
 	setOriginalMeshesVisibility: (visibility) ->
-		for strokeMesh in @strokeMeshes
+		for strokeMesh in @_strokeMeshes
 			strokeMesh.setOriginalMeshVisibility visibility
 
 	setDepthMeshesVisibility: (visibility) ->
-		for strokeMesh in @strokeMeshes
+		for strokeMesh in @_strokeMeshes
 			strokeMesh.setDepthMeshVisibility visibility
 
 	setStrokeMeshesVisibility: (visibility) ->
-		for strokeMesh in @strokeMeshes
+		for strokeMesh in @_strokeMeshes
 			strokeMesh.setStrokeMeshVisibility visibility
 
 	draw: ->
@@ -104,10 +104,10 @@ module.exports = class Graphics extends GameObject
 		@setDepthMeshesVisibility true
 		@setStrokeMeshesVisibility false
 
-		@renderer.render @scene, @_camera, @depthTexture, true
+		@renderer.render @_scene, @_camera, @_depthTexture, true
 
 		@setOriginalMeshesVisibility true
 		@setDepthMeshesVisibility false
 		@setStrokeMeshesVisibility true
 
-		@renderer.render @scene, @_camera
+		@renderer.render @_scene, @_camera
