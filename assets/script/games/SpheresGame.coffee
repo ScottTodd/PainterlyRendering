@@ -7,7 +7,7 @@ SimpleStrokeMeshObject = require '../SimpleStrokeMeshObject'
 module.exports = class SpheresGame extends Game
 	allResources: ->
 		models: [ ]
-		textures: [ 'stroke' ]
+		textures: [ 'stroke1' ]
 
 	initialObjects: ->
 		cc =
@@ -19,7 +19,7 @@ module.exports = class SpheresGame extends Game
 		s1 =
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
 				geometry: new three.SphereGeometry 2, 32, 32
-				strokeTexture: @resources().texture 'stroke'
+				strokeTexture: @resources().texture 'stroke1'
 				layers: [
 						nStrokes: 1000
 						strokeSize: 175
@@ -53,7 +53,7 @@ module.exports = class SpheresGame extends Game
 		s2 =
 			new SimpleStrokeMeshObject (new three.Vector3 0.9, 0, -6),
 				geometry: new three.SphereGeometry 2, 32, 32
-				strokeTexture: @resources().texture 'stroke'
+				strokeTexture: @resources().texture 'stroke1'
 				colors: type: 'rainbow'
 				layers: [
 					nStrokes: 2000
@@ -63,7 +63,7 @@ module.exports = class SpheresGame extends Game
 		s3 =
 			new SimpleStrokeMeshObject (new three.Vector3 1.4, 0, 0),
 				geometry: new three.SphereGeometry 1, 32, 32
-				strokeTexture: @resources().texture 'stroke'
+				strokeTexture: @resources().texture 'stroke1'
 				colors: type: 'rainbow'
 				layers: [
 					nStrokes: 2000

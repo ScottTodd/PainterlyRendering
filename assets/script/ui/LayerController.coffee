@@ -93,7 +93,7 @@ module.exports = class LayerController extends GameObject
 	read @, 'div'
 
 	opts: ->
-		strokeTexture: @resources().texture 'stroke'
+		strokeTexture: @resources().texture 'stroke1'
 		nStrokes: @_nStrokes.get()
 		strokeSize: @_strokeSize.get()
 		colors:

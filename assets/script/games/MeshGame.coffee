@@ -9,7 +9,7 @@ StrokeMesh = require '../StrokeMesh'
 module.exports = class MeshGame extends Game
 	allResources: ->
 		models: [ 'bunny' ]
-		textures: [ 'stroke' ]
+		textures: [ 'stroke1' ]
 
 	initialObjects: ->
 		cc =
@@ -25,13 +25,13 @@ module.exports = class MeshGame extends Game
 				layers: [
 					nStrokes: 100000
 					strokeSize: 160
-					strokeTexture: @resources().texture 'stroke'
+					strokeTexture: @resources().texture 'stroke1'
 				]
 
 		bunny =
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
 				geometry: @resources().geometry 'bunny'
-				strokeTexture: @resources().texture 'stroke'
+				strokeTexture: @resources().texture 'stroke1'
 				colors: type: 'rainbow'
 				layers: [
 					nStrokes: 2000
@@ -39,7 +39,7 @@ module.exports = class MeshGame extends Game
 				,
 					nStrokes: 10000
 					strokeSize: 60
-					strokeTexture: @resources().texture 'stroke'
+					strokeTexture: @resources().texture 'stroke1'
 				]
 
 		super.concat [ cc, ft, knot ]

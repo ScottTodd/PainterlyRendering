@@ -6,7 +6,7 @@ ParametersController = require '../ui/ParametersController'
 module.exports = class ParametersGame extends Game
 	allResources: ->
 		models: [ ]
-		textures: [ 'stroke' ]
+		textures: [ 'stroke1' ]
 
 	initialObjects: ->
 		cc =
@@ -21,7 +21,7 @@ module.exports = class ParametersGame extends Game
 		s2 =
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
 				geometry: new three.SphereGeometry 2, 32, 32
-				strokeTexture: @resources().texture 'stroke'
+				strokeTexture: @resources().texture 'stroke1'
 				colors: type: 'rainbow'
 				layers: [
 					nStrokes: 2000

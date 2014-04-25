@@ -9,7 +9,7 @@ PhysicalObject = require '../PhysicalObject'
 module.exports = class BouncingBunnyGame extends Game
 	allResources: ->
 		models: [ 'bunny' ]
-		textures: [ 'stroke' ]
+		textures: [ 'stroke1' ]
 
 	initialObjects: ->
 		cc =
@@ -25,7 +25,7 @@ module.exports = class BouncingBunnyGame extends Game
 				model: new three.PlaneGeometry 50, 50
 				materialName: 'ground'
 				strokeMeshOptions:
-					strokeTexture: @resources().texture 'stroke'
+					strokeTexture: @resources().texture 'stroke1'
 					colors: type: 'rainbow'
 					layers: [
 							nStrokes: 2000
@@ -46,7 +46,7 @@ module.exports = class BouncingBunnyGame extends Game
 				materialName: 'bunny'
 				mass: 1
 				strokeMeshOptions:
-					strokeTexture: @resources().texture 'stroke'
+					strokeTexture: @resources().texture 'stroke1'
 					colors: type: 'rainbow'
 					layers: [
 						nStrokes: 100000
