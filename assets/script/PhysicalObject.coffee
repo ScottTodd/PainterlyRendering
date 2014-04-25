@@ -1,4 +1,5 @@
 $ = require 'jquery'
+three = require 'three'
 GameObject = require './GameObject'
 StrokeMeshLayer = require './StrokeMeshLayer'
 StrokeMesh = require './StrokeMesh'
@@ -15,6 +16,7 @@ module.exports = class PhysicalObject extends GameObject
 
 	start: ->
 		center = @opts.center ? fail()
+		velocity = @opts.velocity ? new three.Vector3 0, 0, 0
 		originalGeometry =
 			if @opts.model?
 				@opts.model
@@ -39,6 +41,7 @@ module.exports = class PhysicalObject extends GameObject
 				originalGeometry: @mesh.getOriginalMesh().geometry
 				mass: mass
 				center: center
+				velocity: velocity
 				materialName: materialName
 
 		if @opts.init?

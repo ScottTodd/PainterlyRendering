@@ -4,6 +4,7 @@ SpheresGame = require './games/SpheresGame'
 MeshGame = require './games/MeshGame'
 BouncingBunnyGame = require './games/BouncingBunnyGame'
 ParametersGame = require './games/ParametersGame'
+BouncingBallsGame = require './games/BouncingBallsGame'
 
 game =
 	new ParametersGame

@@ -57,7 +57,8 @@ module.exports = class Physics extends GameObject
 		gameObject = opts.gameObject ? fail()
 		threeObject = opts.threeObject ? fail()
 		originalGeometry = opts.originalGeometry ? fail()
-		center = opts. center ? fail()
+		center = opts.center ? fail()
+		velocity = opts.velocity ? fail()
 		boundsType = 'box'
 
 		shape =
@@ -87,6 +88,7 @@ module.exports = class Physics extends GameObject
 			new cannon.RigidBody mass, shape, @material materialName
 
 		body.position.set center.x, center.y, center.z
+		body.velocity.set velocity.x, velocity.y, velocity.z
 
 		body.gameObject =
 			gameObject
