@@ -91,6 +91,16 @@ module.exports = class Graphics extends GameObject
 		for dirLight in @dirLights
 			@_scene.add dirLight
 
+	addLight: (opts) ->
+		color = opts.color
+		intensity = opts.intensity
+		pos = opts.pos
+
+		light =
+			new three.DirectionalLight color, intensity
+		light.position.copy pos
+		@_scene.add light
+
 	setOriginalMeshesVisibility: (visibility) ->
 		for strokeMesh in @_strokeMeshes
 			strokeMesh.setOriginalMeshVisibility visibility
