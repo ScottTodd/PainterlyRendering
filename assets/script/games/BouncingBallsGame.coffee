@@ -91,7 +91,7 @@ module.exports = class BouncingBallsGame extends Game
 							hue: [0.08, 0.12]
 							sat: [0.05, 0.25]
 							lum: [0.20, 0.40]
-						specularIntensity: 0.2
+						specularIntensity: 0.8
 						specularPower: 4
 						layers: [
 								nStrokes: 4000

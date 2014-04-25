@@ -79,14 +79,19 @@ module.exports = class Graphics extends GameObject
 			[]
 
 		dirLight1 =
-			new three.DirectionalLight 0xffffff, 1.0
+			new three.DirectionalLight 0xffffff, 0.8
 		dirLight1.position.set -1, 0, -1
 		@dirLights.push dirLight1
 
 		dirLight2 =
-			new three.DirectionalLight 0xffff00, 2.0
+			new three.DirectionalLight 0xffffff, 0.8
 		dirLight2.position.set 0, -1, 1
 		@dirLights.push dirLight2
+
+		dirLight3 =
+			new three.DirectionalLight 0xffffff, 0.8
+		dirLight3.position.set 1, -1, 0
+		@dirLights.push dirLight3
 
 		for dirLight in @dirLights
 			@_scene.add dirLight
