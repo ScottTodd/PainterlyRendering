@@ -111,6 +111,9 @@ module.exports = (grunt) ->
 			texture:
 				files: 'assets/texture/**/*'
 				tasks: [ 'copy:texture' ]
+			model:
+				files: 'assets/model/**/*'
+				tasks: [ 'copy:model' ]
 			view:
 				files: 'assets/view/**/*'
 				tasks: [ 'jade' ]
