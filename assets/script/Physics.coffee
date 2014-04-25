@@ -17,6 +17,9 @@ module.exports = class Physics extends GameObject
 		@world.allowSleep =
 			yes
 
+		@secondsPerUpdate =
+			1.0 / 60.0
+
 		@_materials = {}
 
 	material: (name) ->
@@ -33,20 +36,24 @@ module.exports = class Physics extends GameObject
 		physicsSecondsPerRealSecond =
 			1
 
-		@world.step (dt * physicsSecondsPerRealSecond)
+		# TODO: This is bad! It can over and under count time.
+		while dt > 0
+			dt -= @secondsPerUpdate
 
-		for body in @world.bodies
-			body.threeObject.position.copy body.position
+			@world.step (@secondsPerUpdate * physicsSecondsPerRealSecond)
 
-			# For some reason, plain copy doesn't work.
-			# body.threeObject.quaternion.copy body.quaternion
-			tq = body.threeObject.quaternion
-			bq = body.quaternion
+			for body in @world.bodies
+				body.threeObject.position.copy body.position
 
-			tq.x = bq.x
-			tq.y = bq.y
-			tq.z = bq.z
-			tq.w = bq.w
+				# For some reason, plain copy doesn't work.
+				# body.threeObject.quaternion.copy body.quaternion
+				tq = body.threeObject.quaternion
+				bq = body.quaternion
+
+				tq.x = bq.x
+				tq.y = bq.y
+				tq.z = bq.z
+				tq.w = bq.w
 
 	setGravity: (v) ->
 		@world.gravity.set v.x, v.y, v.z
