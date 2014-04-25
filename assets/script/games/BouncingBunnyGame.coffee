@@ -29,10 +29,10 @@ module.exports = class BouncingBunnyGame extends Game
 					colors: type: 'rainbow'
 					layers: [
 							nStrokes: 2000
-							strokeSize: 500
+							strokeSize: 1.25
 						,
 							nStrokes: 30000
-							strokeSize: 80
+							strokeSize: 0.2
 					]
 				init: ->
 					@quaternion().setFromAxisAngle \
@@ -50,7 +50,7 @@ module.exports = class BouncingBunnyGame extends Game
 					colors: type: 'rainbow'
 					layers: [
 						nStrokes: 100000
-						strokeSize: 160
+						strokeSize: 0.4
 					]
 
 		super.concat [ cc, ft, @ground, @bunny ]

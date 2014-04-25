@@ -22,7 +22,7 @@ module.exports = class TestGame extends Game
 				strokeTexture: @resources().texture 'arrow'
 				layers: [
 					nStrokes: 200
-					strokeSize: 100
+					strokeSize: 0.3
 					colors:
 						type: 'randomHSL'
 						hue: 0

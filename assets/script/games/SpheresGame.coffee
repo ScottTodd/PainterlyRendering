@@ -22,7 +22,7 @@ module.exports = class SpheresGame extends Game
 				strokeTexture: @resources().texture 'stroke1'
 				layers: [
 						nStrokes: 1000
-						strokeSize: 175
+						strokeSize: 0.5
 						colors:
 							type: 'randomHSL'
 							hue: 0.5
@@ -30,7 +30,7 @@ module.exports = class SpheresGame extends Game
 							lum: 0.4
 					,
 						nStrokes: 1250
-						strokeSize: 125
+						strokeSize: 0.3
 						specularMin: 0
 						specularFadeIn: 0.6
 						colors:
@@ -40,7 +40,7 @@ module.exports = class SpheresGame extends Game
 							lum: 0.45
 					,
 						nStrokes: 1500
-						strokeSize: 75
+						strokeSize: 0.15
 						specularMin: 0.6
 						specularFadeIn: 0.4
 						colors:
@@ -57,7 +57,7 @@ module.exports = class SpheresGame extends Game
 				colors: type: 'rainbow'
 				layers: [
 					nStrokes: 2000
-					strokeSize: 160
+					strokeSize: 0.5
 				]
 
 		s3 =
@@ -67,7 +67,7 @@ module.exports = class SpheresGame extends Game
 				colors: type: 'rainbow'
 				layers: [
 					nStrokes: 2000
-					strokeSize: 160
+					strokeSize: 0.5
 				]
 
 		super.concat [ cc, ft, s1, s1 ]#, s2, s3 ]

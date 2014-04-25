@@ -1,3 +1,4 @@
+$ = require 'jquery'
 three = require 'three'
 require './vendor/TrackballControls' # creates three.TrackballControls
 
@@ -15,7 +16,9 @@ module.exports = class CameraController extends GameObject
 			@controls =
 				new three.TrackballControls @graphics().camera(), div
 			@controls.target.set 0, 0, 0
+			($ window).resize @controls.handleResize()
 		.done()
+
 
 	step: ->
 		if @controls?

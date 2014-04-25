@@ -29,6 +29,10 @@ module.exports = class Graphics extends GameObject
 
 	read @, 'camera', 'depthTexture', 'scene', 'strokeMeshes'
 
+	size: ->
+		# TODO: Is this the right formula to scale up with any screen?
+		Math.min @_width, @_height
+
 	divPromise: ->
 		@_divDefer.promise
 

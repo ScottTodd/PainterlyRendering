@@ -1,28 +1,45 @@
 $ = require 'jquery'
 GameObject = require '../GameObject'
 { read } = require '../meta'
+OnOffButton = require './OnOffButton'
+RadioSelector = require './RadioSelector'
 Range = require './Range'
 RangeRange = require './RangeRange'
 
 module.exports = class LayerController extends GameObject
-	constructor: (@_paramsControl) ->
+	constructor: (@_paramsControl, index) ->
 		strokeDiv =
 			$ "<div class='stroke'/>"
 		strokeDiv.append ($ "<div class='strokeTitle'/>").text "Stroke"
+
+		@_on =
+			new OnOffButton
+				start: index == 0
+
 		@_nStrokes =
 			new Range
 				name: 'Number'
 				min: 0
 				max: 2000
-				start: 200
 				step: 1
+				start: 400 * Math.pow 2, index
 		@_strokeSize =
 			new Range
 				name: 'Size'
-				min: 50
-				max: 300
-				start: 200
-		strokeDiv.append @_nStrokes.div(), @_strokeSize.div()
+				min: 0.1
+				max: 1
+				start: 0.8 * Math.pow 0.5, index
+		@_strokeTexture =
+			new RadioSelector
+				name: 'Stroke Texture'
+				options: [
+					'stroke1', 'stroke2', 'stroke3', 'stroke4',
+					'stroke5', 'noise1', 'noise2', 'circle',
+					'triangle', 'square', 'stick', 'grid'
+				]
+				start: 'stroke1'
+
+		strokeDiv.append @_nStrokes.div(), @_strokeSize.div(), @_strokeTexture.div()
 
 		hslDiv =
 			$ "<div class='hsl'/>"
@@ -80,7 +97,8 @@ module.exports = class LayerController extends GameObject
 
 		# Handle events
 		allOpts =
-			[ @_nStrokes, @_strokeSize, @_hue, @_sat, @_lum,
+			[ @_on, @_nStrokes, @_strokeSize, @_strokeTexture,
+			  @_hue, @_sat, @_lum,
 			  @_specIntense, @_specPow, @_specMin, @_specFadeIn ]
 
 		for x in allOpts
@@ -88,12 +106,15 @@ module.exports = class LayerController extends GameObject
 				@_paramsControl.regenerate()
 
 		@_div = $ "<div class='layerController'/>"
-		@_div.append strokeDiv, hslDiv, specDiv
+		@_div.append @_on.div(), strokeDiv, hslDiv, specDiv
 
 	read @, 'div'
 
+	on: ->
+		@_on.get()
+
 	opts: ->
-		strokeTexture: @resources().texture 'stroke1'
+		strokeTexture: @resources().texture @_strokeTexture.get()
 		nStrokes: @_nStrokes.get()
 		strokeSize: @_strokeSize.get()
 		colors:

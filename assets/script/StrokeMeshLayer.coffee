@@ -100,13 +100,16 @@ module.exports = class StrokeMeshLayer
 		check normals.length == nStrokes, 'must have nStrokes normals'
 		check colors.length == nStrokes, 'must have nStrokes colors'
 
+		@_strokeSize =
+			strokeSize
+
 		uniforms =
 			strokeTexture:
 				type: 't'
 				value: strokeTexture
 			strokeSize:
 				type: 'f'
-				value: strokeSize
+				value: 0 #strokeSize
 			depthTexture:
 				type: 't'
 				value: null
@@ -165,6 +168,9 @@ module.exports = class StrokeMeshLayer
 
 	setupUsingGraphics: (graphics) ->
 		@setUniform 'depthTexture', graphics.depthTexture()
+		graphics.divPromise().then =>
+			@setUniform 'strokeSize', @_strokeSize * graphics.size()
+		.done()
 
 	addToParent: (parent) ->
 		parent.add @_strokeSystem

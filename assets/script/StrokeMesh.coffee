@@ -30,14 +30,17 @@ module.exports = class StrokeMesh extends GameObject
 			for layerOpts in opts.layers
 				StrokeMeshLayer.of $.extend opts, layerOpts
 
-		new StrokeMesh opts.geometry, layers
+		borderSize =
+			opts.borderSize ? 0
+
+		new StrokeMesh opts.geometry, borderSize, layers
 
 
 	###
 	@private
 	Use a factory method instead!
 	###
-	constructor: (originalGeometry, @_strokeLayers) ->
+	constructor: (originalGeometry, borderSize, @_strokeLayers) ->
 		depthGeometry = originalGeometry.clone()
 		fattenGeometry originalGeometry, 0.1
 
@@ -45,7 +48,7 @@ module.exports = class StrokeMesh extends GameObject
 			new DepthBufferMesh originalGeometry
 
 		outlineGeometry = originalGeometry.clone()
-		fattenGeometry outlineGeometry, 0.2
+		fattenGeometry outlineGeometry, borderSize
 
 		@_originalMesh =
 			new three.Mesh outlineGeometry, new three.MeshBasicMaterial

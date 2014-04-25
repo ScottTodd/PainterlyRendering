@@ -24,7 +24,7 @@ module.exports = class MeshGame extends Game
 				colors: type: 'rainbow'
 				layers: [
 					nStrokes: 100000
-					strokeSize: 160
+					strokeSize: 0.4
 					strokeTexture: @resources().texture 'stroke1'
 				]
 
@@ -35,10 +35,10 @@ module.exports = class MeshGame extends Game
 				colors: type: 'rainbow'
 				layers: [
 					nStrokes: 2000
-					strokeSize: 280
+					strokeSize: 0.7
 				,
 					nStrokes: 10000
-					strokeSize: 60
+					strokeSize: 0.15
 					strokeTexture: @resources().texture 'stroke1'
 				]
 
