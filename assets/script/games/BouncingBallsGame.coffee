@@ -118,7 +118,7 @@ module.exports = class BouncingBallsGame extends Game
 		randomPosition = =>
 			(Math.random() - 0.5) * @boxSize * spawnAreaPercentage
 
-		randomVelocityComponent = =>
+		randomVelocityComponent = ->
 			(Math.random() - 0.5) * 2
 
 		for _ in [0...numBalls]

@@ -1,6 +1,12 @@
+@require 'font'
+
 centered-x()
 	margin-left auto
 	margin-right auto
+
+margin-x(amount)
+	margin-left amount
+	margin-right amount
 
 margin-y(amount)
 	margin-top amount
@@ -8,6 +14,13 @@ margin-y(amount)
 
 grad-bg(color-a, color-b, angle=to bottom right)
 	background linear-gradient(angle, color-a, color-b)
+
+skale(amount)
+	-ms-transform scale(2) // Internet Explorer
+	-moz-transform scale(2) // Firefox
+	-webkit-transform scale(2) // Safari
+	-o-transform scale(2) // Opera
+
 
 html, body
 	margin 0
@@ -23,10 +36,17 @@ body
 #hud
 	centered-x()
 	width 200px
-	height 24px
+	height 16px
 
-#playPauseButton
-	float left
+#hud div, #hud button
+	display inline-block
+
+#playPauseButton button
+	color red
+#stopButton
+	color green
+#screenShotButton
+	color blue
 
 #frameRate
 	font-face mono
@@ -38,57 +58,102 @@ body
 	centered-x()
 
 	margin-top 10px
-	width 800px
-	height 400px
+	width 400px
+	height 200px
+
+	border 1px solid black
 
 #parameters
 	width 1200px
 	centered-x()
-	background-color cyan
+	border-radius 40px
+	grad-bg #def8 #fed8
+
+.subController
+	display inline-block
+	width 380px
+	border-radius 20px
+	margin-x 10px
+
+.lightController
+	@extends .subController
+
+.onOffDiv
+	centered-x()
+	width 32px
+
 
 .layerController
-	centered-x()
-	width 400px
-	background-color gray
-	display inline-block
+	@extends .subController
+	grad-bg #fed8 #def8
+
+
+.controlTitle
+	font-control-title()
+	font-size 24px
+	text-align center
+	text-shadow 1px 1px white
+
+.controlTitle[name='mesh']
+	color #088
+
+.controlTitle[name='layers']
+	color #808
+
+.controlTitle[name='lights']
+	color #ff0
+	text-shadow 1px 1px black
+
+.controlTitle[name='stroke'] //.layerController .strokeTitle
+	color #800
+
+.controlTitle[name='hsl'] //.layerController .hslTitle
+	color #080
+
+.controlTitle[name='specular'] //.layerController .specularTitle
+	color #008
 
 .radioSelector
 	centered-x()
-	background-color white
+	border-radius 10px
+	grad-bg #ffff #fff8
 	width 320px
+	margin-y 6px
 .radioSelector .single
 	display inline-block
 	width 80px
 .radioSelector .single .button
 
 .radioSelector .single .name
-	color red
 	font-size 14px
 	vertical-align middle
-
-
-.range
-	centered-x()
-	width 350px
-	background-color pink
-	margin-y 10px
-	border 1px solid green
-	vertical-align middle
-
-.range .slider
-	width 160px
-
-.rangeRange
-	centered-x()
-	width 350px
-	background-color pink
-	margin-y 10px
-	border 1px solid green
-	vertical-align middle
+	font-radio-option()
 
 .controlPart
 	vertical-align middle
 	display inline-block
+
+.rangeGroup
+	grad-bg #fdd, #dff
+	border-radius 8px
+	width 350px
+	centered-x()
+	font-control()
+
+.rangeLike
+	vertical-align middle
+	height 20px
+
+.range
+	@extends .rangeLike
+
+.range .slider
+	@extends .controlPart
+	width 200px
+
+.rangeRange
+	@extends .rangeLike
+
 
 .controlName
 	@extends .controlPart
@@ -97,7 +162,7 @@ body
 
 .rangeRange .average
 	@extends .controlPart
-	width 80px
+	width 100px
 
 .rangeRange .variance
 	@extends .controlPart
@@ -105,4 +170,5 @@ body
 
 .readOut
 	@extends .controlPart
-	color red
+	font-size 12px
+	color sienna

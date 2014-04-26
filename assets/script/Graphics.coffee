@@ -10,24 +10,18 @@ module.exports = class Graphics extends GameObject
 		@renderer =
 			new three.WebGLRenderer
 				alpha: yes
-
-		depthTextureOptions =
-			magFilter: three.NearestFilter
-			minFilter: three.NearestFilter
-			wrapS: three.ClampToEdgeWrapping
-			wrapT: three.ClampToEdgeWrapping
-			type: three.FloatType
-
-		@_depthTexture =
-			# TODO: don't hard-code size
-			new three.WebGLRenderTarget 800, 600, depthTextureOptions
+				preserveDrawingBuffer: yes
 
 		@_strokeMeshes =
 			[]
 
-		@_divDefer = q.defer()
+		@_divDefer =
+			q.defer()
 
-	read @, 'camera', 'depthTexture', 'scene', 'strokeMeshes'
+	read @, 'camera', 'depthTexture', 'scene', 'strokeMeshes', 'width', 'height'
+
+	imageDataURL: ->
+		@renderer.domElement.toDataURL()
 
 	size: ->
 		# TODO: Is this the right formula to scale up with any screen?
@@ -55,6 +49,16 @@ module.exports = class Graphics extends GameObject
 		@_camera.aspect = @_width / @_height
 		@_camera.updateProjectionMatrix()
 
+		depthTextureOptions =
+			magFilter: three.NearestFilter
+			minFilter: three.NearestFilter
+			wrapS: three.ClampToEdgeWrapping
+			wrapT: three.ClampToEdgeWrapping
+			type: three.FloatType
+
+		@_depthTexture =
+			new three.WebGLRenderTarget @_width, @_height, depthTextureOptions
+
 	restart: ->
 		@_scene =
 			new three.Scene()
@@ -70,31 +74,13 @@ module.exports = class Graphics extends GameObject
 
 		@_scene.add @_camera
 
+	setAmbient: (color) ->
+		@_ambientLight.color.copy color
+
 	setupLights: ->
-		@ambientLight =
-			new three.AmbientLight 0x222222
-		@_scene.add @ambientLight
-
-		@dirLights =
-			[]
-
-		dirLight1 =
-			new three.DirectionalLight 0xffffff, 0.8
-		dirLight1.position.set -1, 0, -1
-		@dirLights.push dirLight1
-
-		dirLight2 =
-			new three.DirectionalLight 0xffffff, 0.8
-		dirLight2.position.set 0, -1, 1
-		@dirLights.push dirLight2
-
-		dirLight3 =
-			new three.DirectionalLight 0xffffff, 0.8
-		dirLight3.position.set 1, -1, 0
-		@dirLights.push dirLight3
-
-		for dirLight in @dirLights
-			@_scene.add dirLight
+		@_ambientLight =
+			new three.AmbientLight 0xffffff
+		@_scene.add @_ambientLight
 
 	addLight: (opts) ->
 		color = opts.color

@@ -14,7 +14,9 @@ module.exports = class OnOffButton
 		@_box.bind 'change', =>
 			@_change.fire @get()
 
-		@_div = $ "<div/>"
+		@_div = $ "<div class='onOffDiv'/>"
+		if opts.class?
+			@_div.addClass opts.class
 
 		@_div.append @_box
 

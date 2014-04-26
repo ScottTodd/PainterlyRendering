@@ -18,7 +18,7 @@ module.exports = class Physics extends GameObject
 			yes
 
 		@secondsPerUpdate =
-			1.0 / 60.0
+			1.0 / 30.0
 
 		@_materials = {}
 
@@ -37,23 +37,22 @@ module.exports = class Physics extends GameObject
 			1
 
 		# TODO: This is bad! It can over and under count time.
-		while dt > 0
-			dt -= @secondsPerUpdate
+		dt = Math.min dt, @secondsPerUpdate
 
-			@world.step (@secondsPerUpdate * physicsSecondsPerRealSecond)
+		@world.step (@secondsPerUpdate * physicsSecondsPerRealSecond)
 
-			for body in @world.bodies
-				body.threeObject.position.copy body.position
+		for body in @world.bodies
+			body.threeObject.position.copy body.position
 
-				# For some reason, plain copy doesn't work.
-				# body.threeObject.quaternion.copy body.quaternion
-				tq = body.threeObject.quaternion
-				bq = body.quaternion
+			# For some reason, plain copy doesn't work.
+			# body.threeObject.quaternion.copy body.quaternion
+			tq = body.threeObject.quaternion
+			bq = body.quaternion
 
-				tq.x = bq.x
-				tq.y = bq.y
-				tq.z = bq.z
-				tq.w = bq.w
+			tq.x = bq.x
+			tq.y = bq.y
+			tq.z = bq.z
+			tq.w = bq.w
 
 	setGravity: (v) ->
 		@world.gravity.set v.x, v.y, v.z
@@ -105,3 +104,8 @@ module.exports = class Physics extends GameObject
 		@world.add body
 
 		body
+
+	removeBody: (body) ->
+		@world.remove body
+
+

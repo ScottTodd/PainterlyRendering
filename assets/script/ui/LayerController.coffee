@@ -10,10 +10,11 @@ module.exports = class LayerController extends GameObject
 	constructor: (@_paramsControl, index) ->
 		strokeDiv =
 			$ "<div class='stroke'/>"
-		strokeDiv.append ($ "<div class='strokeTitle'/>").text "Stroke"
+		strokeDiv.append ($ "<div class='controlTitle' name='stroke'/>").text "Stroke"
 
 		@_on =
 			new OnOffButton
+				class: 'layerOn'
 				start: index == 0
 
 		@_nStrokes =
@@ -39,11 +40,13 @@ module.exports = class LayerController extends GameObject
 				]
 				start: 'stroke1'
 
-		strokeDiv.append @_nStrokes.div(), @_strokeSize.div(), @_strokeTexture.div()
+		strokeDiv.append ($ "<div class='rangeGroup'/>").append \
+			@_nStrokes.div(), @_strokeSize.div()
+		strokeDiv.append @_strokeTexture.div()
 
 		hslDiv =
 			$ "<div class='hsl'/>"
-		hslDiv.append ($ "<div class='hslTitle'/>").text "Colors"
+		hslDiv.append ($ "<div class='controlTitle' name='hsl'/>").text "Colors"
 		@_hue =
 			new RangeRange
 				name: 'Hue'
@@ -61,17 +64,18 @@ module.exports = class LayerController extends GameObject
 				min: 0
 				max: 1
 				startAverage: 0.25
-		hslDiv.append @_hue.div(), @_sat.div(), @_lum.div()
-
+		hslDiv.append ($ "<div class='rangeGroup'/>").append \
+			@_hue.div(), @_sat.div(), @_lum.div()
 		specDiv =
 			$ "<div class='specular'/>"
-		specDiv.append ($ "<div class='sectionTitle'/>").text "Specular"
+		specDiv.append \
+			($ "<div class='controlTitle' name='specular'/>").text "Specular"
 		@_specIntense =
 			new Range
 				name: 'Amount'
 				min: 0
 				max: 10
-				start: 1
+				start: 2
 		@_specPow =
 			new Range
 				name: 'Power'
@@ -88,7 +92,7 @@ module.exports = class LayerController extends GameObject
 				name: 'Fade In'
 				min: 0
 				max: 5
-		specDiv.append \
+		specDiv.append ($ "<div class='rangeGroup'/>").append \
 			@_specIntense.div(),
 			@_specPow.div(),
 			@_specMin.div(),
@@ -105,7 +109,8 @@ module.exports = class LayerController extends GameObject
 			x.change().add =>
 				@_paramsControl.regenerate()
 
-		@_div = $ "<div class='layerController'/>"
+		@_div =
+			$ "<div class='layerController'/>"
 		@_div.append @_on.div(), strokeDiv, hslDiv, specDiv
 
 	read @, 'div'

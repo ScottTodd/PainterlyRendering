@@ -47,6 +47,10 @@ module.exports = class PhysicalObject extends GameObject
 		if @opts.init?
 			@opts.init.call @
 
+	finish: ->
+		@physics().removeBody @body
+		@mesh.removeFromGraphics @graphics()
+
 	listenForCollide: (callback) ->
 		@body.addEventListener 'collide', (event) ->
 			callback event.with.gameObject

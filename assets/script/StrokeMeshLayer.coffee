@@ -167,8 +167,8 @@ module.exports = class StrokeMeshLayer
 		@_strokeSystem.geometry.vertices.length
 
 	setupUsingGraphics: (graphics) ->
-		@setUniform 'depthTexture', graphics.depthTexture()
 		graphics.divPromise().then =>
+			@setUniform 'depthTexture', graphics.depthTexture()
 			@setUniform 'strokeSize', @_strokeSize * graphics.size()
 		.done()
 

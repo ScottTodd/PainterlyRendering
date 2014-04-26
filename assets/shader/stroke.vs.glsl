@@ -9,8 +9,10 @@ uniform float specularIntensity;
 uniform float specularPower;
 
 uniform vec3 ambientLightColor;
+#if MAX_DIR_LIGHTS > 0
 uniform vec3 directionalLightDirection[MAX_DIR_LIGHTS];
 uniform vec3 directionalLightColor[MAX_DIR_LIGHTS];
+#endif
 
 /*
 Three.js also gives us these:
@@ -46,6 +48,7 @@ void calcLight(vec3 mPosition, vec3 mNormal, out vec3 diffuseTotal, out vec3 spe
 	specularTotal =
 		vec3(0, 0, 0);
 
+	#if MAX_DIR_LIGHTS > 0
 	for(int i = 0; i < MAX_DIR_LIGHTS; i++)
 	{
 		vec3 lightColor =
@@ -65,6 +68,7 @@ void calcLight(vec3 mPosition, vec3 mNormal, out vec3 diffuseTotal, out vec3 spe
 		specularTotal +=
 			lightColor * phongSpecular;
 	}
+	#endif
 
 	specularTotal *= specularIntensity;
 }
