@@ -10,7 +10,8 @@ module.exports = class LayerController extends GameObject
 	constructor: (@_paramsControl, index) ->
 		strokeDiv =
 			$ "<div class='stroke'/>"
-		strokeDiv.append ($ "<div class='controlTitle' name='stroke'/>").text "Stroke"
+		strokeDiv.append ($ "<div class='controlTitle'
+							name='stroke'/>").text "Stroke"
 
 		@_on =
 			new OnOffButton

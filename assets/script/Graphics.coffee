@@ -82,6 +82,31 @@ module.exports = class Graphics extends GameObject
 			new three.AmbientLight 0xffffff
 		@_scene.add @_ambientLight
 
+		@addLight
+			color: 0xffffff
+			intensity: 0.05
+			pos: new three.Vector3 -1, 0, 0
+		@addLight
+			color: 0xffffff
+			intensity: 0.05
+			pos: new three.Vector3 1, 0, 0
+		@addLight
+			color: 0xffffff
+			intensity: 0.05
+			pos: new three.Vector3 0, -1, 0
+		@addLight
+			color: 0xffffff
+			intensity: 0.05
+			pos: new three.Vector3 0, 1, 0
+		@addLight
+			color: 0xffffff
+			intensity: 0.05
+			pos: new three.Vector3 0, 0, -1
+		@addLight
+			color: 0xffffff
+			intensity: 0.05
+			pos: new three.Vector3 0, 0, 1
+
 	addLight: (opts) ->
 		color = opts.color
 		intensity = opts.intensity

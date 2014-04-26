@@ -103,7 +103,7 @@ module.exports = class ParametersController extends GameObject
 			@walls.push wall
 
 		numBalls =
-			20
+			10
 		spawnAreaPercentage =
 			0.9
 		ballMaxSpeed =

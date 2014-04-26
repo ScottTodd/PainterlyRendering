@@ -42,10 +42,11 @@ module.exports = class StrokeMesh extends GameObject
 	###
 	constructor: (originalGeometry, borderSize, @_strokeLayers) ->
 		depthGeometry = originalGeometry.clone()
-		fattenGeometry originalGeometry, 0.1
+		fatGeometry = originalGeometry.clone()
+		fattenGeometry fatGeometry, 0.1
 
 		@_depthMesh =
-			new DepthBufferMesh originalGeometry
+			new DepthBufferMesh fatGeometry
 
 		outlineGeometry = originalGeometry.clone()
 		fattenGeometry outlineGeometry, borderSize

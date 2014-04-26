@@ -11,20 +11,26 @@ module.exports = class LightController extends GameObject
 		@_on =
 			new OnOffButton
 				class: 'lightOn'
-				start: index == 0
+				start: true
 
 		@_lat =
 			new Range
 				name: 'Lat'
 				min: -90
 				max: 90
-				start: if index == 0 then -30 else 0
+				start:
+					if index == 0 then -30
+					else if index == 1 then -12
+					else -50
 		@_long =
 			new Range
 				name: 'Long'
 				min: -180
 				max: 180
-				start: 0
+				start:
+					if index == 0 then 0
+					else if index == 1 then -110
+					else 115
 		@_hue =
 			new Range
 				name: 'Hue'
