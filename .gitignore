@@ -1,3 +1,9 @@
 doc
 node_modules
 public
+*~
+*.aux
+*.log
+*.bbl
+*.blg
+.DS_Store
