@@ -40,10 +40,22 @@ module.exports = class LayerController extends GameObject
 					'triangle', 'square', 'stick', 'grid'
 				]
 				start: 'stroke1'
+		@_strokeEnableRotation =
+			new OnOffButton
+				start: 1
+		@_strokeCurveFactor =
+			new Range
+				name: 'Curve Factor'
+				min: 0
+				max: 2
+				start: 1
 
 		strokeDiv.append ($ "<div class='rangeGroup'/>").append \
 			@_nStrokes.div(), @_strokeSize.div()
 		strokeDiv.append @_strokeTexture.div()
+		strokeDiv.append ($ "<div class='controlName'/>").text "Rotation"
+		strokeDiv.append @_strokeEnableRotation.div()
+		strokeDiv.append @_strokeCurveFactor.div()
 
 		hslDiv =
 			$ "<div class='hsl'/>"
@@ -103,6 +115,7 @@ module.exports = class LayerController extends GameObject
 		# Handle events
 		allOpts =
 			[ @_on, @_nStrokes, @_strokeSize, @_strokeTexture,
+			  @_strokeEnableRotation, @_strokeCurveFactor,
 			  @_hue, @_sat, @_lum,
 			  @_specIntense, @_specPow, @_specMin, @_specFadeIn ]
 
@@ -123,6 +136,8 @@ module.exports = class LayerController extends GameObject
 		strokeTexture: @resources().texture @_strokeTexture.get()
 		nStrokes: @_nStrokes.get()
 		strokeSize: @_strokeSize.get()
+		enableRotation: @_strokeEnableRotation.get()
+		curveFactor: @_strokeCurveFactor.get()
 		colors:
 			type: 'randomHSL'
 			hue: @_hue.get()
@@ -132,4 +147,3 @@ module.exports = class LayerController extends GameObject
 		specularPower: @_specPow.get()
 		specularMin: @_specMin.get()
 		specularFadeIn: @_specFadeIn.get()
-

@@ -7,6 +7,8 @@ uniform float specularMin;
 uniform float specularFadeIn;
 uniform float specularIntensity;
 uniform float specularPower;
+uniform int   enableRotation;
+uniform float curveFactor;
 
 uniform vec3 ambientLightColor;
 #if MAX_DIR_LIGHTS > 0
@@ -314,12 +316,14 @@ void main()
 			mNormal, mvNormal,
 			colorAmount(diffuseTotal + specularTotal));
 
-	strokeOrientation =
-		normalize(vec2(-gradient.y, gradient.x));
+	if (enableRotation == 1) {
+		strokeOrientation =
+			normalize(vec2(-gradient.y, gradient.x));
+	} else {
+		strokeOrientation =
+			vec2(1.0, 0.0);
+	}
 
-	float curveFactor =
-		// TODO: uniform
-		1.0;
 	curveAmount =
 		length(gradient) * curveFactor;
 }
