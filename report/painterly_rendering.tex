@@ -1,13 +1,3 @@
-%%% template.tex
-%%%
-%%% This LaTeX source document can be used as the basis for your technical
-%%% paper or abstract. Intentionally stripped of annotation, the parameters
-%%% and commands should be adjusted for your particular paper - title,
-%%% author, article DOI, etc.
-%%% The accompanying ``template.annotated.tex'' provides copious annotation
-%%% for the commands and parameters found in the source document. (The code
-%%% is identical in ``template.tex'' and ``template.annotated.tex.'')
-
 \documentclass[conference]{acmsiggraph}
 
 \TOGonlineid{45678}
@@ -94,11 +84,50 @@ TODO.
 
 \section{Stroke Rendering}
 
+We represent each brush stroke as a particle within a particle system that is
+maintained by three.js. We provide a vertex shader and a fragment shader for
+three.js to use in rendering the particle system. Each layer of brush strokes
+on each object in the scene has its own particle system.
+
 \subsection{zQuality}
 
-TODO.
+\begin{figure*}[ht] % figure* allows for this to span the full page width
+  \centering
+  \includegraphics[width=6.0in]{images/torus_depth_test_demo}
+  \caption{The image on the right discards fragments whose depth values differ
+           from the value stored in the depth buffer texture while the image on
+           the left does not. Note the intersections and other artifacts on the
+           left.}
+\end{figure*}
+
+We found that three.js could sort particles by depth for rendering, but this
+was too slow for our application and the number of particles we were using.
+Blending within the shaders was also unsuccessful.
+
+We use a two-pass rendering approach to perform z-culling. First, we render
+only the original geometry into a floating point depth buffer texture. Then, we
+pass that texture into our brush stroke shaders and use that information to
+choose which strokes to render.
+
+In the first iteration of our algorithm, we discarded fragments whose depth
+values differ from the value stored in the depth buffer at that position. This
+method performs a sharp cutoff around the silhouette of each object, so it
+conflicted with the painterly rendering focus of our project.
+
+We refined this approach by expanding the silhouette of each object in the
+scene and fading strokes in based on the difference between their depth and the
+depth in the depth buffer texture. We expanded the silhouette of each object by
+pushing each vertex of their geometries by a factor of the normal at that
+vertex.
 
 \subsection{Gradient Estimation}
+
+\begin{figure*}[ht]
+  \centering
+  \includegraphics[width=6.0in]{images/sphere_rotation_curve}
+  \caption{From left to right: no orientation or curvature, orientation with
+           no curvature, orientation and exaggerated curvature (2.0).}
+\end{figure*}
 
 TODO.
 
@@ -113,6 +142,21 @@ TODO.
 \section{Results}
 
 TODO.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=3.3in]{images/bunny_with_fade_in}
+  \caption{The Stanford bunny rendered using three layers of brush strokes.
+           The topmost layer uses a minimum specular cutoff of 0.95 and a
+           specular fade-in of 0.63.}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=3.3in]{images/teapot_with_background}
+  \caption{The Utah teapot rendered using three layers of brush strokes.
+           The topmost layer uses a specular fade-in of 0.03.}
+\end{figure}
 
 \section{Limitations}
 
