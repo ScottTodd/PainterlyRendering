@@ -20,8 +20,8 @@
 \begin{document}
 
 \teaser{
-  \includegraphics[height=1.5in]{images/sampleteaser}
-  \caption{Spring Training 2009, Peoria, AZ.}
+  \includegraphics[height=2.0in]{images/teapot_bronze}
+  \caption{The Utah teapot rendered using our system.}
 }
 
 \maketitle
@@ -62,6 +62,22 @@ TODO.
 
 TODO \cite{Meier:1996:PRA:237170.237288}.
 
+In \cite{Hertzmann:1998:PRC:280814.280951}, 2D input images are painted over
+by layers of spline brush strokes. Strokes are placed along areas of high
+gradient on a source image blurred proportionally to the current brush size. In
+this manner, progressive emphasis is  placed on regions of high visual
+interest. An intuitive collection of parameters is chosen such that a user may
+easily select between a spectrum of visual styles. Parameter sets are presented
+for “Impressionist”, “Expressionist”, “Colorist Wash”, and “Pointillist”
+styles.
+
+\cite{Kalnins:2002:WND:566570.566648} explores interactive techniques that
+allow artists to create non-photorealistic renderings of 3D models. Artists are
+given control over brush styles, paper textures, basecoats, background styles,
+and the position and styling of each stroke. Their system uses information
+supplied from one or more viewpoints to render the models at any new viewpoint
+while preserving the desired aesthetic.
+
 \section{Painterly Rendering System}
 
 \subsection{Algorithm Overview}
@@ -71,12 +87,6 @@ parameters for each geometry, as well as a list of three.js directional lights.
 It outputs to a three.js WebGL renderer in any supporting browser.
 
 TODO.
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=1.5in]{images/samplefigure}
-  \caption{Sample illustration.}
-\end{figure}
 
 \subsection{Stroke Selection}
 
@@ -133,7 +143,23 @@ TODO.
 
 \subsection{Layering}
 
-TODO.
+As in \cite{Hertzmann:1998:PRC:280814.280951},
+\cite{Meier:1996:PRA:237170.237288}, (and others?), we use multiple layers of
+brush strokes for each object. While the layer properties can be
+user-controller, we intend for the base layers to contain a smaller quantity of
+larger brush strokes and the top layers to contain a larger quantity of smaller
+brush strokes. The base layers capture rough details and cover the entirety of
+the original mesh, while the top layers show fine details and are expected to
+leave gaps between each other. We found that three layers of strokes was
+sufficient for the scenes that we tested.
+
+We support using a specular threshold and specular fade in to control the
+visibility of strokes within a layer. If the specular lighting contribution at
+a stroke does not exceed the minimum value, it is discarded. Similarly, if a
+stroke has low specular, we change its alpha value based on the specular fade
+in. This allows us to approximate the visual interest sampling in
+\cite{Hertzmann:1998:PRC:280814.280951} and (other reference).
+
 
 \subsection{Parameters List}
 
