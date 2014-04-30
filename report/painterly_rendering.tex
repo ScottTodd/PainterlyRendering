@@ -58,9 +58,19 @@ TODO.
 
 (Link to GitHub and hosted url)
 
+
 \subsection{Related Work}
 
-TODO \cite{Meier:1996:PRA:237170.237288}.
+The use of particle systems to create painted images was explored in
+``Painterly Rendering for Animation'' \cite{Meier:1996:PRA:237170.237288}.
+Paint particles are distributed onto 3D objects and undergo the same
+transormation. During the rendering phase, a reference picture rendering is
+first created using traditional methods. Then every particle is sorted by
+depth, and particles are drawn back-to-front. Particles take on the color of
+the reference picture, or a solid color may be used per-particle and the
+reference picture ignored. The color is applied to a stroke texture (called
+the ``brush image''), which is finally applied to the screen at the particle's
+(projected) location.
 
 In \cite{Hertzmann:1998:PRC:280814.280951}, 2D input images are painted over
 by layers of spline brush strokes. Strokes are placed along areas of high
@@ -68,7 +78,7 @@ gradient on a source image blurred proportionally to the current brush size. In
 this manner, progressive emphasis is  placed on regions of high visual
 interest. An intuitive collection of parameters is chosen such that a user may
 easily select between a spectrum of visual styles. Parameter sets are presented
-for “Impressionist”, “Expressionist”, “Colorist Wash”, and “Pointillist”
+for ``Impressionist'', ``Expressionist'', ``Colorist Wash'', and ``Pointillist''
 styles.
 
 \cite{Kalnins:2002:WND:566570.566648} explores interactive techniques that
@@ -78,28 +88,49 @@ and the position and styling of each stroke. Their system uses information
 supplied from one or more viewpoints to render the models at any new viewpoint
 while preserving the desired aesthetic.
 
+
 \section{Painterly Rendering System}
 
 \subsection{Algorithm Overview}
 
-Our system takes as input a set of three.js geometries and a list of rendering
-parameters for each geometry, as well as a list of three.js directional lights.
-It outputs to a three.js WebGL renderer in any supporting browser.
+We represent brush strokes as particles within particle systems. (The particles
+will be referred to as ``strokes''.) Each object in the scene is represented as
+any number of layers; each layer has its own particle system.
 
-TODO.
+Our system creates stroke meshes out of traditional three.js meshes. Other
+inputs will include layer and coloring information. The system outputs a
+painterly image to a WebGL canvas.
+
 
 \subsection{Stroke Selection}
 
-TODO.
+Rather than storing models directly as stroke systems, our system loads
+three.js JSON object files. These are transformed into stroke systems in the
+client using a method similar to that of \cite{Meier:1996:PRA:237170.237288}.
+The total number of particles to be placed on the mesh is a parameter. Then for
+each face on the mesh, the number of particles on that face is in proportion to
+its area; in other words, it is that face's fraction of the total area, times
+the total number of particles. Random Barycentric coordinates are selected, and
+position, normal, and u/v values are interpolated between the face's vertices.
 
-\section{Stroke Rendering}
+Particles of a single layer are drawn in the same order every time, so if
+particles are generated one face at a time in this way, rendered images will
+show an undesirable ordering of particles. So, a stroke particles are shuffled
+once during the loading phase.
 
-We represent each brush stroke as a particle within a particle system that is
-maintained by three.js. We provide a vertex shader and a fragment shader for
-three.js to use in rendering the particle system. Each layer of brush strokes
-on each object in the scene has its own particle system.
 
-\subsection{zQuality}
+\subsection{Colors}
+
+To color particles, the user may select random hue, saturation, and luminance
+ranges for particles to be chosen from. This produces aesthetically pleasing
+representations of what are essentially ``solid'' colored objects.
+
+We are also exploring the use of textures.
+
+
+\subsection{Stroke Rendering}
+
+\subsubsection{zQuality}
 
 \begin{figure*}[ht] % figure* allows for this to span the full page width
   \centering
@@ -110,27 +141,42 @@ on each object in the scene has its own particle system.
            left.}
 \end{figure*}
 
-We found that three.js could sort particles by depth for rendering, but this
-was too slow for our application and the number of particles we were using.
-Blending within the shaders was also unsuccessful.
+Good results may be achieved by sorting particles by depth, but at the cost of
+performance. Blending particles is also unsuccessful because the number of
+overlapping particles is unpredictable. So, within each layer, particles are
+always drawn in the same order and always draw on top of each other. This leads
+to occlusion issues when a layer overlaps itself, shown in Figure 2.
 
-We use a two-pass rendering approach to perform z-culling. First, we render
-only the original geometry into a floating point depth buffer texture. Then, we
-pass that texture into our brush stroke shaders and use that information to
-choose which strokes to render.
+To mitigate this effect, we render in two passes. First, we render the original
+geometry into a floating point depth buffer texture.
 
 In the first iteration of our algorithm, we discarded fragments whose depth
 values differ from the value stored in the depth buffer at that position. This
-method performs a sharp cutoff around the silhouette of each object, so it
+method performs a sharp cut-off around the silhouette of each object, so it
 conflicted with the painterly rendering focus of our project.
 
-We refined this approach by expanding the silhouette of each object in the
-scene and fading strokes in based on the difference between their depth and the
-depth in the depth buffer texture. We expanded the silhouette of each object by
-pushing each vertex of their geometries by a factor of the normal at that
+This depth texture is passed as a uniform into the vertex shader for paint
+strokes. Each stroke measures its depth compared to the expected depth, and
+fades out when there is a discrepancy. (A simple on/off threshold would work,
+but strokes just showing up coming around the edge of an object would suddenly
+``pop'' into existence.)
+
+There is still another problem for strokes just at the edge of an object, which
+do not frames share its depth buffer. A slight fattening of the original mesh
+ensures that all of its strokes fit within its borders. We expanded the
+original mesh by pushing each vertex a small distance along the normal at that
 vertex.
 
-\subsection{Gradient Estimation}
+\subsubsection{Lighting}
+
+Each stroke is solidly colored using the light calculated at its center. We use
+the Phong equations. These are calculated per stroke (in the vertex shader),
+making our method more efficient than first creating a reference image. The
+total diffuse and specular lighting are calculated separately (see the section
+on specular fade in).
+
+
+\subsubsection{Gradient Estimation}
 
 \begin{figure*}[ht]
   \centering
@@ -141,7 +187,7 @@ vertex.
 
 TODO.
 
-\subsection{Layering}
+\subsubsection{Layering}
 
 As in \cite{Hertzmann:1998:PRC:280814.280951},
 \cite{Meier:1996:PRA:237170.237288}, (and others?), we use multiple layers of
