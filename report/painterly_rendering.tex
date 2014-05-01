@@ -1,5 +1,12 @@
 \documentclass[conference]{acmsiggraph}
 
+% http://en.wikibooks.org/wiki/LaTeX/Algorithms
+% \usepackage{algorithm2e}
+\usepackage{algpseudocode}
+
+\usepackage{float}
+\usepackage{caption}
+
 \TOGonlineid{45678}
 \TOGvolume{0}
 \TOGnumber{0}
@@ -9,19 +16,20 @@
 \TOGdataURL{}
 \TOGcodeURL{}
 
-\title{Painterly Rendering for WebGL}
+\title{Painterly Rendering for WebGL \\ May 1, 2014}
 
 \author{Andy Hanson\thanks{email: hansoa2@rpi.edu}\\
         Scott Todd\thanks{email: todds@rpi.edu}}
-\pdfauthor{Robert A. Smith}
+\pdfauthor{Scott Todd}
 
-\keywords{radiosity, global illumination, constant time}
+\keywords{Painterly Rendering, Non-Photorealistic Rendering,
+          Particle Systems, Painting, Interactive Techniques,
+          GPU Processing}
 
 \begin{document}
 
 \teaser{
-  \includegraphics[height=2.0in]{images/teapot_bronze}
-  \caption{The Utah teapot rendered using our system.}
+  \includegraphics[height=2.0in]{images/green_bunny}
 }
 
 \maketitle
@@ -29,6 +37,8 @@
 \begin{abstract}
 
 TODO.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus dignissim, ligula tristique ullamcorper semper, lacus tortor adipiscing ipsum, in auctor ipsum nunc ac orci. Etiam a tincidunt ante. Fusce pulvinar aliquet dolor, vel pharetra leo. Etiam adipiscing, sapien quis condimentum iaculis, risus ligula facilisis magna, ac vehicula odio mauris ac augue. Ut fermentum eros metus, id dictum mi vestibulum eu. Aliquam euismod sem id hendrerit iaculis. In id nibh sem. Mauris non arcu vitae sem pulvinar porttitor. Curabitur ac convallis turpis, a fermentum ipsum. Praesent vestibulum iaculis sem vitae viverra.
 
 \end{abstract}
 
@@ -110,6 +120,15 @@ supplied from one or more viewpoints to render the models at any new viewpoint
 while preserving the desired aesthetic.
 
 
+% \begin{figure*}[t] % figure* allows for this to span the full page width
+%   \centering
+%   \includegraphics[width=5.0in]{images/torus_depth_test_demo}
+%   \caption{The image on the right discards fragments whose depth values differ
+%            from the value stored in the depth buffer texture while the image on
+%            the left does not. Note the intersections and other artifacts on the
+%            left.}
+% \end{figure*}
+
 \section{Painterly Rendering System}
 
 \subsection{Algorithm Overview}
@@ -121,6 +140,29 @@ any number of layers; each layer has its own particle system.
 Our system creates stroke meshes out of three.js geometries. Other inputs will
 include layer, color, and lighting information. The system outputs an image to
 a WebGL canvas.
+
+% \RestyleAlgo{boxed}
+  % At load time: Create a ``Stroke Mesh'' particle system for each layer on each
+  % object
+
+% \begin{algorithm}
+
+% \begin{algorithmic}
+%   \State \textit{at load time}
+%     \ForAll{stroke layers}
+%       \State create a ``stroke mesh'' particle system
+%     \EndFor
+%   \State \textit{at run time}
+%     \ForAll{objects}
+%       \ForAll{stroke layers from bottom to top}
+%         \ForAll{strokes}
+%           ...
+%         \EndFor
+%       \EndFor
+%     \EndFor
+% \end{algorithmic}
+
+% \end{algorithm}
 
 \begin{enumerate}
   \item At load time: create a ``stroke mesh'' particle system for each layer
@@ -203,20 +245,23 @@ necessary for our method.
 
 \subsubsection{zQuality}
 
-\begin{figure*}[ht] % figure* allows for this to span the full page width
-  \centering
-  \includegraphics[width=6.0in]{images/torus_depth_test_demo}
-  \caption{The image on the right discards fragments whose depth values differ
-           from the value stored in the depth buffer texture while the image on
-           the left does not. Note the intersections and other artifacts on the
-           left.}
-\end{figure*}
+
+\begin{minipage}{\linewidth}% to keep image and caption on one page
+  % \makebox[\linewidth]{%        to center the image
+  \includegraphics[width=3.32in]{images/torus_depth_test_demo}
+  \captionof{figure}{The image on the right discards fragments whose depth values
+                     differ from the value stored in the depth buffer texture
+                     while the image on the left does not. Note the intersections
+                     and other artifacts on the left.}
+  \label{visina8}
+\end{minipage}
+
 
 Good results may be achieved by sorting particles by depth, but at the cost of
 performance. Blending particles is also unsuccessful because the number of
 overlapping particles is unpredictable. So, within each layer, particles are
 always drawn in the same order and always draw on top of each other. This leads
-to occlusion issues when a layer overlaps itself, shown in Figure 2.
+to occlusion issues when a layer overlaps itself, shown in Figure 1.
 
 To mitigate this effect, we render in two passes. First, we render the original
 geometry into a floating point depth buffer texture.
@@ -243,7 +288,7 @@ vertex.
 Each stroke is shaded the same throughout, using the light calculated at its
 center. We use the Phong equations. Light is calculated per stroke (in the
 vertex shader), rather than per-fragment. The total diffuse and specular
-lighting are calculated separately (see the section on specular fade in).
+lighting are calculated separately (see section 2.3.8).
 
 
 \subsubsection{Use of Gradient}
@@ -350,7 +395,20 @@ approximate the visual interest sampling in
 
 \subsection{Parameters List}
 
-TODO.
+The following properties may be specified per-layer:
+
+\begin{enumerate}
+  \item Number of strokes
+  \item Stroke size
+  \item Stroke texture
+  \item Curve factor
+  \item Color range (hue, sat, lum)
+  \item Specular amount and power
+  \item Specular fade-in range
+\end{enumerate}
+
+These may be specified by calling our API or through a user interface we
+created for this purpose.
 
 
 \section{Results}
@@ -373,19 +431,24 @@ TODO.
 \end{figure}
 
 
-\section{Limitations}
+\section{Limitations and Future Work}
 
-TODO.
+Our method achieves smooth zooming by scaling strokes down when they are
+further away. Thus, objects in the distance may be drawn with many small
+strokes rather than with a few well-placed strokes.
 
+The primary efficiency issue with our method is that every stroke is stored as
+a particle with position, normal, and coloring information. For large objects
+with many small strokes this would use a large amount of data. Also, most
+strokes are discarded in most frames, whether because they are occluded or do
+not reach their minimum specular value. One improvement might be to perform
+stroke generation in a geometry shader and only store the mesh as data.
+Unfortunately, WebGL does not yet support geometry shaders.
 
-\section{Future Work}
-
-TODO.
-
-
-\section{Conclusion}
-
-TODO.
+Our method does not cull strokes at object boundaries, instead curving them
+inwards. This would not work well for objects with corners. However,
+per-fragment culling could be easily added, at the cost of unappealingly
+slicing strokes in two.
 
 
 \section*{Acknowledgements}
