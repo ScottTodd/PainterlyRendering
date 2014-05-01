@@ -54,7 +54,28 @@ TODO.
 
 \section{Introduction}
 
-TODO.
+Non-photorealistic rendering (NPR) aims to bridge the gap between the
+creativity and expressivity of traditional art and the interactive and
+automated world of digital computer graphics. Various NPR techniques have
+applications in games, films, architecture, and scientific visualization.
+Painterly rendering is a subset of NPR that tries to create images that have a
+painted appearance, as if the image was created from a sequence of brush
+strokes on a canvas.
+
+Painterly rendering research typically focuses on brush stroke properties,
+methods of user interaction, potential aesthetic styles, rendering techniques,
+and other methods of approximating natural artwork.
+
+Many past painterly algorithms \cite{Hertzmann:1998:PRC:280814.280951},
+\cite{Lu:2010:IPS:1730804.1730825} have first generated a ``real'' image using
+other methods, then attempted to draw it as a painting. This brings with it the
+computational cost of fully rendering the scene twice, as well as a
+``shower door'' visual effect where 2D strokes do not move perfectly in sync
+with 3D geometry.
+
+Like others \cite{Meier:1996:PRA:237170.237288}, we instead keep a scene of
+brush strokes. There is no ``real'' rendering but the paint, and brush strokes
+store their own color and calculate their own light.
 
 (Link to GitHub and hosted url)
 
@@ -97,12 +118,49 @@ We represent brush strokes as particles within particle systems. (The particles
 will be referred to as ``strokes''.) Each object in the scene is represented as
 any number of layers; each layer has its own particle system.
 
-Our system creates stroke meshes out of traditional three.js meshes. Other
-inputs will include layer and coloring information. The system outputs a
-painterly image to a WebGL canvas.
+Our system creates stroke meshes out of three.js geometries. Other inputs will
+include layer, color, and lighting information. The system outputs an image to
+a WebGL canvas.
+
+\begin{enumerate}
+  \item At load time: create a ``stroke mesh'' particle system for each layer
+    on each object {[}Section 2.2{]}
+
+  \item At run time: every frame {[}Section 2.3{]}:
+
+      \begin{enumerate}
+        \item Render a depth image
+        \item For each object, for each layer from bottom to top, for each
+          stroke
+
+          \begin{enumerate}
+            \item Compute the stroke properties in the vertex shader:
+
+              \begin{enumerate}
+                \item Compute zQuality (closeness to desired depth) and discard
+                  strokes with negative zQuality {[}Section 2.3.1{]}
+                \item Calculate diffuse and specular lighting and discard
+                  strokes with specular less than the minimum
+                  {[}Section 2.3.2{]}
+                \item Calculate the ``drawing gradient'' at the stroke's
+                  position, which provides the stroke's orientation and
+                  curvature {[}Section 2.3.3{]}
+              \end{enumerate}
+
+            \item In the fragment shader, render an oriented, curved, colored
+              version of the stroke texture according to the above parameters
+
+          \end{enumerate}
+
+      \end{enumerate}
+
+\end{enumerate}
 
 
-\subsection{Stroke Selection}
+
+\subsection{Stroke Mesh Creation}
+
+\subsubsection{Stroke Selection}
 
 Rather than storing models directly as stroke systems, our system loads
 three.js JSON object files. These are transformed into stroke systems in the
@@ -119,7 +177,7 @@ show an undesirable ordering of particles. So, a stroke particles are shuffled
 once during the loading phase.
 
 
-\subsection{Colors}
+\subsubsection{Colors}
 
 To color particles, the user may select random hue, saturation, and luminance
 ranges for particles to be chosen from. This produces aesthetically pleasing
@@ -129,6 +187,18 @@ We are also exploring the use of textures.
 
 
 \subsection{Stroke Rendering}
+
+Both the original triangle mesh and stroke meshes are needed for rendering. We
+render in two passes. First, we render the original geometry into a (floating
+point) depth texture. Then, we may render objects in any order, but render
+lower stroke layers before higher layers. Some higher-layer strokes will decide
+to discard themselves. (As WebGL does not yet support geometry shaders,
+discarding a stroke is done by shrinking it to 0 size and moving it offscreen.)
+
+We also render object borders by fattening the original and drawing only
+triangles which face away from the camera. This is visually pleasing, but not
+necessary for our method.
+
 
 \subsubsection{zQuality}
 
@@ -169,14 +239,26 @@ vertex.
 
 \subsubsection{Lighting}
 
-Each stroke is solidly colored using the light calculated at its center. We use
-the Phong equations. These are calculated per stroke (in the vertex shader),
-making our method more efficient than first creating a reference image. The
-total diffuse and specular lighting are calculated separately (see the section
-on specular fade in).
+Each stroke is shaded the same throughout, using the light calculated at its
+center. We use the Phong equations. Light is calculated per stroke (in the
+vertex shader), rather than per-fragment. The total diffuse and specular
+lighting are calculated separately (see the section on specular fade in).
 
 
-\subsubsection{Gradient Estimation}
+\subsubsection{Use of Gradient}
+
+For each stroke, we calculate a ``gradient'' property which strokes will be
+drawn perpendicular to. We would like strokes to satisfy the following
+attributes: they should follow the contours of objects and not extend far
+beyond the edges; and they should circle around centers of light. To satisfy
+these, we calculate the ``net gradient'' of the image based on both position
+and lighting attributes. These two parts are called the ``edge gradient'' and
+``light gradient''.
+
+We calculate their contributions with this formula:
+
+TODO.
+
 
 \begin{figure*}[ht]
   \centering
@@ -185,19 +267,18 @@ on specular fade in).
            no curvature, orientation and exaggerated curvature (2.0).}
 \end{figure*}
 
-TODO.
 
 \subsubsection{Layering}
 
 As in \cite{Hertzmann:1998:PRC:280814.280951},
-\cite{Meier:1996:PRA:237170.237288}, (and others?), we use multiple layers of
-brush strokes for each object. While the layer properties can be
-user-controller, we intend for the base layers to contain a smaller quantity of
-larger brush strokes and the top layers to contain a larger quantity of smaller
-brush strokes. The base layers capture rough details and cover the entirety of
-the original mesh, while the top layers show fine details and are expected to
-leave gaps between each other. We found that three layers of strokes was
-sufficient for the scenes that we tested.
+\cite{Meier:1996:PRA:237170.237288}, \cite{Lu:2010:IPS:1730804.1730825}, we use
+multiple layers of brush strokes for each object. While the layer properties
+can be user-controller, we intend for the base layers to contain a smaller
+quantity of larger brush strokes and the top layers to contain a larger
+quantity of smaller brush strokes. The base layers capture rough details and
+cover the entirety of the original mesh, while the top layers show fine details
+and are expected to leave gaps between each other. We found that three layers
+of strokes was sufficient for the scenes that we tested.
 
 We support using a specular threshold and specular fade in to control the
 visibility of strokes within a layer. If the specular lighting contribution at
@@ -210,6 +291,7 @@ in. This allows us to approximate the visual interest sampling in
 \subsection{Parameters List}
 
 TODO.
+
 
 \section{Results}
 
@@ -230,21 +312,30 @@ TODO.
            The topmost layer uses a specular fade-in of 0.03.}
 \end{figure}
 
+
 \section{Limitations}
 
 TODO.
+
 
 \section{Future Work}
 
 TODO.
 
+
 \section{Conclusion}
 
 TODO.
 
+
 \section*{Acknowledgements}
 
 (TODO) Three.js
+
+\LaTeX : (TODO: write)
+
+SIGGRAPH (TODO: LaTeX style)
+
 
 \bibliographystyle{acmsiggraph}
 \bibliography{painterly_rendering}
