@@ -144,11 +144,12 @@ a WebGL canvas.
                   {[}Section 2.3.2{]}
                 \item Calculate the ``drawing gradient'' at the stroke's
                   position, which provides the stroke's orientation and
-                  curvature {[}Section 2.3.3{]}
+                  curvature {[}Sections 2.3.3-2.3.6{]}
               \end{enumerate}
 
             \item In the fragment shader, render an oriented, curved, colored
               version of the stroke texture according to the above parameters
+              {[}Section 2.3.6{]}
 
           \end{enumerate}
 
@@ -257,7 +258,64 @@ and lighting attributes. These two parts are called the ``edge gradient'' and
 
 We calculate their contributions with this formula:
 
-TODO.
+% TODO: format this
+  $edgePart = \| edgeGradient \|$ \\
+  $lightPart = min(lightFactor * \| lightGradient \| , (1 - edgePart)^2)$ \\
+  $netGradient = edgePart * norm(edgeGradient) + lightPart * norm(lightGradient)$
+
+Near the edges, only the edge gradient will factor in. It is more important
+that strokes align along the silhouette edges than that they circle the light.
+``lightFactor'' is a parameter measuring how important the light gradient is,
+but ``lightPart'' can never exceed $(1 - edgePart)^2$. This quantity is squared
+to strictly reduce it; without squaring, strokes would still occasionally leak
+past the edges.
+
+
+\subsubsection{Edge gradient}
+
+The edge gradient is simply the x and y of the projected normal. Strokes whose
+normals point straight at the viewer have no edge gradient, meaning that there
+is no desire to orient them along the edges of the object, as they are likely
+in the middle. Strokes whose normals point straight to the side have a
+``edge gradient'' of length 1, meaning that they are on the very edge of the
+object and there is a strong desire to orient them along it.
+
+
+\subsubsection{Light gradient}
+
+The lighting gradient is estimated without the expense of creating a reference
+image, meaning a Sobel filter is not used. Instead, we consider the changes in
+lighting as a viewer looks across the surface of an object. To do this, we
+calculate the direction from the camera to each stroke. This direction is then
+moved an epsilon to the camera's right or up (for the gradient's dx and dy,
+respectively). A second ray is then fired from the camera and assumed to hit
+the same object. We approximate the local surface as a sphere and use a
+ray/sphere collision solver to find the new intersection (The sphere's radius
+is the mesh's curvature at that position. We currently hard-code this, but it
+may be calculated at load-time \cite{gatzke2006estimating}.). The lighting
+intensity is then calculated with the new position and normal there to find
+the difference in light. So, the lighting equation is run 3 times per stroke.
+
+
+\subsubsection{Orientation and Curvature}
+
+Strokes orientation is decided simply by rotating the gradient through a right
+angle. The amount of curvature is determined by multiplying the gradient length
+by the parameter ``curveFactor''; strokes always curve along the gradient
+(towards the center of light or away from the object's edges). Since strokes
+are point sprites, orientation and curvature are done using image
+transformations in the fragment shader.
+
+First, the fragment coordinate is rotated around the stroke center by the
+orientation. Then it is distorted according to curvature. Fragments with
+$x = 0.5$ will remain unaffected, while fragments near $x = 0$ or $x = 1$ will
+sag down in a parabola whose height scales with the curvature amount.
+
+$yDistort = curveAmount * (x - 0.5)^2$
+
+The stroke texture sampling is then taken at $(x, y - yDistort)$. The stroke
+texture controls opacity, not color. The fragment shader's output is the
+stroke's shaded color, with an opacity value or the stroke texture sampling.
 
 
 \begin{figure*}[ht]
@@ -272,19 +330,21 @@ TODO.
 
 As in \cite{Hertzmann:1998:PRC:280814.280951},
 \cite{Meier:1996:PRA:237170.237288}, \cite{Lu:2010:IPS:1730804.1730825}, we use
-multiple layers of brush strokes for each object. While the layer properties
-can be user-controller, we intend for the base layers to contain a smaller
-quantity of larger brush strokes and the top layers to contain a larger
-quantity of smaller brush strokes. The base layers capture rough details and
-cover the entirety of the original mesh, while the top layers show fine details
-and are expected to leave gaps between each other. We found that three layers
-of strokes was sufficient for the scenes that we tested.
+multiple layers of brush strokes for each object. Usually, the base layers will
+contain fewer, larger brush strokes. The base layers capture rough, un-detailed
+areas and completely cover object's silhouette, while the top layers show fine
+details and may leave gaps between each other. We found that three layers of
+strokes was sufficient for the scenes that we tested. Layers have completely
+separate properties, making for interesting visual effects; for example, a base
+layer may be unsaturated and have a rougher stroke texture.
 
-We support using a specular threshold and specular fade in to control the
-visibility of strokes within a layer. If the specular lighting contribution at
-a stroke does not exceed the minimum value, it is discarded. Similarly, if a
-stroke has low specular, we change its alpha value based on the specular fade
-in. This allows us to approximate the visual interest sampling in
+\subsubsection{Specular Fade In}
+
+We support having higher-layer strokes fade in to only areas of high specular
+light. If the specular lighting contribution at a stroke does not exceed a
+(user-specified) minimum value, it is discarded. Strokes with low specular will
+be partly transparent, allowing for a smooth transition. This allows us to
+approximate the visual interest sampling in
 \cite{Hertzmann:1998:PRC:280814.280951} and (other reference).
 
 
