@@ -1,11 +1,12 @@
 \documentclass[conference]{acmsiggraph}
 
 % http://en.wikibooks.org/wiki/LaTeX/Algorithms
-% \usepackage{algorithm2e}
-\usepackage{algpseudocode}
+\usepackage{algorithm2e}
+% \usepackage{algpseudocode}
 
 \usepackage{float}
 \usepackage{caption}
+\usepackage{amsmath}
 
 \TOGonlineid{45678}
 \TOGvolume{0}
@@ -29,7 +30,7 @@
 \begin{document}
 
 \teaser{
-  \includegraphics[height=2.0in]{images/green_bunny}
+  \includegraphics[height=200px]{images/green_bunny}
 }
 
 \maketitle
@@ -141,64 +142,44 @@ Our system creates stroke meshes out of three.js geometries. Other inputs will
 include layer, color, and lighting information. The system outputs an image to
 a WebGL canvas.
 
-% \RestyleAlgo{boxed}
-  % At load time: Create a ``Stroke Mesh'' particle system for each layer on each
-  % object
+\RestyleAlgo{boxruled}
+\begin{algorithm}
+\DontPrintSemicolon
+\caption{Painterly Rendering Overview}
+  {[}Section 2.2{]} At load time : \ForEach{object} {
+    \ForEach{layer} {
+      Create a ``stroke mesh'' particle system
+    }
+  }
+  {[}Section 2.3{]} At run time : \ForEach{frame} {
+    Render a depth image \\
+    \ForEach{object} {
 
-% \begin{algorithm}
+      \ForEach{layer from bottom to top} {
 
-% \begin{algorithmic}
-%   \State \textit{at load time}
-%     \ForAll{stroke layers}
-%       \State create a ``stroke mesh'' particle system
-%     \EndFor
-%   \State \textit{at run time}
-%     \ForAll{objects}
-%       \ForAll{stroke layers from bottom to top}
-%         \ForAll{strokes}
-%           ...
-%         \EndFor
-%       \EndFor
-%     \EndFor
-% \end{algorithmic}
-
-% \end{algorithm}
-
-\begin{enumerate}
-  \item At load time: create a ``stroke mesh'' particle system for each layer
-    on each object {[}Section 2.2{]}
-
-  \item At run time: every frame {[}Section 2.3{]}:
-
-      \begin{enumerate}
-        \item Render a depth image
-        \item For each object, for each layer from bottom to top, for each
-          stroke
-
+        \ForEach{stroke} {
+          Compute stroke properties in the vertex shader \\
           \begin{enumerate}
-            \item Compute the stroke properties in the vertex shader:
-
-              \begin{enumerate}
-                \item Compute zQuality (closeness to desired depth) and discard
-                  strokes with negative zQuality {[}Section 2.3.1{]}
-                \item Calculate diffuse and specular lighting and discard
-                  strokes with specular less than the minimum
-                  {[}Section 2.3.2{]}
-                \item Calculate the ``drawing gradient'' at the stroke's
-                  position, which provides the stroke's orientation and
-                  curvature {[}Sections 2.3.3-2.3.6{]}
-              \end{enumerate}
-
-            \item In the fragment shader, render an oriented, curved, colored
-              version of the stroke texture according to the above parameters
-              {[}Section 2.3.6{]}
-
+            \item {[}Section 2.3.1{]} Compute zQuality \\(closeness to
+              desired depth) and discard \\ strokes with negative zQuality
+            \item  {[}Section 2.3.2{]} Compute diffuse and \\ specular
+              lighting and discard strokes with \\ specular less than the
+              minimum
+            \item {[}Sections 2.3.3 - 2.3.6{]} Compute the \\
+              ``drawing gradient'' at the stroke's position, \\ which provides
+              the stroke's orientation and \\ curvature
           \end{enumerate}
 
-      \end{enumerate}
+          {[}Section 2.3.6{]} In the fragment shader, render an oriented,
+          curved, colored version of the stroke texture according to the
+          above parameters
+        }
 
-\end{enumerate}
+      }
 
+    }
+  }
+\end{algorithm}
 
 
 \subsection{Stroke Mesh Creation}
@@ -302,11 +283,14 @@ and lighting attributes. These two parts are called the ``edge gradient'' and
 ``light gradient''.
 
 We calculate their contributions with this formula:
-
-% TODO: format this
-  $edgePart = \| edgeGradient \|$ \\
-  $lightPart = min(lightFactor * \| lightGradient \| , (1 - edgePart)^2)$ \\
-  $netGradient = edgePart * norm(edgeGradient) + lightPart * norm(lightGradient)$
+% TODO: this could use better alignment
+\begin{align*}
+  edgePart = &\| edgeGradient \| \\
+  lightPart = &min(lightFactor \times \| lightGradient \| , \\
+              &(1 - edgePart)^2) \\
+  netGradient = &edgePart \times norm(edgeGradient) +\\
+                &lightPart \times norm(lightGradient)
+\end{align*}
 
 Near the edges, only the edge gradient will factor in. It is more important
 that strokes align along the silhouette edges than that they circle the light.
