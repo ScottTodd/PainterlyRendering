@@ -1,3 +1,10 @@
 doc
 node_modules
 public
+*~
+*.synctex.gz
+*.aux
+*.log
+*.bbl
+*.blg
+.DS_Store
