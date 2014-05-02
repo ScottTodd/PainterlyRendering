@@ -8,6 +8,13 @@
 \usepackage{caption}
 \usepackage{amsmath}
 
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
 \TOGonlineid{45678}
 \TOGvolume{0}
 \TOGnumber{0}
@@ -19,9 +26,10 @@
 
 \title{Painterly Rendering for WebGL \\ May 1, 2014}
 
+
 \author{Andy Hanson\thanks{email: hansoa2@rpi.edu}\\
         Scott Todd\thanks{email: todds@rpi.edu}}
-\pdfauthor{Scott Todd}
+\pdfauthor{Andy Hanson, Scott Todd}
 
 \keywords{Painterly Rendering, Non-Photorealistic Rendering,
           Particle Systems, Painting, Interactive Techniques,
@@ -30,16 +38,20 @@
 \begin{document}
 
 \teaser{
-  \includegraphics[height=200px]{images/green_bunny}
+  \includegraphics[height=180px]{images/green_bunny}
 }
 
 \maketitle
 
+
 \begin{abstract}
 
-TODO.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus dignissim, ligula tristique ullamcorper semper, lacus tortor adipiscing ipsum, in auctor ipsum nunc ac orci. Etiam a tincidunt ante. Fusce pulvinar aliquet dolor, vel pharetra leo. Etiam adipiscing, sapien quis condimentum iaculis, risus ligula facilisis magna, ac vehicula odio mauris ac augue. Ut fermentum eros metus, id dictum mi vestibulum eu. Aliquam euismod sem id hendrerit iaculis. In id nibh sem. Mauris non arcu vitae sem pulvinar porttitor. Curabitur ac convallis turpis, a fermentum ipsum. Praesent vestibulum iaculis sem vitae viverra.
+We produce painterly images of 3D models by covering them in a particle system
+of brush strokes. Strokes move along with the original object, producing smooth
+animations. Strokes are rendered in multiple layers; higher layers show detail
+and appear in areas of high specular value. Strokes orient and curve themselves
+along edges and towards centers of light. We have avoided the use of the
+painter's algorithm or 2D image manipulation.
 
 \end{abstract}
 
@@ -60,8 +72,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus dignissim, ligu
 \TOGlinkslist
 
 %% Required for all content.
+\blfootnote{Project Repository: https://github.com/ScottTodd/PainterlyRendering}
 
 \copyrightspace
+
 
 \section{Introduction}
 
@@ -85,10 +99,13 @@ computational cost of fully rendering the scene twice, as well as a
 with 3D geometry.
 
 Like others \cite{Meier:1996:PRA:237170.237288}, we instead keep a scene of
-brush strokes. There is no ``real'' rendering but the paint, and brush strokes
-store their own color and calculate their own light.
-
-(Link to GitHub and hosted url)
+brush stroke particles. There is no ``real'' rendering but the paint, and
+strokes store their own color and calculate their own light. Strokes are
+transformed along with the original geometry, allowing them to be controlled by
+a physics engine (in our case, cannon.js). In video games, there is also the
+potential to change brush stroke properties according to an object’s state -
+for example, a damaged character glowing red. It would also be possible for
+painted objects to appear alongside those in other styles.
 
 
 \subsection{Related Work}
@@ -103,6 +120,15 @@ the reference picture, or a solid color may be used per-particle and the
 reference picture ignored. The color is applied to a stroke texture (called
 the ``brush image''), which is finally applied to the screen at the particle's
 (projected) location.
+
+\cite{Lu:2010:IPS:1730804.1730825} uses a hybrid approach - strokes are
+attached to the screen in 2D but (in the case of a 3D animated scene) follow
+the motion vectors of objects. There is still a slight grainy look as strokes
+are stochastically killed and reborn when passing object boundaries. Their
+approach is also suitable to video camera footage. Like us, they use multiple
+stroke layers and a variety of stroke parameters (in their approach, these
+parameters are applied to the whole image at once rather than to a particular
+object.)
 
 In \cite{Hertzmann:1998:PRC:280814.280951}, 2D input images are painted over
 by layers of spline brush strokes. Strokes are placed along areas of high
@@ -120,15 +146,6 @@ and the position and styling of each stroke. Their system uses information
 supplied from one or more viewpoints to render the models at any new viewpoint
 while preserving the desired aesthetic.
 
-
-% \begin{figure*}[t] % figure* allows for this to span the full page width
-%   \centering
-%   \includegraphics[width=5.0in]{images/torus_depth_test_demo}
-%   \caption{The image on the right discards fragments whose depth values differ
-%            from the value stored in the depth buffer texture while the image on
-%            the left does not. Note the intersections and other artifacts on the
-%            left.}
-% \end{figure*}
 
 \section{Painterly Rendering System}
 
@@ -181,7 +198,6 @@ a WebGL canvas.
   }
 \end{algorithm}
 
-
 \subsection{Stroke Mesh Creation}
 
 \subsubsection{Stroke Selection}
@@ -201,16 +217,24 @@ show an undesirable ordering of particles. So, a stroke particles are shuffled
 once during the loading phase.
 
 
-\subsubsection{Colors}
+\subsubsection{Color Selection}
 
 To color particles, the user may select random hue, saturation, and luminance
 ranges for particles to be chosen from. This produces aesthetically pleasing
 representations of what are essentially ``solid'' colored objects.
 
-We are also exploring the use of textures.
+\begin{figure}[b]
+  \centering
+  \includegraphics[width=1.8in]{images/better_depth_value_rendering_cropped}
+  \caption{The Stanford bunny rendered into a depth buffer texture. Note that
+           areas close to the screen are lighter than areas further from the
+           screen.}
+\end{figure}
 
 
-\subsection{Stroke Rendering}
+\subsection{Rendering}
+
+\subsubsection{Rendering Overview}
 
 Both the original triangle mesh and stroke meshes are needed for rendering. We
 render in two passes. First, we render the original geometry into a (floating
@@ -223,46 +247,58 @@ We also render object borders by fattening the original and drawing only
 triangles which face away from the camera. This is visually pleasing, but not
 necessary for our method.
 
+\begin{figure*}[t] % figure* allows for this to span the full page width
+  \centering
+  \includegraphics[width=5.0in]{images/torus_depth_test_demo}
+  \caption{On the left, all zQuality values are set to 1. Backfacing strokes
+           render, causing black marks. It is unclear which portions are in
+           front. On the right, zQuality is used, so only strokes that should
+           be showing are drawn and strokes fade in smoothly along the edges.}
+\end{figure*}
 
 \subsubsection{zQuality}
 
 
-\begin{minipage}{\linewidth}% to keep image and caption on one page
-  % \makebox[\linewidth]{%        to center the image
-  \includegraphics[width=3.32in]{images/torus_depth_test_demo}
-  \captionof{figure}{The image on the right discards fragments whose depth values
-                     differ from the value stored in the depth buffer texture
-                     while the image on the left does not. Note the intersections
-                     and other artifacts on the left.}
-  \label{visina8}
-\end{minipage}
 
+% \begin{minipage}{\linewidth}% to keep image and caption on one page
+%   % \makebox[\linewidth]{%        to center the image
+%   \includegraphics[width=3.32in]{images/torus_depth_test_demo}
+%   \captionof{figure}{The image on the right discards fragments whose depth values
+%                      differ from the value stored in the depth buffer texture
+%                      while the image on the left does not. Note the intersections
+%                      and other artifacts on the left.}
+% \end{minipage}
 
 Good results may be achieved by sorting particles by depth, but at the cost of
 performance. Blending particles is also unsuccessful because the number of
 overlapping particles is unpredictable. So, within each layer, particles are
 always drawn in the same order and always draw on top of each other. This leads
-to occlusion issues when a layer overlaps itself, shown in Figure 1.
-
-To mitigate this effect, we render in two passes. First, we render the original
-geometry into a floating point depth buffer texture.
-
-In the first iteration of our algorithm, we discarded fragments whose depth
-values differ from the value stored in the depth buffer at that position. This
-method performs a sharp cut-off around the silhouette of each object, so it
-conflicted with the painterly rendering focus of our project.
+to occlusion issues when a layer overlaps itself (see Figure 2).
 
 This depth texture is passed as a uniform into the vertex shader for paint
 strokes. Each stroke measures its depth compared to the expected depth, and
-fades out when there is a discrepancy. (A simple on/off threshold would work,
-but strokes just showing up coming around the edge of an object would suddenly
-``pop'' into existence.)
+fades out as the difference increases. We scale opacity by an amount
+``zQuality''defined as:
+\begin{align*}
+zQual&ity = 1.0 - \\
+           &(modelViewPosition.z - depthTextureZ) / zEpsilon
+\end{align*}
+Where zEpsilon is a parameter such that greater values cause strokes to fade in
+over a greater distance. A simple on/off threshold ($zEpsilon \ll 1$) would
+work, but strokes just showing up coming around the edge of an object would
+suddenly ``pop'' into existence.
+
+We could have discarded fragments rather than whole strokes, but decided that
+the visible clipping of strokes that would result was undesirable.
 
 There is still another problem for strokes just at the edge of an object, which
-do not frames share its depth buffer. A slight fattening of the original mesh
-ensures that all of its strokes fit within its borders. We expanded the
-original mesh by pushing each vertex a small distance along the normal at that
-vertex.
+may on some frames barely extend beyond its depth buffer, leading to negative
+zQuality and a discarded stroke; and on other frames fit perfectly; meaning
+that these strokes would flicker on and off. A slight fattening of the original
+mesh ensures that all of its strokes fit within its borders. We fattened the
+original mesh by pushing each vertex a small distance along its normal.
+
+
 
 \subsubsection{Lighting}
 
