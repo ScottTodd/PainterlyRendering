@@ -24,7 +24,7 @@
 \TOGdataURL{}
 \TOGcodeURL{}
 
-\title{Painterly Rendering for WebGL \\ May 1, 2014}
+\title{Object-Space Painterly Rendering for WebGL}
 
 
 \author{Andy Hanson\thanks{email: hansoa2@rpi.edu}\\
@@ -32,13 +32,13 @@
 \pdfauthor{Andy Hanson, Scott Todd}
 
 \keywords{Painterly Rendering, Non-Photorealistic Rendering,
-          Particle Systems, Painting, Interactive Techniques,
-          GPU Processing}
+          Particle Systems, Painting, GPU Processing}
 
 \begin{document}
 
 \teaser{
   \includegraphics[height=180px]{images/green_bunny}
+  \caption{The Stanford bunny rendered with 3 layers of brush strokes.}
 }
 
 \maketitle
@@ -249,7 +249,7 @@ necessary for our method.
 
 \begin{figure*}[t] % figure* allows for this to span the full page width
   \centering
-  \includegraphics[width=5.0in]{images/torus_depth_test_demo}
+  \includegraphics[width=4.5in]{images/torus_depth_test_demo}
   \caption{On the left, all zQuality values are set to 1. Backfacing strokes
            render, causing black marks. It is unclear which portions are in
            front. On the right, zQuality is used, so only strokes that should
@@ -258,22 +258,11 @@ necessary for our method.
 
 \subsubsection{zQuality}
 
-
-
-% \begin{minipage}{\linewidth}% to keep image and caption on one page
-%   % \makebox[\linewidth]{%        to center the image
-%   \includegraphics[width=3.32in]{images/torus_depth_test_demo}
-%   \captionof{figure}{The image on the right discards fragments whose depth values
-%                      differ from the value stored in the depth buffer texture
-%                      while the image on the left does not. Note the intersections
-%                      and other artifacts on the left.}
-% \end{minipage}
-
 Good results may be achieved by sorting particles by depth, but at the cost of
 performance. Blending particles is also unsuccessful because the number of
 overlapping particles is unpredictable. So, within each layer, particles are
 always drawn in the same order and always draw on top of each other. This leads
-to occlusion issues when a layer overlaps itself (see Figure 2).
+to occlusion issues when a layer overlaps itself (see Figure 3).
 
 This depth texture is passed as a uniform into the vertex shader for paint
 strokes. Each stroke measures its depth compared to the expected depth, and
@@ -298,25 +287,23 @@ that these strokes would flicker on and off. A slight fattening of the original
 mesh ensures that all of its strokes fit within its borders. We fattened the
 original mesh by pushing each vertex a small distance along its normal.
 
-
-
 \subsubsection{Lighting}
 
 Each stroke is shaded the same throughout, using the light calculated at its
 center. We use the Phong equations. Light is calculated per stroke (in the
 vertex shader), rather than per-fragment. The total diffuse and specular
-lighting are calculated separately (see section 2.3.8).
+lighting are calculated separately (see section 2.3.9).
 
 
 \subsubsection{Use of Gradient}
 
-For each stroke, we calculate a ``gradient'' property which strokes will be
-drawn perpendicular to. We would like strokes to satisfy the following
+For each stroke, we calculate a ``drawing gradient'' property which strokes
+will be drawn perpendicular to. We would like strokes to satisfy the following
 attributes: they should follow the contours of objects and not extend far
 beyond the edges; and they should circle around centers of light. To satisfy
 these, we calculate the ``net gradient'' of the image based on both position
 and lighting attributes. These two parts are called the ``edge gradient'' and
-``light gradient''.
+``light gradient'' (see Figures 4-6).
 
 We calculate their contributions with this formula:
 % TODO: this could use better alignment
@@ -336,6 +323,13 @@ to strictly reduce it; without squaring, strokes would still occasionally leak
 past the edges.
 
 
+\begin{figure}
+  \centering
+  \includegraphics[width=1.8in]{images/betterLightPartCamPartShaded}
+  \caption{Strokes are green where edgePart is high, red where lightPart is
+           high, and transparent otherwise.}
+\end{figure}
+
 \subsubsection{Edge gradient}
 
 The edge gradient is simply the x and y of the projected normal. Strokes whose
@@ -344,7 +338,6 @@ is no desire to orient them along the edges of the object, as they are likely
 in the middle. Strokes whose normals point straight to the side have a
 ``edge gradient'' of length 1, meaning that they are on the very edge of the
 object and there is a strong desire to orient them along it.
-
 
 \subsubsection{Light gradient}
 
@@ -361,6 +354,22 @@ may be calculated at load-time \cite{gatzke2006estimating}.). The lighting
 intensity is then calculated with the new position and normal there to find
 the difference in light. So, the lighting equation is run 3 times per stroke.
 
+\begin{figure}
+  \centering
+  \includegraphics[width=1.8in]{images/betterLightPartCamPart}
+  \caption{Lit version. Note how strokes circle around the center of light, and
+           also align along the sphere’s edges.}
+  \includegraphics[width=1.8in]{images/betterLightPartWild}
+  \caption{To create this image, ``lightPart'' was defined as
+           $lightFactor \times ||lightGradient||$. Specular light is just
+           coming in on the edge, driving the gradient wild.}
+\end{figure}
+
+% \begin{minipage}{\linewidth}% to keep image and caption on one page
+%   % \makebox[\linewidth]{%        to center the image
+%   \includegraphics[width=3.32in]{images/sphere_rotation_curve}
+%   \captionof{figure}{From left to right: no orientation or curvature, orientation with no curvature, orientation and exaggerated curvature (2.0).}
+% \end{minipage}
 
 \subsubsection{Orientation and Curvature}
 
@@ -372,23 +381,24 @@ are point sprites, orientation and curvature are done using image
 transformations in the fragment shader.
 
 First, the fragment coordinate is rotated around the stroke center by the
-orientation. Then it is distorted according to curvature. Fragments with
-$x = 0.5$ will remain unaffected, while fragments near $x = 0$ or $x = 1$ will
-sag down in a parabola whose height scales with the curvature amount.
+orientation. Then it is distorted according to curvature (see Figure 7).
+Fragments with $x = 0.5$ will remain unaffected, while fragments near $x = 0$
+or $x = 1$ will sag down in a parabola whose height scales with the curvature
+amount.
 
-$yDistort = curveAmount * (x - 0.5)^2$
+$yDistort = curveAmount \times (x - 0.5)^2$
 
 The stroke texture sampling is then taken at $(x, y - yDistort)$. The stroke
 texture controls opacity, not color. The fragment shader's output is the
 stroke's shaded color, with an opacity value or the stroke texture sampling.
 
 
-\begin{figure*}[ht]
+\begin{figure}
   \centering
-  \includegraphics[width=6.0in]{images/sphere_rotation_curve}
+  \includegraphics[width=3.45in]{images/sphere_rotation_curve}
   \caption{From left to right: no orientation or curvature, orientation with
            no curvature, orientation and exaggerated curvature (2.0).}
-\end{figure*}
+\end{figure}
 
 
 \subsubsection{Layering}
@@ -410,7 +420,10 @@ light. If the specular lighting contribution at a stroke does not exceed a
 (user-specified) minimum value, it is discarded. Strokes with low specular will
 be partly transparent, allowing for a smooth transition. This allows us to
 approximate the visual interest sampling in
-\cite{Hertzmann:1998:PRC:280814.280951} and (other reference).
+\cite{Hertzmann:1998:PRC:280814.280951} and \cite{Lu:2010:IPS:1730804.1730825};
+however, it does not draw small strokes along object borders. (If such was
+really desired, it could be done by considering the magnitude of edge
+gradient.)
 
 
 \subsection{Parameters List}
@@ -433,52 +446,70 @@ created for this purpose.
 
 \section{Results}
 
-TODO.
-
-\begin{figure}[ht]
+\begin{figure}
   \centering
-  \includegraphics[width=3.3in]{images/bunny_with_fade_in}
-  \caption{The Stanford bunny rendered using three layers of brush strokes.
-           The topmost layer uses a minimum specular cutoff of 0.95 and a
-           specular fade-in of 0.63.}
+  \includegraphics[width=2.5in]{images/betterMyBall}
+  \caption{Different layers may have different properties. Large red
+           unsaturated strokes lead to medium pink grids leading to rainbow
+           stick figures.}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}
   \centering
-  \includegraphics[width=3.3in]{images/teapot_with_background}
+  \includegraphics[width=2.5in]{images/MagmaBunny}
+  \caption{The Stanford bunny demonstrating some of our parameters. The base
+           layer contains large, dark, desaturated brush strokes. The top layer
+           disappears below a minimum specular and fades in as specular
+           increases.}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=2.5in]{images/teapot_cropped}
   \caption{The Utah teapot rendered using three layers of brush strokes.
-           The topmost layer uses a specular fade-in of 0.03.}
+           The topmost layer uses a specular fade-in}
 \end{figure}
 
 
 \section{Limitations and Future Work}
 
 Our method achieves smooth zooming by scaling strokes down when they are
-further away. Thus, objects in the distance may be drawn with many small
+farther away. Thus, objects in the distance may be drawn with many small
 strokes rather than with a few well-placed strokes.
 
 The primary efficiency issue with our method is that every stroke is stored as
 a particle with position, normal, and coloring information. For large objects
-with many small strokes this would use a large amount of data. Also, most
-strokes are discarded in most frames, whether because they are occluded or do
-not reach their minimum specular value. One improvement might be to perform
-stroke generation in a geometry shader and only store the mesh as data.
-Unfortunately, WebGL does not yet support geometry shaders.
+with many small strokes this would have a great data cost. Most strokes are
+discarded in most frames, whether because they are occluded or do not reach
+their minimum specular value. One improvement might be to perform stroke
+generation in a geometry shader and only store the mesh as data.
+(Unfortunately, WebGL does not yet support geometry shaders.)
 
 Our method does not cull strokes at object boundaries, instead curving them
 inwards. This would not work well for objects with corners. However,
 per-fragment culling could be easily added, at the cost of unappealingly
 slicing strokes in two.
 
+We are also exploring the use of textures for color selection. If a model
+provides a set of UV coordinates at each vertex on a face, we can interpolate
+those UV coordinates and perform a lookup into a texture. We can then use that
+color for the brush stroke instead of a random color. To preserve details, we
+could strategically place upper-layer strokes at areas of high gradient in the
+texture, similar to what others \cite{Hertzmann:1998:PRC:280814.280951},
+\cite{Lu:2010:IPS:1730804.1730825} have done to painterly images as a whole.
+
+There remains the possibility of controlling stroke parameters in real time
+based on how a game plays out. Values passed to the vertex shader as uniforms
+are animatable - this includes texture, size, curvature, and specular
+parameters. It may also be desired to efficiently animate what are currently
+specified as shader (per-stroke) attributes - for example, stroke colors on a
+character may increase in saturation when the character is selected. This could
+be done by adding uniform factors or differentials for these values.
+
 
 \section*{Acknowledgements}
 
-(TODO) Three.js
-
-\LaTeX : (TODO: write)
-
-SIGGRAPH (TODO: LaTeX style)
-
+We developed our system using three.js.
 
 \bibliographystyle{acmsiggraph}
 \bibliography{painterly_rendering}
