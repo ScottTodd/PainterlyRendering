@@ -24,6 +24,8 @@ Can't simply use three.GeometryUtils.randomPointInTriangle
 Done using barycentric coordinates.
 The best reference for random selection I can find is
 	<http://www.cs.fsu.edu/~banks/courses/2003.3/homework/hw.04.html>.
+It's also used in
+	<http://users.soe.ucsc.edu/~avg/Papers/fur_gi.pdf>.
 ###
 randomPointAndNormalInTriangle = (va, vb, vc, na, nb, nc) ->
 	alpha =

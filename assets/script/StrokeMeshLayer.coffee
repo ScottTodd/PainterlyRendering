@@ -76,6 +76,8 @@ module.exports = class StrokeMeshLayer
 						lum: 0.5
 				when 'randomHSL'
 					randomHSLs opts.nStrokes, colorsOpt
+				else
+					fail()
 
 		[ outOpts.vertices, outOpts.normals ] =
 			meshVerticesNormals (new three.Mesh geometry), outOpts.nStrokes

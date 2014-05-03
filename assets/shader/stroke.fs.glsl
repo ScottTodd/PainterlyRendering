@@ -40,9 +40,6 @@ Leaves middle alone. Drops ends by `curveAmount` like a parabola.
 */
 vec2 distort(vec2 textureCoordinate)
 {
-	float bottom =
-		-curveAmount;
-
 	float x =
 		textureCoordinate.x;
 

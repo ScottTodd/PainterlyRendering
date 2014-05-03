@@ -7,7 +7,8 @@ uniform float specularMin;
 uniform float specularFadeIn;
 uniform float specularIntensity;
 uniform float specularPower;
-uniform int   enableRotation;
+uniform int enableRotation;
+// uniform float lightGradientFactor;
 uniform float curveFactor;
 
 uniform vec3 ambientLightColor;
@@ -160,6 +161,32 @@ float getLightDifferential(
 	return calcLightAmount(newPos, newNorm) - lightAmount;
 }
 
+float Pi =
+	3.141592653589793238462643383279502884197169399375105820974944;
+
+float cosEase(float x)
+{
+	return -0.5 * cos(Pi * x) + 0.5;
+}
+
+float shiftToRight(float x)
+{
+	return max(0.0, x * 2.0 - 1.0);
+}
+
+/*
+Makes x stick closer to 1.
+*/
+float quadraticEase(float x)
+{
+	return 1.0 - square(1.0 - x);
+}
+
+float quarticEase(float x)
+{
+	return 1.0 - square(square(x - 1.0));
+}
+
 /*
 Returned value has length in range [0..1].
 */
@@ -170,6 +197,9 @@ vec2 getGradient(
 	vec3 mvNormal,
 	float lightAmount)
 {
+	float lightGradientFactor =
+		2.0;
+
 	// Camera 'gradient'
 	vec4 projectedNormal =
 		normalize(projectionMatrix * vec4(mvNormal, 0));
@@ -196,7 +226,7 @@ vec2 getGradient(
 	float cameraPart =
 		length(cameraGradient);
 	float lightPart =
-		min(length(lightGradient), 1.0 - cameraPart);
+		min(lightGradientFactor * length(lightGradient), square(1.0 - cameraPart));
 
 	cameraGradient =
 		normalize(cameraGradient);
@@ -206,7 +236,7 @@ vec2 getGradient(
 	/*
 	// Visualize the relative gradient contributions.
 	strokeShadedColor =
-		vec4(1, 0, 0, 1) * lightPart + vec4(0, 1, 0, 1) * camPart
+		vec4(1, 0, 0, 1) * lightPart + vec4(0, 1, 0, 1) * cameraPart;
 	*/
 
 	return cameraPart * cameraGradient + lightPart * lightGradient;
@@ -316,12 +346,16 @@ void main()
 			mNormal, mvNormal,
 			colorAmount(diffuseTotal + specularTotal));
 
-	if (enableRotation == 1) {
-		strokeOrientation =
-			normalize(vec2(-gradient.y, gradient.x));
-	} else {
-		strokeOrientation =
+	strokeOrientation =
+		(enableRotation == 1) ?
+			normalize(vec2(-gradient.y, gradient.x))
+		:
 			vec2(1.0, 0.0);
+
+	if (length(strokeOrientation) < 0.99)
+	{
+		strokeShadedColor = vec4(1, 0, 0, 1);
+		strokeOrientation = vec2(1, 0);
 	}
 
 	curveAmount =

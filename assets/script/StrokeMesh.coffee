@@ -41,7 +41,6 @@ module.exports = class StrokeMesh extends GameObject
 	Use a factory method instead!
 	###
 	constructor: (originalGeometry, borderSize, @_strokeLayers) ->
-		depthGeometry = originalGeometry.clone()
 		fatGeometry = originalGeometry.clone()
 		fattenGeometry fatGeometry, 0.1
 
