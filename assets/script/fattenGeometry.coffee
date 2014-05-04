@@ -4,19 +4,22 @@ three = require 'three'
 module.exports = fattenGeometry = (geometry, fattenAmount) ->
 	type geometry, three.Geometry, fattenAmount, Number
 
-	geometry.computeVertexNormals()
+	fat =
+		geometry.clone()
+
+	fat.computeVertexNormals()
 
 	vertexNormals = []
-	for face in geometry.faces
+	for face in fat.faces
 		[ vertexNormals[face.a], vertexNormals[face.b], vertexNormals[face.c] ] =
 			face.vertexNormals
 
-	for idx in [0...geometry.vertices.length]
+	for idx in [0...fat.vertices.length]
 		# SphereGeometry apparently does not use every vertex...
 		if vertexNormals[idx]?
 			fattener = new three.Vector3
 			fattener.copy vertexNormals[idx]
 			fattener.multiplyScalar fattenAmount
-			geometry.vertices[idx].add fattener
+			fat.vertices[idx].add fattener
 
-	null
+	fat

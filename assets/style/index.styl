@@ -58,10 +58,8 @@ body
 	centered-x()
 
 	margin-top 10px
-	width 1000px
-	height 500px
-
-	border 1px solid black
+	width 100px
+	height 50px
 
 #parameters
 	width 1200px
@@ -87,7 +85,20 @@ body
 .layerController
 	@extends .subController
 	grad-bg #fed8 #def8
+	position relative
+	height 445px
 
+.layerControllerOverlay
+	width 380px
+	border-radius 20px
+	height 417px
+	grad-bg #6668 #9998
+
+	display block
+	position absolute
+	top 20
+	bottom 0
+	left 0
 
 .controlTitle
 	font-control-title()

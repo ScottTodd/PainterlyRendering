@@ -41,14 +41,11 @@ module.exports = class StrokeMesh extends GameObject
 	Use a factory method instead!
 	###
 	constructor: (originalGeometry, borderSize, @_strokeLayers) ->
-		fatGeometry = originalGeometry.clone()
-		fattenGeometry fatGeometry, 0.1
-
 		@_depthMesh =
-			new DepthBufferMesh fatGeometry
+			new DepthBufferMesh fattenGeometry originalGeometry, 0.1
 
-		outlineGeometry = originalGeometry.clone()
-		fattenGeometry outlineGeometry, borderSize
+		outlineGeometry =
+			fattenGeometry originalGeometry, borderSize
 
 		@_originalMesh =
 			new three.Mesh outlineGeometry, new three.MeshBasicMaterial

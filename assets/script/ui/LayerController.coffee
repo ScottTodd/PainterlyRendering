@@ -111,7 +111,6 @@ module.exports = class LayerController extends GameObject
 			@_specMin.div(),
 			@_specFadeIn.div()
 
-
 		# Handle events
 		allOpts =
 			[ @_on, @_nStrokes, @_strokeSize, @_strokeTexture,
@@ -126,6 +125,20 @@ module.exports = class LayerController extends GameObject
 		@_div =
 			$ "<div class='layerController'/>"
 		@_div.append @_on.div(), strokeDiv, hslDiv, specDiv
+
+		@_overlay =
+			$ "<div class='layerControllerOverlay'/>"
+		@_div.append @_overlay
+
+		showOn = =>
+			if @on()
+				@_overlay.hide() #.slideUp()
+			else
+				@_overlay.show() #.slideDown()
+
+		@_on.change().add showOn
+		showOn()
+
 
 	read @, 'div'
 
