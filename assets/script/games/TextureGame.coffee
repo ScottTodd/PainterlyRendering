@@ -2,6 +2,7 @@ three = require 'three'
 CameraController = require '../CameraController'
 FramerateTracker = require '../FramerateTracker'
 Game = require '../Game'
+ScreenShooter = require '../ScreenShooter'
 SimpleStrokeMeshObject = require '../SimpleStrokeMeshObject'
 StrokeMeshLayer = require '../StrokeMeshLayer'
 StrokeMesh = require '../StrokeMesh'
@@ -10,7 +11,7 @@ TexturedObject = require '../TexturedObject'
 module.exports = class TextureGame extends Game
 	allResources: ->
 		models: [ 'bunny', 'quad' ]
-		textures: [ 'stroke', 'white', 'The_Scream', 'easy_colors' ]
+		textures: [ 'stroke1', 'white', 'The_Scream', 'easy_colors' ]
 
 	initialObjects: ->
 		cc =
@@ -18,6 +19,8 @@ module.exports = class TextureGame extends Game
 				distance: 25
 		ft =
 			new FramerateTracker '#frameRateNumber'
+		ss =
+			new ScreenShooter '#screenShotButton'
 
 		testQuad =
 			new TexturedObject (new three.Vector3 0, 0, 0),
@@ -33,18 +36,19 @@ module.exports = class TextureGame extends Game
 					hue: 0.65
 					sat: 0.0
 					lum: 1.0
-				strokeTexture: @resources().texture 'stroke'
+				strokeTexture: @resources().texture 'stroke1'
+				specularIntensity: 0
 				layers: [
-					nStrokes: 500
-					strokeSize: 380
+					nStrokes: 600
+					strokeSize: 0.9
+				,
+					nStrokes: 1000
+					strokeSize: 0.5
 				,
 					nStrokes: 3000
-					strokeSize: 160
-				,
-					nStrokes: 10000
-					strokeSize: 30
+					strokeSize: 0.15
 
 				]
 
 
-		super.concat [ cc, ft, quad ]
+		super.concat [ cc, ft, ss, quad ]
