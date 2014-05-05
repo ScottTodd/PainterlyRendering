@@ -147,20 +147,6 @@ module.exports = class ParametersController extends GameObject
 					materialName: 'ball'
 					mass: 1
 					strokeMeshOptions: strokeMeshOpts
-						###
-						strokeTexture: @resources().texture 'stroke1'
-						colors:
-							type: 'randomHSL'
-							hue: [0.05, 0.25]
-							sat: [0.40, 0.80]
-							lum: [0.40, 0.80]
-						specularIntensity: 1
-						specularPower: 4
-						layers: [
-								nStrokes: 4000
-								strokeSize: 0.5
-						]
-						####
 					init: ->
 						@quaternion().setFromAxisAngle \
 							(new cannon.Vec3 1, 0, 0),
@@ -168,8 +154,6 @@ module.exports = class ParametersController extends GameObject
 			@balls.push ball
 
 		@walls.concat @balls
-
-
 
 
 	start: ->

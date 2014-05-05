@@ -9,13 +9,13 @@ Light = require '../Light'
 
 module.exports = class TextureGame extends Game
 	allResources: ->
-		models: [ 'bunny', 'quad' ]
+		models: [ 'bunny', 'quad', 'sphere' ]
 		textures: [ 'stroke1', 'white', 'The_Scream', 'easy_colors' ]
 
 	initialObjects: ->
 		cc =
 			new CameraController
-				distance: 25
+				distance: 3
 		ft =
 			new FramerateTracker '#frameRateNumber'
 		ss =
@@ -28,7 +28,7 @@ module.exports = class TextureGame extends Game
 
 		quad =
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
-				geometry: @resources().geometry 'quad'
+				geometry: @resources().geometry 'bunny'
 				objectTexture: @resources().texture 'The_Scream'
 				colors:
 					type: 'randomHSL'
@@ -39,13 +39,13 @@ module.exports = class TextureGame extends Game
 				specularIntensity: 2.0
 				layers: [
 					nStrokes: 600
-					strokeSize: 0.9
+					strokeSize: 0.3
 				,
 					nStrokes: 1000
-					strokeSize: 0.5
+					strokeSize: 0.2
 				,
 					nStrokes: 3000
-					strokeSize: 0.15
+					strokeSize: 0.1
 				]
 
 		l1 =

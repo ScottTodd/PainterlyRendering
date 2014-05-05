@@ -66,6 +66,8 @@ module.exports = class StrokeMeshLayer
 			opts.enableRotation ? 1
 		outOpts.curveFactor =
 			opts.curveFactor ? 1.0
+		outOpts.depthEpsilon =
+			opts.depthEpsilon ? 1.0
 		outOpts.objectTexture = getOpt opts, 'objectTexture', -> null
 
 		colorsOpt = getOpt opts, 'colors'
@@ -102,7 +104,7 @@ module.exports = class StrokeMeshLayer
 	###
 	constructor: (opts) ->
 		{ nStrokes, strokeSize, vertices, normals, uvs, hasUVs, colors,
-		  strokeTexture, objectTexture, enableRotation, curveFactor,
+		  strokeTexture, objectTexture, enableRotation, curveFactor, depthEpsilon,
 		  specularMin, specularFadeIn, specularIntensity, specularPower } = opts
 
 		check vertices.length == nStrokes, 'must have nStrokes vertices'
@@ -131,6 +133,9 @@ module.exports = class StrokeMeshLayer
 			curveFactor:
 				type: 'f'
 				value: curveFactor
+			depthEpsilon:
+				type: 'f'
+				value: 0.6
 			depthTexture:
 				type: 't'
 				value: null

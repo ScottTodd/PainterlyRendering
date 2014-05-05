@@ -40,6 +40,13 @@ module.exports = class LayerController extends GameObject
 					'triangle', 'square', 'stick', 'grid'
 				]
 				start: 'stroke1'
+		@_objectTexture =
+			new RadioSelector
+				name: 'Object Texture'
+				options: [
+					'none', 'The_Scream', 'grid'
+				]
+				start: 'none'
 		@_strokeEnableRotation =
 			new OnOffButton
 				start: 1
@@ -52,7 +59,7 @@ module.exports = class LayerController extends GameObject
 
 		strokeDiv.append ($ "<div class='rangeGroup'/>").append \
 			@_nStrokes.div(), @_strokeSize.div()
-		strokeDiv.append @_strokeTexture.div()
+		strokeDiv.append @_strokeTexture.div(), @_objectTexture.div()
 		strokeDiv.append ($ "<div class='controlName'/>").text "Rotation"
 		strokeDiv.append @_strokeEnableRotation.div()
 		strokeDiv.append @_strokeCurveFactor.div()
@@ -113,7 +120,7 @@ module.exports = class LayerController extends GameObject
 
 		# Handle events
 		allOpts =
-			[ @_on, @_nStrokes, @_strokeSize, @_strokeTexture,
+			[ @_on, @_nStrokes, @_strokeSize, @_strokeTexture, @_objectTexture,
 			  @_strokeEnableRotation, @_strokeCurveFactor,
 			  @_hue, @_sat, @_lum,
 			  @_specIntense, @_specPow, @_specMin, @_specFadeIn ]
@@ -147,6 +154,9 @@ module.exports = class LayerController extends GameObject
 
 	opts: ->
 		strokeTexture: @resources().texture @_strokeTexture.get()
+		objectTexture:
+			if @_objectTexture.get() != 'none'
+				@resources().texture @_objectTexture.get()
 		nStrokes: @_nStrokes.get()
 		strokeSize: @_strokeSize.get()
 		enableRotation: @_strokeEnableRotation.get()

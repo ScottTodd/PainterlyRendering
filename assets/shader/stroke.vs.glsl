@@ -13,6 +13,7 @@ uniform int enableRotation;
 uniform int useObjectTexture;
 // uniform float lightGradientFactor;
 uniform float curveFactor;
+uniform float depthEpsilon;
 
 uniform vec3 ambientLightColor;
 #if MAX_DIR_LIGHTS > 0
@@ -275,11 +276,8 @@ float getZQuality(vec3 mvPosition, vec4 glPosition)
 		sampleDepth(glPosition);
 	float strokeZDifference =
 		abs(mvPosition.z - depthTextureZ);
-	const float strokeZEpsilon =
-		// TODO: This should vary by object size
-		1.0;
 
-	return 1.0 - (strokeZDifference / strokeZEpsilon);
+	return 1.0 - (strokeZDifference / depthEpsilon);
 }
 
 void main()

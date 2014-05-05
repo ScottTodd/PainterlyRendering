@@ -8,6 +8,10 @@ module.exports = class ParametersGame extends Game
 	allResources: ->
 		models: [ 'bunny', 'lamp', 'teapot' ]
 		textures: [
+			# Object textures
+			'The_Scream', # TODO: more!
+
+			# Stroke textures
 			'stroke1', 'stroke2', 'stroke3', 'stroke4',
 			'stroke5', 'noise1', 'noise2', 'circle',
 			'triangle', 'square', 'stick', 'grid'
