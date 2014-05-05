@@ -2,7 +2,7 @@ fs = require 'fs'
 $ = require 'jquery'
 three = require 'three'
 { check, type } = require './check'
-meshVerticesNormals = require './meshVerticesNormals'
+meshVerticesNormalsUVs = require './meshVerticesNormalsUVs'
 { read } = require './meta'
 
 getOpt = (opts, name, defaultOpt) ->
@@ -45,6 +45,7 @@ module.exports = class StrokeMeshLayer
 	nStrokes: Number
 	strokeSize: Number
 	strokeTexture: three.Texture
+	objectTexture: three.Texture
 	colors:
 		type: 'rainbow'
 		OR
@@ -65,6 +66,7 @@ module.exports = class StrokeMeshLayer
 			opts.enableRotation ? 1
 		outOpts.curveFactor =
 			opts.curveFactor ? 1.0
+		outOpts.objectTexture = getOpt opts, 'objectTexture', -> null
 
 		colorsOpt = getOpt opts, 'colors'
 		outOpts.colors =
@@ -79,8 +81,8 @@ module.exports = class StrokeMeshLayer
 				else
 					fail()
 
-		[ outOpts.vertices, outOpts.normals ] =
-			meshVerticesNormals (new three.Mesh geometry), outOpts.nStrokes
+		[ outOpts.vertices, outOpts.normals, outOpts.uvs, outOpts.hasUVs ] =
+			meshVerticesNormalsUVs (new three.Mesh geometry), outOpts.nStrokes
 
 		outOpts.specularIntensity =
 			opts.specularIntensity ? 4
@@ -99,8 +101,8 @@ module.exports = class StrokeMeshLayer
 	Use a factory method instead!
 	###
 	constructor: (opts) ->
-		{ nStrokes, strokeSize, vertices, normals, colors, strokeTexture,
-		  enableRotation, curveFactor,
+		{ nStrokes, strokeSize, vertices, normals, uvs, hasUVs, colors,
+		  strokeTexture, objectTexture, enableRotation, curveFactor,
 		  specularMin, specularFadeIn, specularIntensity, specularPower } = opts
 
 		check vertices.length == nStrokes, 'must have nStrokes vertices'
@@ -114,6 +116,12 @@ module.exports = class StrokeMeshLayer
 			strokeTexture:
 				type: 't'
 				value: strokeTexture
+			objectTexture:
+				type: 't'
+				value: objectTexture
+			useObjectTexture:
+				type: 'i'
+				value: hasUVs and objectTexture?
 			strokeSize:
 				type: 'f'
 				value: 0 #strokeSize
@@ -146,6 +154,9 @@ module.exports = class StrokeMeshLayer
 			strokeVertexNormal:
 				type: 'v3'
 				value: normals
+			strokeUV:
+				type: 'v2'
+				value: uvs
 
 		material =
 			new three.ShaderMaterial

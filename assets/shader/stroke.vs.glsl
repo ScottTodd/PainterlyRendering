@@ -1,6 +1,8 @@
 attribute vec3 strokeVertexNormal;
+attribute vec2 strokeUV;
 
 uniform sampler2D depthTexture;
+uniform sampler2D objectTexture;
 
 uniform float strokeSize;
 uniform float specularMin;
@@ -8,6 +10,7 @@ uniform float specularFadeIn;
 uniform float specularIntensity;
 uniform float specularPower;
 uniform int enableRotation;
+uniform int useObjectTexture;
 // uniform float lightGradientFactor;
 uniform float curveFactor;
 
@@ -45,7 +48,6 @@ void calcLight(vec3 mPosition, vec3 mNormal, out vec3 diffuseTotal, out vec3 spe
 {
 	vec3 dirToCamera =
 		normalize(cameraPosition - mPosition);
-
 	diffuseTotal =
 		ambientLightColor;
 	specularTotal =
@@ -331,8 +333,13 @@ void main()
 	float alpha =
 		specularAmountToAlpha * zQualityAlpha;
 
-	strokeShadedColor =
-		vec4(litColor, alpha);
+	if (useObjectTexture == 1) {
+		strokeShadedColor =
+			vec4(litColor, alpha) + texture2D(objectTexture, strokeUV);
+	} else {
+		strokeShadedColor =
+			vec4(litColor, alpha);
+	}
 
 
 	float shrinkInDistance =
