@@ -44,8 +44,8 @@ module.exports = class LayerController extends GameObject
 			new RadioSelector
 				name: 'Object Texture'
 				options: [
-					'none', 'scream', '4colors', 'raytracing',
-					'sirius-1-10', 'sirius-2-17', 'sirius-2-19'
+					'none', 'scream', '4colors', 'raytrace',
+					'ice', 'fire', 'water'
 				]
 				start: 'none'
 		@_strokeEnableRotation =

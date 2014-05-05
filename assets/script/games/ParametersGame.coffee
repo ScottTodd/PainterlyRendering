@@ -6,11 +6,10 @@ ParametersController = require '../ui/ParametersController'
 
 module.exports = class ParametersGame extends Game
 	allResources: ->
-		models: [ 'bunny', 'lamp', 'teapot', 'quad' ]
+		models: [ 'sphere', 'bunny', 'lamp', 'teapot', 'quad' ]
 		textures: [
 			# Object textures
-			'4colors', 'scream', 'sirius-1-10', 'sirius-2-17', 'sirius-2-19',
-			'raytracing' # TODO: even more!
+			'4colors', 'scream', 'raytrace', 'ice', 'fire', 'water'
 
 			# Stroke textures
 			'stroke1', 'stroke2', 'stroke3', 'stroke4',
@@ -21,6 +20,7 @@ module.exports = class ParametersGame extends Game
 	initialObjects: ->
 		cc =
 			new CameraController
+				distance: 2
 		ft =
 			new FramerateTracker '#frameRateNumber'
 		pc =
@@ -33,7 +33,6 @@ module.exports = class ParametersGame extends Game
 
 	otherSetup: ->
 		three = require 'three'
-		#@graphics().camera().position.set 0, 0, @boxSize / 2
 		@physics().setGravity new three.Vector3 0, -9.8, 0
 		@physics().addMaterialContact 'ball', 'wall', 0, 1
 		@physics().addMaterialContact 'ball', 'ball', 0, 1

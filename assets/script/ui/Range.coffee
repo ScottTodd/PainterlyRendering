@@ -2,16 +2,38 @@ $ = require 'jquery'
 { read } = require '../meta'
 { makeSlider, onSliderChange } = require './sliderHelp'
 
+roundToNearest = (x, step) ->
+	Math.round(x / step) * step
+
 module.exports = class Range
 	constructor: (opts) ->
 		@_name = opts.name
+		@_scaleType = opts.scaleType ? 'exponential'
+		@_min = opts.min ? 0
+		@_max = opts.max ? 1
+		@_step = opts.step ? 0.01
+		start = opts.start ? 0
+
+		unScaledStart =
+			# 0-1
+			(start - @_min) / (@_max - @_min)
+
+		unScaledStart =
+			switch @_scaleType
+				when 'linear'
+					unScaledStart
+				when 'exponential'
+					k = 2
+					Math.log(unScaledStart * (Math.exp(k) - 1) + 1) / k
+				else
+					fail()
 
 		@_nameDiv =
 			$ "<div class='controlName'/>"
 		@_nameDiv.text @_name
 
 		@_slider =
-			makeSlider 'slider', opts.min, opts.max, opts.start, opts.step
+			makeSlider 'slider', 0, 1, unScaledStart, 0.001
 		@_change =
 			$.Callbacks()
 
@@ -34,7 +56,24 @@ module.exports = class Range
 	read @, 'change', 'div', 'name'
 
 	get: ->
-		parseFloat @_slider.val()
+		x =
+			parseFloat @_slider.val()
+
+
+		scaled =
+			switch @_scaleType
+				when 'linear'
+					x
+				when 'exponential'
+					k = 2
+					(Math.exp(x * k) - 1) / (Math.exp(k) - 1)
+				else
+					fail()
+
+		scaled =
+			@_min + scaled * (@_max - @_min)
+
+		roundToNearest scaled, @_step
 
 	set: (val) ->
 		@_slider.val val

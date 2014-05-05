@@ -6,10 +6,14 @@ GameObject = require './GameObject'
 
 module.exports = class Graphics extends GameObject
 	constructor: ->
-		@renderer =
-			new three.WebGLRenderer
-				alpha: yes
-				preserveDrawingBuffer: yes
+		try
+			@renderer =
+				new three.WebGLRenderer
+					alpha: yes
+					preserveDrawingBuffer: yes
+		catch error
+			alert 'Could not initialize WebGL!'
+			throw error
 
 		@_strokeMeshes =
 			[]

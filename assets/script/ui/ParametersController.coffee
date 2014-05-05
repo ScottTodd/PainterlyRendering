@@ -241,13 +241,8 @@ module.exports = class ParametersController extends GameObject
 			for b in x
 				@emit b
 		else
-
 			opts.geometry =
-				switch @_geometry.get()
-					when 'sphere'
-						new three.SphereGeometry 2, 32, 32
-					else
-						@resources().geometry @_geometry.get()
+				@resources().geometry @_geometry.get()
 
 			@_obj =
 				new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0), opts
