@@ -9,7 +9,8 @@ module.exports = class ParametersGame extends Game
 		models: [ 'bunny', 'lamp', 'teapot', 'quad' ]
 		textures: [
 			# Object textures
-			'4colors', 'scream', # TODO: more!
+			'4colors', 'scream', 'sirius-1-10', 'sirius-2-17', 'sirius-2-19',
+			'raytracing' # TODO: even more!
 
 			# Stroke textures
 			'stroke1', 'stroke2', 'stroke3', 'stroke4',

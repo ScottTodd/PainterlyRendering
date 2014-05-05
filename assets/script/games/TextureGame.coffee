@@ -10,7 +10,8 @@ Light = require '../Light'
 module.exports = class TextureGame extends Game
 	allResources: ->
 		models: [ 'bunny', 'quad', 'sphere' ]
-		textures: [ 'stroke1', 'white', 'scream', 'easy_colors' ]
+		textures: [ 'stroke1', 'white', 'scream', 'easy_colors',
+					'sirius-1-10', 'sirius-2-17', 'sirius-2-19', 'raytracing' ]
 
 	initialObjects: ->
 		cc =
