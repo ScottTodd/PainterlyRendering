@@ -66,7 +66,7 @@ module.exports = class StrokeMeshLayer
 			opts.enableRotation ? 1
 		outOpts.curveFactor =
 			opts.curveFactor ? 1.0
-		outOpts.objectTexture = getOpt opts, 'objectTexture'
+		outOpts.objectTexture = getOpt opts, 'objectTexture', -> null
 
 		colorsOpt = getOpt opts, 'colors'
 		outOpts.colors =
@@ -81,7 +81,7 @@ module.exports = class StrokeMeshLayer
 				else
 					fail()
 
-		[ outOpts.vertices, outOpts.normals, outOpts.uvs ] =
+		[ outOpts.vertices, outOpts.normals, outOpts.uvs, outOpts.hasUVs ] =
 			meshVerticesNormalsUVs (new three.Mesh geometry), outOpts.nStrokes
 
 		outOpts.specularIntensity =
@@ -101,7 +101,7 @@ module.exports = class StrokeMeshLayer
 	Use a factory method instead!
 	###
 	constructor: (opts) ->
-		{ nStrokes, strokeSize, vertices, normals, uvs, colors,
+		{ nStrokes, strokeSize, vertices, normals, uvs, hasUVs, colors,
 		  strokeTexture, objectTexture, enableRotation, curveFactor,
 		  specularMin, specularFadeIn, specularIntensity, specularPower } = opts
 
@@ -119,6 +119,9 @@ module.exports = class StrokeMeshLayer
 			objectTexture:
 				type: 't'
 				value: objectTexture
+			useObjectTexture:
+				type: 'i'
+				value: hasUVs and objectTexture?
 			strokeSize:
 				type: 'f'
 				value: 0 #strokeSize

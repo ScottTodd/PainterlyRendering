@@ -4,9 +4,8 @@ FramerateTracker = require '../FramerateTracker'
 Game = require '../Game'
 ScreenShooter = require '../ScreenShooter'
 SimpleStrokeMeshObject = require '../SimpleStrokeMeshObject'
-StrokeMeshLayer = require '../StrokeMeshLayer'
-StrokeMesh = require '../StrokeMesh'
 TexturedObject = require '../TexturedObject'
+Light = require '../Light'
 
 module.exports = class TextureGame extends Game
 	allResources: ->
@@ -37,7 +36,7 @@ module.exports = class TextureGame extends Game
 					sat: 0.0
 					lum: 1.0
 				strokeTexture: @resources().texture 'stroke1'
-				specularIntensity: 0
+				specularIntensity: 2.0
 				layers: [
 					nStrokes: 600
 					strokeSize: 0.9
@@ -47,8 +46,15 @@ module.exports = class TextureGame extends Game
 				,
 					nStrokes: 3000
 					strokeSize: 0.15
-
 				]
 
+		l1 =
+			new Light
+				direction: new three.Vector3 1, 1, 1
+				lum: 0.5
+		l2 =
+			new Light
+				direction: new three.Vector3 -1, -1, -1
+				lum: 0.5
 
-		super.concat [ cc, ft, ss, quad ]
+		super.concat [ cc, ft, ss, l1, l2, quad ]

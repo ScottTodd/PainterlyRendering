@@ -7,10 +7,14 @@ module.exports = class TexturedObject extends GameObject
 			new three.MeshBasicMaterial
 				map: opts.texture
 
-		@mesh =
+		@_mesh =
 			new three.Mesh opts.geometry, material
 
 	start: ->
 		super()
 
-		@graphics().scene.add @mesh
+		@graphics().scene().add @_mesh
+
+	finish: ->
+		super()
+		@_mesh.removeFromGraphics @graphics()

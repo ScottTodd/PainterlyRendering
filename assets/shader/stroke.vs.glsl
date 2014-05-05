@@ -10,6 +10,7 @@ uniform float specularFadeIn;
 uniform float specularIntensity;
 uniform float specularPower;
 uniform int enableRotation;
+uniform int useObjectTexture;
 // uniform float lightGradientFactor;
 uniform float curveFactor;
 
@@ -332,10 +333,13 @@ void main()
 	float alpha =
 		specularAmountToAlpha * zQualityAlpha;
 
-	strokeShadedColor =
-		texture2D(objectTexture, strokeUV);
-		// vec4(litColor, alpha);
-		// vec4(color * lightTotal, alpha) * texture2D(objectTexture, strokeUV);
+	if (useObjectTexture == 1) {
+		strokeShadedColor =
+			vec4(litColor, alpha) + texture2D(objectTexture, strokeUV);
+	} else {
+		strokeShadedColor =
+			vec4(litColor, alpha);
+	}
 
 
 	float shrinkInDistance =

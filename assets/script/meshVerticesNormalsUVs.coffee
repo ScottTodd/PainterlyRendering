@@ -20,7 +20,7 @@ shuffleEqually = (listA, listB, listC) ->
 
 ###
 Can't simply use three.GeometryUtils.randomPointInTriangle
-	because we need the normal too.
+	because we need the normal and uv too.
 
 Done using barycentric coordinates.
 The best reference for random selection I can find is
@@ -53,7 +53,7 @@ randomPointNormalUVInTriangle = (va, vb, vc, na, nb, nc, uva, uvb, uvc) ->
 
 ###
 Randomly distributres vertices across a mesh.
-Assigns interpolated normals.
+Assigns interpolated normals and uvs.
 ###
 module.exports = meshVerticesNormalsUVs = (mesh, nVertices) ->
 	type mesh, three.Mesh
@@ -80,12 +80,20 @@ module.exports = meshVerticesNormalsUVs = (mesh, nVertices) ->
 
 	verticesOwed = 0
 
+	hasUVs = geometry.faceVertexUvs? and geometry.faceVertexUvs[0].length > 0
+
 	for i in [0...geometry.faces.length]
 		face = geometry.faces[i]
 
 		[ va, vb, vc ] = faceVertices face
 		[ na, nb, nc ] = face.vertexNormals
-		[ uva, uvb, uvc ] = geometry.faceVertexUvs[0][i]
+
+		if hasUVs
+			[ uva, uvb, uvc ] = geometry.faceVertexUvs[0][i]
+		else
+			[ uva, uvb, uvc ] = [ (new three.Vector2 0, 0),
+								  (new three.Vector2 0, 0),
+								  (new three.Vector2 0, 0)  ]
 
 		area =
 			three.GeometryUtils.triangleArea va, vb, vc
@@ -111,4 +119,4 @@ module.exports = meshVerticesNormalsUVs = (mesh, nVertices) ->
 
 	shuffleEqually vertices, normals, uvs
 
-	[ vertices, normals, uvs ]
+	[ vertices, normals, uvs, hasUVs ]

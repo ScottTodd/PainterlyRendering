@@ -7,8 +7,7 @@ ParametersGame = require './games/ParametersGame'
 TextureGame = require './games/TextureGame'
 
 game =
-	new TextureGame
-	# new ParametersGame
+	new ParametersGame
 
 ($ 'document').ready ->
 	($ playButton).hide()
