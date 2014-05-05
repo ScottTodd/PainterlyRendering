@@ -22,15 +22,15 @@ module.exports = class LayerController extends GameObject
 			new Range
 				name: 'Number'
 				min: 0
-				max: 2000
+				max: 4000
 				step: 1
 				start: 400 * Math.pow 2, index
 		@_strokeSize =
 			new Range
 				name: 'Size'
 				min: 0.1
-				max: 1
-				start: 0.8 * Math.pow 0.5, index
+				max: 0.8
+				start: 0.4 * Math.pow 0.5, index
 		@_strokeTexture =
 			new RadioSelector
 				name: 'Stroke Texture'
@@ -44,7 +44,7 @@ module.exports = class LayerController extends GameObject
 			new RadioSelector
 				name: 'Object Texture'
 				options: [
-					'none', 'The_Scream', 'grid'
+					'none', 'scream', '4colors'
 				]
 				start: 'none'
 		@_strokeEnableRotation =

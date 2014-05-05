@@ -6,10 +6,10 @@ ParametersController = require '../ui/ParametersController'
 
 module.exports = class ParametersGame extends Game
 	allResources: ->
-		models: [ 'bunny', 'lamp', 'teapot' ]
+		models: [ 'bunny', 'lamp', 'teapot', 'quad' ]
 		textures: [
 			# Object textures
-			'The_Scream', # TODO: more!
+			'4colors', 'scream', # TODO: more!
 
 			# Stroke textures
 			'stroke1', 'stroke2', 'stroke3', 'stroke4',

@@ -33,6 +33,12 @@ varying vec4 strokeShadedColor;
 varying vec2 strokeOrientation;
 varying float curveAmount;
 
+
+vec3 getColor()
+{
+	return (useObjectTexture == 1) ? texture2D(objectTexture, strokeUV).rgb : color;
+}
+
 /*
 How much we weight a color's importance.
 This doesn't necessarily have to equally value r, g, and b.
@@ -310,7 +316,7 @@ void main()
 		colorAmount(specularTotal);
 
 	vec3 litColor =
-		color * (diffuseTotal + specularTotal);
+		getColor() * (diffuseTotal + specularTotal);
 
 	if (specularTotalAmount < specularMin)
 	{
@@ -331,6 +337,7 @@ void main()
 	float alpha =
 		specularAmountToAlpha * zQualityAlpha;
 
+	/*
 	if (useObjectTexture == 1) {
 		strokeShadedColor =
 			vec4(litColor, alpha) + texture2D(objectTexture, strokeUV);
@@ -338,7 +345,9 @@ void main()
 		strokeShadedColor =
 			vec4(litColor, alpha);
 	}
-
+	*/
+	strokeShadedColor =
+		vec4(litColor, alpha);
 
 	float shrinkInDistance =
 		1.0 / gl_Position.z;

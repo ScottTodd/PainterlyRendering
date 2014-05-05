@@ -10,7 +10,7 @@ Light = require '../Light'
 module.exports = class TextureGame extends Game
 	allResources: ->
 		models: [ 'bunny', 'quad', 'sphere' ]
-		textures: [ 'stroke1', 'white', 'The_Scream', 'easy_colors' ]
+		textures: [ 'stroke1', 'white', 'scream', 'easy_colors' ]
 
 	initialObjects: ->
 		cc =
@@ -24,12 +24,12 @@ module.exports = class TextureGame extends Game
 		testQuad =
 			new TexturedObject (new three.Vector3 0, 0, 0),
 				geometry: @resources().geometry 'quad'
-				texture: @resources().texture 'The_Scream'
+				texture: @resources().texture 'scream'
 
 		quad =
 			new SimpleStrokeMeshObject (new three.Vector3 0, 0, 0),
-				geometry: @resources().geometry 'bunny'
-				objectTexture: @resources().texture 'The_Scream'
+				geometry: @resources().geometry 'quad'
+				objectTexture: @resources().texture 'scream'
 				colors:
 					type: 'randomHSL'
 					hue: 0.65

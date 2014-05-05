@@ -163,15 +163,15 @@ module.exports = class ParametersController extends GameObject
 			new RadioSelector
 				name: 'Geometry'
 				options: [
-					'sphere', 'bunny', 'teapot', 'bounce'
+					'sphere', 'bunny', 'teapot', 'quad', 'bounce'
 				]
 				start: 'sphere'
 		@_borderSize =
 			new Range
 				name: 'Border'
 				min: 0
-				max: 0.5
-				start: 0.2
+				max: 0.25
+				start: 0.1
 		@_geometry.change().add =>
 			@regenerate()
 		@_borderSize.change().add =>
