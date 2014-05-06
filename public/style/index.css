@@ -1,0 +1,173 @@
+
+/* line 197 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003197}}
+
+/* line 1 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\node_modules\grunt-contrib-stylus\node_modules\stylus\lib\functions\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/node_modules\/grunt-contrib-stylus\/node_modules\/stylus\/lib\/functions\/index\.styl}line{font-family:\000031}}
+
+/* line 293 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\node_modules\grunt-contrib-stylus\node_modules\stylus\lib\functions\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/node_modules\/grunt-contrib-stylus\/node_modules\/stylus\/lib\/functions\/index\.styl}line{font-family:\00003293}}
+
+/* line 2 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\font.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/font\.styl}line{font-family:\000032}}
+
+/* line 25 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000325}}
+html,body{margin:0;height:100%}
+/* line 29 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000329}}
+body{background:linear-gradient(-45deg,#aaa,#eee);background-repeat:no-repeat;background-attachment:fixed;margin:0;height:100%}
+/* line 36 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000336}}
+#hud{margin-left:auto;margin-right:auto;width:200px;height:16px}
+/* line 41 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000341}}
+#hud div,#hud button{display:inline-block}
+/* line 44 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000344}}
+#playButton{color:#008000}
+/* line 46 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000346}}
+#pauseButton{color:#f00}
+/* line 48 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000348}}
+#stopButton{color:#f00}
+/* line 50 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000350}}
+#screenShotButton{color:#00f}
+/* line 53 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000353}}
+#frameRate{font-family:'Nova Round';float:right}
+/* line 57 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000357}}
+#glContainer{margin-left:auto;margin-right:auto;margin-top:10px;width:1000px;height:500px}
+/* line 64 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000364}}
+#parameters{width:1200px;margin-left:auto;margin-right:auto;border-radius:40px;background:linear-gradient(to bottom right,rgba(221,238,255,0.533),rgba(255,238,221,0.533))}
+/* line 70 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000370}}
+.subController,.lightController,.layerController{display:inline-block;width:380px;border-radius:20px;margin-left:10px;margin-right:10px}
+/* line 76 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000376}}
+
+/* line 79 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000379}}
+.onOffDiv{margin-left:auto;margin-right:auto;width:32px}
+/* line 86 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000386}}
+.layerController{background:linear-gradient(to bottom right,rgba(255,238,221,0.533),rgba(221,238,255,0.533));position:relative;height:510px}
+/* line 94 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\0000394}}
+.layerControllerOverlay{width:380px;border-radius:20px;height:484px;background:linear-gradient(to bottom right,rgba(102,102,102,0.533),rgba(153,153,153,0.533));display:block;position:absolute;top:26px;bottom:0;left:0}
+/* line 106 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003106}}
+.controlTitle,.controlTitle2{font-family:'Lobster';font-size:20px;text-align:center;text-shadow:1px 1px #fff}
+/* line 111 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003111}}
+.controlTitle2{font-size:14px}
+/* line 115 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003115}}
+.controlTitle[name='mesh']{color:#088}
+/* line 118 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003118}}
+.controlTitle[name='layers']{color:#808}
+/* line 121 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003121}}
+.controlTitle[name='lights']{color:#ff0;text-shadow:1px 1px #000}
+/* line 125 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003125}}
+.controlTitle[name='stroke']{color:#800}
+/* line 128 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003128}}
+.controlTitle[name='hsl']{color:#080}
+/* line 131 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003131}}
+.controlTitle[name='specular']{color:#008}
+/* line 134 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003134}}
+.radioSelector{margin-left:auto;margin-right:auto;border-radius:10px;background:linear-gradient(to bottom right,#fff,rgba(255,255,255,0.533));width:320px;margin-top:6px;margin-bottom:6px}
+/* line 140 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003140}}
+.radioSelector.extraLong{width:400px}
+/* line 142 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003142}}
+.radioSelector.short{width:240px}
+/* line 144 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003144}}
+.radioSelector .single{display:inline-block;width:80px}
+/* line 147 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003147}}
+.radioSelector .single .button,.radioSelector .single .name{font-size:14px;vertical-align:middle;font-family:'Voces'}
+/* line 154 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003154}}
+.controlPart,.range .slider,.controlName,.rangeRange .average,.rangeRange .variance,.readOut{vertical-align:middle;display:inline-block}
+/* line 158 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003158}}
+.rangeGroup{background:linear-gradient(to bottom right,#fdd,#dff);border-radius:8px;width:350px;margin-left:auto;margin-right:auto;font-family:'Nova Round'}
+/* line 165 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003165}}
+.rangeLike,.range,.rangeRange{vertical-align:middle;height:20px}
+/* line 169 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003169}}
+
+/* line 172 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003172}}
+.range .slider{width:200px}
+/* line 176 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003176}}
+
+/* line 180 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003180}}
+.controlName{color:#00f;width:60px}
+/* line 185 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003185}}
+.rangeRange .average{width:100px}
+/* line 189 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003189}}
+.rangeRange .variance{width:80px}
+/* line 193 : E:\Libraries\Documents\Dropbox\GitHub\PainterlyRendering\assets\style\index.styl */
+
+@media -stylus-debug-info{filename{font-family:file\:\/\/E\:\/Libraries\/Documents\/Dropbox\/GitHub\/PainterlyRendering\/assets\/style\/index\.styl}line{font-family:\00003193}}
+.readOut{font-size:12px;color:#a0522d}
