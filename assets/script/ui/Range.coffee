@@ -44,7 +44,7 @@ module.exports = class Range
 			$ "<div class='readOut'/>"
 
 		@_change.add =>
-			@_readOut.text @get()
+			@_readOut.text @get().toString().slice 0, 6
 
 		@_change.fire()
 

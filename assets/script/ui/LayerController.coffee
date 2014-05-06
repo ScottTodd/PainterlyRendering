@@ -22,14 +22,14 @@ module.exports = class LayerController extends GameObject
 			new Range
 				name: 'Number'
 				min: 0
-				max: 4000
+				max: 10000
 				step: 1
 				start: 400 * Math.pow 2, index
 		@_strokeSize =
 			new Range
 				name: 'Size'
-				min: 0.1
-				max: 0.8
+				min: 0.04
+				max: 0.6
 				start: 0.4 * Math.pow 0.5, index
 		@_strokeTexture =
 			new RadioSelector
