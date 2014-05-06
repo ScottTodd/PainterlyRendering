@@ -30,7 +30,7 @@ module.exports = class LayerController extends GameObject
 			new Range
 				name: 'Size'
 				min: 0.04
-				max: 0.6
+				max: 0.4
 				scaleType: 'exponential'
 				start: 0.3 - 0.1 * index #0.4 * Math.pow 0.5, index
 		@_strokeTexture =
