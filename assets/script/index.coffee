@@ -19,6 +19,7 @@ game =
 		($ '#pauseButton').hide()
 		game.pause()
 
+	($ '#stopButton').hide()
 	($ '#stopButton').click ->
 		game.restart()
 		pause()

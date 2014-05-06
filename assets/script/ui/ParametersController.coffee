@@ -213,7 +213,7 @@ module.exports = class ParametersController extends GameObject
 			div = $ "##{@_divName}"
 			div.addClass 'parametersController'
 			div.empty()
-			div.append (($ "<div class='controlTitle' name='mesh'/>").text "Mesh")
+			#div.append (($ "<div class='controlTitle' name='mesh'/>").text "Mesh")
 			div.append meshOptionsDiv
 			div.append ($ "<div class='controlTitle' name='layers'/>").text "Layers…"
 			for layer in @_layers

@@ -8,7 +8,7 @@ roundToNearest = (x, step) ->
 module.exports = class Range
 	constructor: (opts) ->
 		@_name = opts.name
-		@_scaleType = opts.scaleType ? 'exponential'
+		@_scaleType = opts.scaleType ? 'linear'
 		@_min = opts.min ? 0
 		@_max = opts.max ? 1
 		@_step = opts.step ? 0.01

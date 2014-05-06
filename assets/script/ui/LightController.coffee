@@ -46,6 +46,7 @@ module.exports = class LightController extends GameObject
 				name: 'Lum'
 				min: 0
 				max: 5
+				scaleType: 'exponential'
 				start: 2
 
 

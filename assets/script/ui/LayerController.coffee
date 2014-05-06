@@ -22,18 +22,20 @@ module.exports = class LayerController extends GameObject
 			new Range
 				name: 'Number'
 				min: 0
-				max: 10000
+				max: 15000
 				step: 1
-				start: 400 * Math.pow 2, index
+				scaleType: 'exponential'
+				start: 500 * Math.pow 2, index
 		@_strokeSize =
 			new Range
 				name: 'Size'
 				min: 0.04
 				max: 0.6
-				start: 0.4 * Math.pow 0.5, index
+				scaleType: 'exponential'
+				start: 0.3 - 0.1 * index #0.4 * Math.pow 0.5, index
 		@_strokeTexture =
 			new RadioSelector
-				name: 'Stroke Texture'
+				name: 'Texture'
 				options: [
 					'stroke1', 'stroke2', 'stroke3', 'stroke4',
 					'stroke5', 'noise1', 'noise2', 'circle',
@@ -45,29 +47,34 @@ module.exports = class LayerController extends GameObject
 				name: 'Object Texture'
 				options: [
 					'none', 'scream', '4colors', 'raytrace',
-					'ice', 'fire', 'water', 'grass', 'brick'
+					'fire', 'water', 'grass', 'brick' # 'ice'
 				]
 				start: 'none'
-		@_strokeEnableRotation =
-			new OnOffButton
-				start: 1
+		@_strokeRotCurve =
+			new RadioSelector
+				name: 'Drawing Method'
+				options: [ 'flat', 'oriented', 'curved' ]
+				start: 'curved'
 		@_strokeCurveFactor =
 			new Range
-				name: 'Curve Factor'
+				name: 'Curve'
 				min: 0
 				max: 2
+				scaleType: 'exponential'
 				start: 1
 
 		strokeDiv.append ($ "<div class='rangeGroup'/>").append \
 			@_nStrokes.div(), @_strokeSize.div()
-		strokeDiv.append @_strokeTexture.div(), @_objectTexture.div()
-		strokeDiv.append ($ "<div class='controlName'/>").text "Rotation"
-		strokeDiv.append @_strokeEnableRotation.div()
-		strokeDiv.append @_strokeCurveFactor.div()
+		strokeDiv.append @_strokeTexture.div()
+		#strokeDiv.append ($ "<div class='controlName'/>").text "Stroke"
+		strokeDiv.append @_strokeRotCurve.div()
+		strokeDiv.append ($ "<div class='rangeGroup'/>").append \
+			@_strokeCurveFactor.div()
 
 		hslDiv =
 			$ "<div class='hsl'/>"
 		hslDiv.append ($ "<div class='controlTitle' name='hsl'/>").text "Colors"
+		hslDiv.append @_objectTexture.div()
 		@_hue =
 			new RangeRange
 				name: 'Hue'
@@ -96,23 +103,27 @@ module.exports = class LayerController extends GameObject
 				name: 'Amount'
 				min: 0
 				max: 10
+				scaleType: 'exponential'
 				start: 2
 		@_specPow =
 			new Range
 				name: 'Power'
 				min: 0
 				max: 10
+				scaleType: 'exponential'
 				start: 4
 		@_specMin =
 			new Range
 				name: 'Min'
 				min: 0
 				max: 10
+				scaleType: 'exponential'
 		@_specFadeIn =
 			new Range
 				name: 'Fade In'
 				min: 0
 				max: 5
+				scaleType: 'exponential'
 		specDiv.append ($ "<div class='rangeGroup'/>").append \
 			@_specIntense.div(),
 			@_specPow.div(),
@@ -122,7 +133,7 @@ module.exports = class LayerController extends GameObject
 		# Handle events
 		allOpts =
 			[ @_on, @_nStrokes, @_strokeSize, @_strokeTexture, @_objectTexture,
-			  @_strokeEnableRotation, @_strokeCurveFactor,
+			  @_strokeRotCurve, @_strokeCurveFactor,
 			  @_hue, @_sat, @_lum,
 			  @_specIntense, @_specPow, @_specMin, @_specFadeIn ]
 
@@ -160,8 +171,12 @@ module.exports = class LayerController extends GameObject
 				@resources().texture @_objectTexture.get()
 		nStrokes: @_nStrokes.get()
 		strokeSize: @_strokeSize.get()
-		enableRotation: @_strokeEnableRotation.get()
-		curveFactor: @_strokeCurveFactor.get()
+		enableRotation: @_strokeRotCurve.get() != 'flat'
+		curveFactor:
+			if @_strokeRotCurve.get() == 'curved'
+				@_strokeCurveFactor.get()
+			else
+				0
 		colors:
 			type: 'randomHSL'
 			hue: @_hue.get()

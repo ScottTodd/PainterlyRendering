@@ -31,7 +31,9 @@ module.exports = class RadioSelector
 				($ "<div class='single'/>").append rad, text
 
 		@_div =
-			($ "<form class='radioSelector'/>").append buttons...
+			($ "<form class='radioSelector'/>")
+		@_div.append ($ "<div class='controlTitle2'/>").text opts.name
+		@_div.append buttons...
 
 	read @, 'change', 'div'
 

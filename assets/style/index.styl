@@ -41,17 +41,17 @@ body
 #hud div, #hud button
 	display inline-block
 
-#playPauseButton button
+#playButton
+	color green
+#pauseButton
 	color red
 #stopButton
-	color green
+	color red
 #screenShotButton
 	color blue
 
 #frameRate
-	font-face mono
-	font-weight bold
-
+	font-control()
 	float right
 
 #glContainer
@@ -81,30 +81,36 @@ body
 	width 32px
 	//skale(2)
 
+layer-controller-height = 510px
 
 .layerController
 	@extends .subController
 	grad-bg #fed8 #def8
 	position relative
-	height 500px
+	height layer-controller-height
+
+layer-overlay-down = 26px
 
 .layerControllerOverlay
 	width 380px
 	border-radius 20px
-	height (500 - 28)px
+	height layer-controller-height - layer-overlay-down
 	grad-bg #6668 #9998
 
 	display block
 	position absolute
-	top 20
+	top layer-overlay-down
 	bottom 0
 	left 0
 
 .controlTitle
 	font-control-title()
-	font-size 24px
+	font-size 20px
 	text-align center
 	text-shadow 1px 1px white
+.controlTitle2
+	@extends .controlTitle
+	font-size 14px
 
 .controlTitle[name='mesh']
 	color #088
