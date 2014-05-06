@@ -45,7 +45,7 @@ module.exports = class LayerController extends GameObject
 				name: 'Object Texture'
 				options: [
 					'none', 'scream', '4colors', 'raytrace',
-					'ice', 'fire', 'water'
+					'ice', 'fire', 'water', 'grass', 'brick'
 				]
 				start: 'none'
 		@_strokeEnableRotation =
