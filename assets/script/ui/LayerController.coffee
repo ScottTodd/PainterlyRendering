@@ -55,6 +55,7 @@ module.exports = class LayerController extends GameObject
 				name: 'Drawing Method'
 				options: [ 'flat', 'oriented', 'curved' ]
 				start: 'curved'
+		@_strokeRotCurve.div().addClass 'short'
 		@_strokeCurveFactor =
 			new Range
 				name: 'Curve'

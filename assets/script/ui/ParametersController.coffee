@@ -166,6 +166,7 @@ module.exports = class ParametersController extends GameObject
 					'sphere', 'bunny', 'teapot', 'quad', 'bounce'
 				]
 				start: 'sphere'
+		@_geometry.div().addClass 'extraLong'
 		@_borderSize =
 			new Range
 				name: 'Border'
